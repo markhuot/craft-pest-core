@@ -19,7 +19,7 @@ class User extends Element {
 
     function definition(int $index = 0)
     {
-        $email = $this->faker->email;
+        $email = $this->faker->email();
 
         return [
             'email' => $email,

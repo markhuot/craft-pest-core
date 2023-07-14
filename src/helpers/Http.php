@@ -3,7 +3,7 @@
 namespace markhuot\craftpest\helpers\http;
 
 use markhuot\craftpest\web\TestableResponse;
-use Pest\PendingObjects\TestCall;
+use Pest\PendingCalls\TestCall;
 
 function get(string $uri='/'): TestableResponse|TestCall {
     return test()->get($uri);

@@ -21,7 +21,7 @@ abstract class Element extends Factory
      */
     function definition(int $index = 0) {
         return [
-            'title' => $this->faker->sentence,
+            'title' => $this->faker->sentence(),
         ];
     }
 

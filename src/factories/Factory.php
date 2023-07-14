@@ -188,10 +188,10 @@ abstract class Factory {
      * ```php
      * Entry::factory()
      *   ->set('title, 'SOME GREAT TITLE')
-     *   ->set('title', fn ($faker) => str_to_upper($faker->sentence))
+     *   ->set('title', fn ($faker) => str_to_upper($faker->sentence()))
      *   ->set([
      *     'title' => 'SOME GREAT TITLE',
-     *     'title' => fn ($faker) => str_to_upper($faker->sentence)
+     *     'title' => fn ($faker) => str_to_upper($faker->sentence())
      *   ])
      * ```
      * 
@@ -254,7 +254,7 @@ abstract class Factory {
      *   {
      *     return [
      *       // The entry's title field
-     *       'title' => $this->faker->sentence,          
+     *       'title' => $this->faker->sentence(),
      *
      *       // A Category field takes an array of category ids or category factories
      *       'category' => Category::factory()->count(3), 
