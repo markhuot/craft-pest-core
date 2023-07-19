@@ -2,10 +2,10 @@
 
 namespace markhuot\craftpest\http;
 
+use markhuot\craftpest\http\requests\WebRequest;
 use markhuot\craftpest\web\TestableResponse;
 use Twig\Error\RuntimeError;
 use yii\base\ExitException;
-use yii\web\HttpException;
 
 class RequestHandler
 {
@@ -35,33 +35,8 @@ class RequestHandler
             return $response;
         }
 
-        // If it's a response that normally returns HTML, then suppress the error and return
-        // HTML with the appropriate status code
-        catch (HttpException $e) {
-            // Fake a response and set the HTTP status code
-            $response = \Craft::createObject(\markhuot\craftpest\web\TestableResponse::class);
-            $response->setStatusCode($e->statusCode);
-            $response->setRequest($request);
-
-            // Error response
-            return $response;
-        }
-
-        // Twig is _so_ annoying that it wraps actual exceptions. So we need to catch _all_ twig
-        // exceptions and unpack them to see what the underlying exception was and then handle
-        // it here. Unfortunately, this is duplicated because if the exception is thrown outside
-        // of twig then the normal `catch` block will catch it too.
-        catch (RuntimeError $e) {
-            if (is_a($e->getPrevious(), ExitException::class)) {
-                /** @var TestableResponse */
-                return \Craft::$app->response;
-            }
-
-            throw $e;
-        }
-        catch (ExitException $e) {
-            /** @var TestableResponse */
-            return \Craft::$app->response;
+        catch (\Throwable $exception) {
+            return $this->handleException($exception, $request);
         }
 
         finally {
@@ -77,6 +52,35 @@ class RequestHandler
         }
     }
 
+    protected function handleException(\Throwable $exception, WebRequest $request): TestableResponse
+    {
+        // Twig is _so_ annoying that it wraps actual exceptions. So we need to unpack any
+        // twig exceptions and recursively interact with the actual/previous exception.
+        if ($exception instanceof RuntimeError) {
+            return $this->handleException($exception->getPrevious(), $request);
+        }
+
+        // If our test doesn't want us to render exceptions out as HTML then re-throw the
+        // exception so the test case can catch it and make assertions against the exception.
+        if (! test()->shouldRenderExceptionsAsHtml()) {
+            throw $exception;
+        }
+
+        if ($exception instanceof ExitException) {
+            /** @var TestableResponse $response */
+            $response = \Craft::$app->response;
+        }
+        else {
+            // Fake a response and set the HTTP status code
+            $response = \Craft::createObject(TestableResponse::class);
+            $response->setStatusCode($exception->statusCode ?? 500);
+            $response->setRequest($request);
+        }
+
+        // Error response
+        return $response;
+    }
+
     private function registerWithCraft($request): void
     {
         $this->app->getConfig()->getGeneral()->runQueueAutomatically = false;
@@ -87,7 +91,7 @@ class RequestHandler
 
         // A response object with methods for assertions
         // Yii will fill it with data once the response is successful
-        $response = \Craft::createObject(\markhuot\craftpest\web\TestableResponse::class);
+        $response = \Craft::createObject(TestableResponse::class);
 
         // Copy over any behaviors from the original response
         $response->attachBehaviors($this->app->response->behaviors);

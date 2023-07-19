@@ -11,7 +11,8 @@ class TestCase extends \PHPUnit\Framework\TestCase {
         RequestBuilders,
         Benchmark,
         CookieState,
-        Dd;
+        Dd,
+        WithExceptionHandling;
 
     protected function setUp(): void
     {
