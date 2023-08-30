@@ -1,6 +1,13 @@
 <?php
 
-require __DIR__ . '/../../vendor/autoload.php';
+foreach ([
+ __DIR__ . '/../../vendor/autoload.php', // if we're a top-level project/clone
+ __DIR__ . '/../../../vendor/autoload.php', // if we're a dependency in the vendor folder
+] as $autoloadPath) {
+    if (file_exists($autoloadPath)) {
+        require $autoloadPath;
+    }
+}
 
 $input = $argv[1] ?? null;
 $output = $argv[2] ?? null;
