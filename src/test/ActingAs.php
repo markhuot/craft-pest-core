@@ -12,6 +12,7 @@ use markhuot\craftpest\factories\User as UserFactory;
  */
 trait ActingAs
 {
+    protected ?string $withToken = null;
 
     /**
      * Acting as accepts a number of "user-like" identifiers to log in a user for the test. You may pass,
@@ -56,6 +57,21 @@ trait ActingAs
     function actingAsAdmin()
     {
         return $this->actingAs(UserFactory::factory()->admin(true)->create());
+    }
+
+    /**
+     * For GQL requests (and other bearer token requests) you can set a token on the request by calling
+     * `->withToken()` and passing a valid bearer token.
+     *
+     * ```php
+     * $this->withToken($token)->get('/')->assertOk();
+     * ```
+     */
+    function withToken(string $token)
+    {
+        $this->withToken = $token;
+
+        return $this;
     }
 
     function tearDownActingAs()
