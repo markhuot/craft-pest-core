@@ -6,7 +6,7 @@ use markhuot\craftpest\web\BenchmarkResult;
 
 trait Benchmark
 {
-    protected array $activeBenchmark = [];
+    protected array $activeBenchmark = ['start' => 0];
 
     /**
      * Benchmarks are started on your test case by calling `->beginBenchmark()`. You are
