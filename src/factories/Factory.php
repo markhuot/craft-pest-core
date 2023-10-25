@@ -47,6 +47,8 @@ use function markhuot\craftpest\helpers\base\collection_wrap;
  * ```
  *
  * That example uses most of the common factory methods.
+ *
+ * @template T
  */
 abstract class Factory {
 
@@ -217,6 +219,8 @@ abstract class Factory {
     /**
      * Get the element to be generated.
      * @internal
+     *
+     * @return T
      */
     abstract function newElement();
 
@@ -343,7 +347,7 @@ abstract class Factory {
      * 
      * You may pass additional definition to further customize the model's attributes.
      *
-     * @return \craft\elements\Entry|Collection
+     * @return T
      */
     function create(array $definition=[]) {
         $elements = collection_wrap($this->make($definition));

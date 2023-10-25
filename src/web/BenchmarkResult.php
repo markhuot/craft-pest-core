@@ -25,6 +25,11 @@ class BenchmarkResult
 {
     protected $manifestCache;
 
+    public function __construct(
+        public int $startProfileAt,
+        public int $endProfileAt,
+    ) { }
+
     // function summary()
     // {
     //     $dbQueries = $this->messages->filter(function($message) {
@@ -38,6 +43,22 @@ class BenchmarkResult
     //     return $this;
     // }
 
+    public function getQueries()
+    {
+        $logs = array_slice(\Craft::getLogger()->getProfiling(), $this->startProfileAt, $this->endProfileAt-$this->startProfileAt);
+
+        return collect($logs)
+            ->filter(fn ($log) => in_array($log['category'], \Craft::getLogger()->dbEventNames));
+    }
+
+    public function assertQueryCount(int $expected)
+    {
+        $queries = $this->getQueries();
+        $actual = $queries->count();
+
+        test()->assertEquals($expected, $actual, 'The expected query count, ' . $expected . ' did not match the actual query count, ' . $actual . PHP_EOL . '- ' . $queries->pluck('info')->join(PHP_EOL.'- '));
+    }
+
     function getQueryTiming()
     {
         return collect($this->getPanels()['db']->calculateTimings());
@@ -50,7 +71,7 @@ class BenchmarkResult
         })->duplicates('info');
     }
 
-    protected function getPanels()
+    public function getPanels()
     {
         $logTarget = Module::getInstance()->logTarget;
 

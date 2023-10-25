@@ -6,6 +6,8 @@ use markhuot\craftpest\web\BenchmarkResult;
 
 trait Benchmark
 {
+    protected array $activeBenchmark = [];
+
     /**
      * Benchmarks are started on your test case by calling `->beginBenchmark()`. You are
      * free to start as many benchmarks as needed, however, note that starting a new
@@ -29,6 +31,10 @@ trait Benchmark
         if (!\Craft::$app->config->getGeneral()->devMode) {
             throw new \Exception('You must enable devMode to use benchmarking.');
         }
+
+        $this->activeBenchmark = [
+            'start' => count(\Craft::getLogger()->getProfiling()),
+        ];
 
         // Normally each request bootstraps its own logTarget with a unique tag each
         // time. However, because we're running multiple requests through a single
@@ -66,9 +72,11 @@ trait Benchmark
      */
     function endBenchmark()
     {
+        $this->activeBenchmark['end'] = count(\Craft::getLogger()->getProfiling());
+
         \craft\debug\Module::getInstance()?->logTarget->export();
-        
-        return new BenchmarkResult();
+
+        return new BenchmarkResult($this->activeBenchmark['start'], $this->activeBenchmark['end']);
     }
 
     function tearDownBenchmark()
