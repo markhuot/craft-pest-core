@@ -13,3 +13,10 @@ For many tests the actual user doesn't matter, only that the user is an admin. T
 will return a generic user with admin permissions. This is helpful for testing that something
 works, not whether the permissions for that thing are accurate. For more fine-tuned permission
 testing you should use `->actingAs()` with a curated user element.
+
+## withToken(string $token)
+For GQL requests (and other bearer token requests) you can set a token on the request by calling
+`->withToken()` and passing a valid bearer token.
+```php
+$this->withToken($token)->get('/')->assertOk();
+```
