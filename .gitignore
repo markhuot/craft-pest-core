@@ -1,7 +1,6 @@
 /vendor
 .DS_Store
 .idea
-composer.lock
 cpresources
 /src/bin/index.php
 .phpunit.result.cache
@@ -15,3 +14,13 @@ src/bin/cpresources
 !/storage/.gitkeep
 node_modules
 /docs/.vitepress/dist
+/composer.lock
+/composer-local.lock
+/storage
+/web
+/bootstrap.php
+/.env
+/cpresources
+/templates
+/node_modules
+
