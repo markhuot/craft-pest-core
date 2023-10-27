@@ -101,6 +101,14 @@ abstract class Factory {
     protected $priorityAttributes = [];
 
     /**
+     * The stored sequence for this factory generation.
+     *
+     * @see sequence()
+     * @var array|callable
+     */
+    protected mixed $sequence = [];
+
+    /**
      * Insert deps
      * @internal
      */
@@ -319,6 +327,51 @@ abstract class Factory {
     }
 
     /**
+     * Set a sequence that will be iterated on as multiple models are created. You can
+     * set this to a callback (which gets passed the index) or an array of definitions
+     * where each definition will be used in order.
+     *
+     * ```php
+     * ->sequence(fn ($index) => ['someField' => "the index is {$index}"])
+     * ->sequence(['someField' => 'the index is 1'], ['someField' => 'the index is 2'])
+     * ```
+     *
+     * With the array approach the sequence will be iterated over and looped so if you
+     * pass two items in to a sequence the third created element will re-use the first
+     * item in the sequence. E.g., this will iterate around true/false admins creating
+     * 5 admins and 5 non-admins.
+     *
+     * ```php
+     * ->count(10)
+     * ->sequence(['isAdmin' => true], ['isAdmin' => false])
+     * ```
+     */
+    function sequence(...$sequence): self
+    {
+        $this->sequence = $sequence;
+
+        return $this;
+    }
+
+    /**
+     * Get the sequence at the specified index
+     */
+    protected function sequenceAt(int $index): array
+    {
+        $value = [];
+
+        if (is_array($this->sequence) && count($this->sequence)) {
+            $value = $this->sequence[$index % count($this->sequence)];
+
+            if (is_callable($value)) {
+                $value = $value($index);
+            }
+        }
+
+        return $value;
+    }
+
+    /**
      * Instantiate an Model without persisting it to the database.
      * 
      * You may pass additional definition to further customize the model's attributes.
@@ -332,7 +385,10 @@ abstract class Factory {
         // Create the models
         $elements = collect([])
             ->pad($this->count, null)
-            ->map(fn () => $this->internalMake($definition));
+            ->map(fn ($_, $index) => $this->internalMake([
+                ...$this->sequenceAt($index),
+                ...$definition,
+            ]));
 
         // Store a reference to the created models
         $this->models = $elements;
@@ -396,8 +452,7 @@ abstract class Factory {
 
         // If the count is one return the first model, otherwise return the full
         // collection of models
-        // @TODO, why is this reversed. It's necessary but I don't know why and I'd like to
-        return ($this->count === 1) ? $elements->first() : $elements->reverse();
+        return ($this->count === 1) ? $elements->first() : $elements;
     }
 
     /**
