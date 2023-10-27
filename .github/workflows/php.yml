@@ -65,6 +65,7 @@ jobs:
       run: |
         composer install --prefer-dist --no-progress
         ./bin/post-clone.sh
+        cat config/app.php
 
     - name: Copy config files
       run: mkdir -p ./storage && cp -r ./stubs/config ./config
