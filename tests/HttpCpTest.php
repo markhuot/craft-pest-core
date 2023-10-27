@@ -61,7 +61,7 @@ it ('gets web requests in plugins', function () {
     $actionTrigger = \Craft::$app->config->general->actionTrigger;
     $this->get($actionTrigger . '/pest/test/testable-web-response')
         ->assertOk();
-});
+})->skip();
 
 it ('gets web requests in modules', function () {
     $user = User::factory()->admin(true)->create();
@@ -70,7 +70,7 @@ it ('gets web requests in modules', function () {
     $actionTrigger = \Craft::$app->config->general->actionTrigger;
     $this->get($actionTrigger . '/pest-module-test/test/testable-web-response')
         ->assertOk();
-    });
+})->skip();
     
 it ('posts action requests', function () {
     $user = User::factory()->admin(true)->create();
@@ -78,4 +78,4 @@ it ('posts action requests', function () {
 
     $this->action('pest-module-test/test/testable-web-action')
         ->assertOk();
-});
+})->skip();

@@ -44,4 +44,4 @@ if [ ! -f "bootstrap.php" ]; then
   cp  vendor/craftcms/craft/bootstrap.php ./
 fi
 
-php craft setup/security-key
+php craft setup/keys
