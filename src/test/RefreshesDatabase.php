@@ -52,7 +52,13 @@ trait RefreshesDatabase {
     function setUpRefreshesDatabase()
     {
         $this->listenForStores();
-        $this->refreshDatabase();
+        
+        // Removed 2023-10-30 because it's causing issues with warning reporting. It's
+        // also overly aggressive to assume that each test should run project config
+        // apply. Without this tests will run faster. If users actually want this
+        // feature they can call beforeEach()->refreshDatabase();
+        // $this->refreshDatabase();
+        
         $this->beginTransaction();
     }
 
