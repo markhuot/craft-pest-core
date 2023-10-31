@@ -21,10 +21,16 @@ trait ActingAs
      * 2. A user, `->actingAs(User::find()->id(1)->one())`
      * 3. A string that may be a username or email address, `->actingAs('my_great_username')`
      * 4. A callable that returns a User element, `->actingAs(fn () => $someUser)`
+     * 5. `null` to log the user out for the given request
      */
-    function actingAs(UserFactory|User|string|callable $userOrName = null): self
+    function actingAs(UserFactory|User|string|callable|null $userOrName = null): self
     {
-        if (is_string($userOrName)) {
+        if (is_null($userOrName)) {
+            \Craft::$app->getUser()->logout(false);
+
+            return $this;
+        }
+        else if (is_string($userOrName)) {
             $user = \Craft::$app->getUsers()->getUserByUsernameOrEmail($userOrName);
         }
         else if (is_a($userOrName, User::class)) {
