@@ -2,6 +2,7 @@
 
 namespace markhuot\craftpest\http;
 
+use craft\web\twig\Extension;
 use markhuot\craftpest\http\requests\WebRequest;
 use markhuot\craftpest\web\TestableResponse;
 use Twig\Error\RuntimeError;
@@ -81,10 +82,11 @@ class RequestHandler
         return $response;
     }
 
-    private function registerWithCraft($request): void
+    protected function registerWithCraft($request): void
     {
+        // Don't run the queue automatically, because it injects JS in to pages that might not be expecting
+        // them under test
         $this->app->getConfig()->getGeneral()->runQueueAutomatically = false;
-        $this->app->getView()->setTemplateMode($request->isCpRequest ? 'cp' : 'site');
 
         // The next request
         $this->app->set('request', $request);
@@ -115,5 +117,19 @@ class RequestHandler
                 'ruleConfig' => ['class' => \craft\web\UrlRule::class],
             ],
         ]);
+
+        // Pull out our view service
+        $view = \Craft::$app->getView();
+
+        // Set the correct template mode
+        $view->setTemplateMode($request->isCpRequest ? 'cp' : 'site');
+
+        // Update the Twig globals. Normally PHP/Craft operate in a single request/response
+        // lifecycle. However, because we're sending multiple requests through a single
+        // Craft instance we need to manually update the globals
+        $globals = (new Extension($view, $view->getTwig()))->getGlobals();
+        foreach ($globals as $key => $value) {
+            $view->getTwig()->addGlobal($key, $value);
+        }
     }
 }

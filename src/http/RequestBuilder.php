@@ -86,12 +86,6 @@ class RequestBuilder
 
     protected function setGlobals()
     {
-        $view = \Craft::$app->getView();
-        $globals = (new Extension($view, $view->getTwig()))->getGlobals();
-        foreach ($globals as $key => $value) {
-            $view->getTwig()->addGlobal($key, $value);
-        }
-
         $this->originalGlobals['_POST'] = array_merge($_POST);
         $this->originalGlobals['_SERVER'] = array_merge($_SERVER);
         $_SERVER['HTTP_METHOD'] = $this->method;
