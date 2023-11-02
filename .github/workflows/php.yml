@@ -70,6 +70,7 @@ jobs:
       run: |
         mkdir -p ./storage
         cp -r ./stubs/config ./
+        cat config/app.php
 
     - name: Install Craft
       run: ./src/bin/craft install --interactive=0 --username=admin --email=michael@bluth.com --password=secret --siteName=Pest --siteUrl=http://localhost:8080 --language=en-US
