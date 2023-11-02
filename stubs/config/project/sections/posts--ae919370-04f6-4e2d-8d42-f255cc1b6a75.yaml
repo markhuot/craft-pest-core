@@ -4,6 +4,11 @@ handle: posts
 name: Posts
 propagationMethod: all
 siteSettings:
+  99c2747f-1049-46bc-93e0-424bad0544e5: # Pest
+    enabledByDefault: true
+    hasUrls: true
+    template: posts/_entry
+    uriFormat: 'posts/{slug}'
   bda4d299-4f91-43c1-91d1-48abd1dd5fb4: # Pest
     enabledByDefault: true
     hasUrls: true

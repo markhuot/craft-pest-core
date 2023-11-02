@@ -1,9 +1,9 @@
 baseUrl: $PRIMARY_SITE_URL
-enabled: '1'
+enabled: true
 handle: default
 hasUrls: true
 language: en-US
 name: Pest
-primary: false
-siteGroup: b11e9b16-d6b0-4771-86bb-3fe962b4596d # Pest
+primary: true
+siteGroup: bdde35b2-daab-45e7-aef7-43fd8b221aa2 # Pest
 sortOrder: 1
