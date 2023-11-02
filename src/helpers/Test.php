@@ -2,7 +2,10 @@
 
 namespace markhuot\craftpest\helpers\test;
 
+use markhuot\craftpest\test\TestCase;
 use Mockery;
+use Pest\Concerns\Expectable;
+use Pest\PendingCalls\TestCall;
 
 if (!function_exists('mock')) {
     function mock($className) {
@@ -18,6 +21,14 @@ if (!function_exists('spy')) {
         \Craft::$container->set($className, $spy);
         return $spy;
     }
+}
+
+/**
+ * @return Expectable|TestCall|TestCase|mixed
+ */
+function test()
+{
+    return \test();
 }
 
 // The default dump() and dd() methods that ship with Craft don't play well with Pest so

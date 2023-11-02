@@ -2,6 +2,7 @@
 
 namespace markhuot\craftpest\http;
 
+use craft\web\twig\Extension;
 use craft\web\User;
 use markhuot\craftpest\http\requests\GetRequest;
 use markhuot\craftpest\http\requests\PostRequest;

@@ -8,6 +8,7 @@ use markhuot\craftpest\http\RequestBuilder;
 use markhuot\craftpest\http\requests\WebRequest;
 use markhuot\craftpest\test\Benchmark;
 use markhuot\craftpest\web\TestableResponse;
+use PHPUnit\Framework\Assert;
 use Symfony\Component\DomCrawler\Crawler;
 use yii\base\Behavior;
 
@@ -222,10 +223,10 @@ class TestableResponseBehavior extends Behavior
      */
     function assertCookie(string $name, string $value=null) {
         if ($value === null) {
-            test()->assertContains($name, array_keys($this->response->cookies->toArray()));
+            Assert::assertContains($name, array_keys($this->response->cookies->toArray()));
         }
         else {
-            test()->assertSame($this->response->cookies->getValue($name), $value);
+            Assert::assertSame($this->response->cookies->getValue($name), $value);
         }
 
         return $this->response;
@@ -247,7 +248,7 @@ class TestableResponseBehavior extends Behavior
         // Then check the expiration of it
         $cookie = $this->response->cookies->get($name);
         if ($cookie->expire === 0 || $cookie->expire >= time()) {
-            test()->fail('Cookie `' . $name . '` does not have an expiration in the past.');
+            Assert::fail('Cookie `' . $name . '` does not have an expiration in the past.');
         }
 
         return $this->response;
@@ -267,7 +268,7 @@ class TestableResponseBehavior extends Behavior
         // Then check the expiration of it
         $cookie = $this->response->cookies->get($name);
         if ($cookie->expire !== 0 && $cookie->expire < time()) {
-            test()->fail('Cookie `' . $name . '` does not have an expiration in the future.');
+            Assert::fail('Cookie `' . $name . '` does not have an expiration in the future.');
         }
 
         return $this->response;
@@ -282,7 +283,7 @@ class TestableResponseBehavior extends Behavior
      */
     function assertCookieMissing(string $name) {
         // First check that the cookie exists
-        test()->assertNotContains($name, array_keys($this->response->cookies->toArray()));
+        Assert::assertNotContains($name, array_keys($this->response->cookies->toArray()));
 
         return $this->response;
     }
@@ -306,7 +307,7 @@ class TestableResponseBehavior extends Behavior
      * ```
      */
     function assertDontSee(string $text) {
-        test()->assertStringNotContainsString($text, $this->response->content);
+        Assert::assertStringNotContainsString($text, $this->response->content);
 
         return $this->response;
     }
@@ -320,7 +321,7 @@ class TestableResponseBehavior extends Behavior
      * ```
      */
     function assertDontSeeText(string $text) {
-        test()->assertStringNotContainsString($text, preg_replace('/\s+/', ' ', strip_tags($this->response->data)));
+        Assert::assertStringNotContainsString($text, preg_replace('/\s+/', ' ', strip_tags($this->response->data)));
         return $this->response;
     }
 
@@ -337,7 +338,7 @@ class TestableResponseBehavior extends Behavior
         $contentDisposition = explode(';', $this->response->headers->get('content-disposition'));
 
         if (trim($contentDisposition[0]) !== 'attachment') {
-            test()->fail(
+            Assert::fail(
                 'Response does not offer a file download.'.PHP_EOL.
                 'Disposition ['.trim($contentDisposition[0]).'] found in header, [attachment] expected.'
             );
@@ -346,7 +347,7 @@ class TestableResponseBehavior extends Behavior
         if (! is_null($filename)) {
             if (isset($contentDisposition[1]) &&
                 trim(explode('=', $contentDisposition[1])[0]) !== 'filename') {
-                test()->fail(
+                Assert::fail(
                     'Unsupported Content-Disposition header provided.'.PHP_EOL.
                     'Disposition ['.trim(explode('=', $contentDisposition[1])[0]).'] found in header, [filename] expected.'
                 );
@@ -355,9 +356,9 @@ class TestableResponseBehavior extends Behavior
             $message = "Expected file [{$filename}] is not present in Content-Disposition header.";
 
             if (! isset($contentDisposition[1])) {
-                test()->fail($message);
+                Assert::fail($message);
             } else {
-                test()->assertSame(
+                Assert::assertSame(
                     $filename,
                     isset(explode('=', $contentDisposition[1])[1])
                         ? trim(explode('=', $contentDisposition[1])[1], " \"'")
@@ -368,7 +369,7 @@ class TestableResponseBehavior extends Behavior
                 return $this;
             }
         } else {
-            test()->assertTrue(true);
+            Assert::assertTrue(true);
 
             return $this;
         }
@@ -383,7 +384,7 @@ class TestableResponseBehavior extends Behavior
      * ```
      */
     function assertExactJson(array $json) {
-        test()->assertEqualsCanonicalizing($json, json_decode($this->response->content, true));
+        Assert::assertEqualsCanonicalizing($json, json_decode($this->response->content, true));
 
         return $this->response;
     }
@@ -410,15 +411,15 @@ class TestableResponseBehavior extends Behavior
      */
     function assertHeader(string $name, string $expected=null) {
         if ($expected === null) {
-            test()->assertContains($name, array_keys($this->response->headers->toArray()));
+            Assert::assertContains($name, array_keys($this->response->headers->toArray()));
         }
         else {
             $value = $this->response->headers->get($name);
             if ($expected === $value) {
-                test()->assertTrue(true);
+                Assert::assertTrue(true);
             }
             else {
-                test()->fail('Response header `' . $name . '` with value `' . $value . '` does not match `' . $expected . '`');
+                Assert::fail('Response header `' . $name . '` with value `' . $value . '` does not match `' . $expected . '`');
             }
         }
 
@@ -433,7 +434,7 @@ class TestableResponseBehavior extends Behavior
      * ```
      */
     function assertHeaderMissing(string $name) {
-        test()->assertNotContains($name, array_keys($this->response->headers->toArray()));
+        Assert::assertNotContains($name, array_keys($this->response->headers->toArray()));
 
         return $this->response;
     }
@@ -520,7 +521,7 @@ class TestableResponseBehavior extends Behavior
             $locationParts = collect($locationParts)->only($checkParts)->toArray();
         }
 
-        test()->assertSame($locationParts, $headerParts);
+        Assert::assertSame($locationParts, $headerParts);
 
         return $this->response;
     }
@@ -572,7 +573,7 @@ class TestableResponseBehavior extends Behavior
     function assertNoContent($status=204) {
         $this->assertStatus($status);
 
-        test()->assertEmpty($this->response->content, 'Response content is not empty.');
+        Assert::assertEmpty($this->response->content, 'Response content is not empty.');
 
         return $this->response;
     }
@@ -607,9 +608,9 @@ class TestableResponseBehavior extends Behavior
      * ```
      */
     function assertRedirect() {
-        test()->assertGreaterThanOrEqual(300, $this->response->getStatusCode());
-        test()->assertLessThan(400, $this->response->getStatusCode());
-        test()->assertContains('location', array_keys($this->response->headers->toArray()), 'The response does not contain a location header.');
+        Assert::assertGreaterThanOrEqual(300, $this->response->getStatusCode());
+        Assert::assertLessThan(400, $this->response->getStatusCode());
+        Assert::assertContains('location', array_keys($this->response->headers->toArray()), 'The response does not contain a location header.');
 
         return $this->response;
     }
@@ -674,7 +675,7 @@ class TestableResponseBehavior extends Behavior
      * ```
      */
     function assertSee(string $text) {
-        test()->assertStringContainsString($text, $this->response->content);
+        Assert::assertStringContainsString($text, $this->response->content);
 
         return $this->response;
     }
@@ -685,8 +686,7 @@ class TestableResponseBehavior extends Behavior
         foreach ($needles as $needle) {
             $lastPos = strpos($haystack, $needle, $lastPos);
             if ($lastPos === false) {
-                test()->fail('The text `' . $needle . '` was not found in order');
-                return;
+                Assert::fail('The text `' . $needle . '` was not found in order');
             }
         }
         expect(true)->toBe(true);
@@ -779,7 +779,7 @@ class TestableResponseBehavior extends Behavior
      * ```
      */
     function assertStatus($code) {
-        test()->assertSame($code, $this->response->getStatusCode());
+        Assert::assertSame($code, $this->response->getStatusCode());
         return $this->response;
     }
 
@@ -787,8 +787,8 @@ class TestableResponseBehavior extends Behavior
      * Asserts a successfull (200-class) response code.
      */
     function assertSuccessful() {
-        test()->assertGreaterThanOrEqual(200, $this->response->getStatusCode());
-        test()->assertLessThan(300, $this->response->getStatusCode());
+        Assert::assertGreaterThanOrEqual(200, $this->response->getStatusCode());
+        Assert::assertLessThan(300, $this->response->getStatusCode());
 
         return $this->response;
     }
@@ -803,7 +803,7 @@ class TestableResponseBehavior extends Behavior
     function assertTitle(string $title)
     {
         $actualTitle = $this->querySelector('title')->text;
-        test()->assertSame($title, $actualTitle, 'The given title did not match `' . $actualTitle . '`');
+        Assert::assertSame($title, $actualTitle, 'The given title did not match `' . $actualTitle . '`');
 
         return $this->response;
     }

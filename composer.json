@@ -17,7 +17,8 @@
         "symfony/process": "^5.3|^6.0",
         "illuminate/collections": "^8.23|^9.1|^10.0",
         "pestphp/pest": "^2.8",
-        "vlucas/phpdotenv": "^2.4|^3.4|^5.4"
+        "vlucas/phpdotenv": "^2.4|^3.4|^5.4",
+        "craftcms/cms": "^4.5"
     },
     "autoload": {
         "psr-4": {
@@ -50,6 +51,7 @@
     "prefer-stable": true,
     "require-dev": {
         "craftcms/phpstan": "dev-main",
-        "symfony/var-dumper": "^5.0|^6.0"
+        "symfony/var-dumper": "^5.0|^6.0",
+        "craftcms/craft": "^2.0"
     }
 }

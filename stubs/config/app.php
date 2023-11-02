@@ -1,10 +1,17 @@
 <?php
 
+use markhuot\craftpest\Pest;
+
 return [
-    'modules' => [
-        'pest-module-test' => \markhuot\craftpest\modules\test\Module::class,
+    'components' => [
+        'queue' => [
+            'class' => \yii\queue\sync\Queue::class,
+            'handle' => true, // if tasks should be executed immediately
+        ],
     ],
     'bootstrap' => [
-        'pest-module-test',
-    ]
+        function ($app) {
+            (new Pest)->bootstrap($app);
+        },
+      ]
 ];

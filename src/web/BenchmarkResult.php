@@ -3,6 +3,7 @@
 namespace markhuot\craftpest\web;
 
 use craft\debug\Module;
+use PHPUnit\Framework\Assert;
 
 /**
  * # Benchmarks
@@ -56,7 +57,7 @@ class BenchmarkResult
         $queries = $this->getQueries();
         $actual = $queries->count();
 
-        test()->assertEquals($expected, $actual, 'The expected query count, ' . $expected . ' did not match the actual query count, ' . $actual . PHP_EOL . '- ' . $queries->pluck('info')->join(PHP_EOL.'- '));
+        Assert::assertEquals($expected, $actual, 'The expected query count, ' . $expected . ' did not match the actual query count, ' . $actual . PHP_EOL . '- ' . $queries->pluck('info')->join(PHP_EOL.'- '));
     }
 
     function getQueryTiming()
@@ -103,7 +104,7 @@ class BenchmarkResult
     {
         $duplicates = $this->getDuplicateQueries();
 
-        test()->assertSame(
+        Assert::assertSame(
             0,
             $duplicates->count(),
             'Duplicate queries were found during the test. ' . "\n" . $duplicates->first()
@@ -135,7 +136,7 @@ class BenchmarkResult
     {
         $actualLoadTime = $this->getPanels()['profiling']->data['time'];
 
-        test()->assertLessThan($expectedLoadTime, $actualLoadTime);
+        Assert::assertLessThan($expectedLoadTime, $actualLoadTime);
 
         return $this;
     }
@@ -159,7 +160,7 @@ class BenchmarkResult
         $actualMemoryLoadBytes = $this->getPanels()['profiling']->data['memory'];
         $actualMemoryLoadMb = $actualMemoryLoadBytes/1024/1024;
 
-        test()->assertLessThan($expectedMemoryLoad, $actualMemoryLoadMb);
+        Assert::assertLessThan($expectedMemoryLoad, $actualMemoryLoadMb);
 
         return $this;
     }
@@ -184,7 +185,7 @@ class BenchmarkResult
         });
 
         if ($failing->count()) {
-            test()->fail($failing->count() . ' queries were slower than ' . $expectedQueryTime);
+            Assert::fail($failing->count() . ' queries were slower than ' . $expectedQueryTime);
         }
 
         expect(true)->toBe(true);

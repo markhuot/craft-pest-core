@@ -60,10 +60,10 @@ passed an instance of faker
 ```php
 Entry::factory()
   ->set('title, 'SOME GREAT TITLE')
-  ->set('title', fn ($faker) => str_to_upper($faker->sentence))
+  ->set('title', fn ($faker) => str_to_upper($faker->sentence()))
   ->set([
     'title' => 'SOME GREAT TITLE',
-    'title' => fn ($faker) => str_to_upper($faker->sentence)
+    'title' => fn ($faker) => str_to_upper($faker->sentence())
   ])
 ```
 
@@ -98,7 +98,7 @@ class Post extends \markhuot\craftpest\factories\Entry
   {
     return [
       // The entry's title field
-      'title' => $this->faker->sentence,          
+      'title' => $this->faker->sentence(),
       // A Category field takes an array of category ids or category factories
       'category' => Category::factory()->count(3), 
       // Generate three body paragraphs of text
@@ -117,6 +117,23 @@ For example the `Entry` factory uses this to set the `slug` after the title has 
 set by definition or through a `->set()` call.
 
 When creating custom factories, this will most likely meed to be overridden.
+
+## sequence($sequence)
+Set a sequence that will be iterated on as multiple models are created. You can
+set this to a callback (which gets passed the index) or an array of definitions
+where each definition will be used in order.
+```php
+->sequence(fn ($index) => ['someField' => "the index is {$index}"])
+->sequence(['someField' => 'the index is 1'], ['someField' => 'the index is 2'])
+```
+With the array approach the sequence will be iterated over and looped so if you
+pass two items in to a sequence the third created element will re-use the first
+item in the sequence. E.g., this will iterate around true/false admins creating
+5 admins and 5 non-admins.
+```php
+->count(10)
+->sequence(['isAdmin' => true], ['isAdmin' => false])
+```
 
 ## make($definition = array ())
 Instantiate an Model without persisting it to the database.

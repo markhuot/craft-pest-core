@@ -57,13 +57,5 @@ class Pest implements BootstrapInterface
                 $event->behaviors[] = FieldTypeHintBehavior::class;
             }
         );
-
-        Event::on(
-            Fields::class,
-            Fields::EVENT_AFTER_SAVE_FIELD,
-            function () {
-                (new RenderCompiledClasses)->handle();
-            }
-        );
     }
 }

@@ -4,7 +4,11 @@ namespace markhuot\craftpest\http\requests;
 
 use craft\helpers\App;
 use markhuot\craftpest\test\Dd;
+use Pest\Expectation;
+use PHPUnit\Framework\Assert;
 use yii\web\NotFoundHttpException;
+
+use function markhuot\craftpest\helpers\test\test;
 
 abstract class WebRequest extends \craft\web\Request
 {
@@ -41,7 +45,7 @@ abstract class WebRequest extends \craft\web\Request
 
     function expect()
     {
-        return test()->expect($this);
+        return new Expectation($this);
     }
 
     /**
@@ -157,7 +161,7 @@ abstract class WebRequest extends \craft\web\Request
 
     function assertMethod($method)
     {
-        test()->assertSame(strtoupper($method), $this->getMethod());
+        Assert::assertSame(strtoupper($method), $this->getMethod());
 
         return $this;
     }
