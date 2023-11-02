@@ -3,6 +3,8 @@
 namespace markhuot\craftpest\dom;
 
 use markhuot\craftpest\http\RequestBuilder;
+use Pest\Expectation;
+use PHPUnit\Framework\Assert;
 
 /**
  * # Node list
@@ -46,7 +48,7 @@ class NodeList implements \Countable
      */
     function expect()
     {
-        return test()->expect($this);
+        return new Expectation($this);
     }
 
     /**
@@ -174,7 +176,7 @@ class NodeList implements \Countable
     function assertAttribute(string $key, string $value)
     {
         if ($this->crawler->count() === 0) {
-            test()->fail('No matching elements to assert against attribute `' . $key . '`');
+            Assert::fail('No matching elements to assert against attribute `' . $key . '`');
         }
 
         $this->each(function ($node) use ($key, $value) {
@@ -182,8 +184,8 @@ class NodeList implements \Countable
             foreach ($node->getNode(0)->attributes as $attr) {
                 $keys[] = $attr->name;
             }
-            test()->assertContains($key, $keys);
-            test()->assertSame($value, $node->attr($key));
+            Assert::assertContains($key, $keys);
+            Assert::assertSame($value, $node->attr($key));
         });
 
         return $this;
@@ -200,7 +202,7 @@ class NodeList implements \Countable
      * ```
      */
     public function assertText($expected) {
-        test()->assertSame($expected, $this->getText());
+        Assert::assertSame($expected, $this->getText());
 
         return $this;
     }
@@ -213,7 +215,7 @@ class NodeList implements \Countable
      * ```
      */
     public function assertContainsString($expected) {
-        test()->assertStringContainsString($expected, $this->getText());
+        Assert::assertStringContainsString($expected, $this->getText());
 
         return $this;
     }
@@ -226,7 +228,7 @@ class NodeList implements \Countable
      * ```
      */
     public function assertCount($expected) {
-        test()->assertCount($expected, $this);
+        Assert::assertCount($expected, $this);
 
         return $this;
     }

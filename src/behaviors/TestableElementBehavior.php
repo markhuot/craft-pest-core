@@ -2,7 +2,10 @@
 
 namespace markhuot\craftpest\behaviors;
 
+use PHPUnit\Framework\Assert;
 use yii\base\Behavior;
+
+use function markhuot\craftpest\helpers\test\test;
 
 /**
  * # Elements
@@ -28,7 +31,7 @@ class TestableElementBehavior extends Behavior
      */
     function assertValid(array $keys = [])
     {
-        test()->assertCount(0, $this->owner->errors);
+        Assert::assertCount(0, $this->owner->errors);
 
         return $this->owner;
     }
@@ -50,14 +53,14 @@ class TestableElementBehavior extends Behavior
                 ->mapWithKeys(fn ($key) => [$key => $this->owner->getErrors($key)])
                 ->filter(fn ($errors) => count($errors) === 0);
             if ($errors->count()) {
-                test()->fail('The following keys were expected to be invalid but were not: '.implode(', ', $errors->keys()->all()));
+                Assert::fail('The following keys were expected to be invalid but were not: '.implode(', ', $errors->keys()->all()));
             }
             else {
-                test()->assertTrue(true);
+                Assert::assertTrue(true);
             }
         }
         else {
-            test()->assertGreaterThanOrEqual(1, count($this->owner->errors));
+            Assert::assertGreaterThanOrEqual(1, count($this->owner->errors));
         }
 
 

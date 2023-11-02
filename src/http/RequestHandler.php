@@ -8,6 +8,8 @@ use markhuot\craftpest\web\TestableResponse;
 use Twig\Error\RuntimeError;
 use yii\base\ExitException;
 
+use function markhuot\craftpest\helpers\test\test;
+
 class RequestHandler
 {
     private \craft\web\Application $app;
