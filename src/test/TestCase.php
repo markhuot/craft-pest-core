@@ -72,7 +72,7 @@ class TestCase extends \PHPUnit\Framework\TestCase {
             $needsRefresh = true;
         }
 
-        if (\Craft::$app->getProjectConfig()->areChangesPending()) {
+        if (\Craft::$app->getProjectConfig()->areChangesPending(null, true)) {
             $this->projectConfigApply();
             $needsRefresh = true;
         }
@@ -92,11 +92,16 @@ class TestCase extends \PHPUnit\Framework\TestCase {
             '--username=' . (App::env('CRAFT_INSTALL_USERNAME') ?? 'user@example.com'),
             '--email=' . (App::env('CRAFT_INSTALL_EMAIL') ?? 'user@example.com'),
             '--password=' . (App::env('CRAFT_INSTALL_PASSWORD') ?? 'secret'),
-            '--siteName=' . (App::env('CRAFT_INSTALL_SITENAME') ?? '"Craft CMS"'),
-            '--siteUrl=' . (App::env('CRAFT_INSTALL_SITEURL') ?? 'http://localhost:8080'),
-            '--language=' . (App::env('CRAFT_INSTALL_LANGUAGE') ?? 'en-US'),
             '--interactive=' . (App::env('CRAFT_INSTALL_INTERACTIVE') ?? '0'),
         ];
+
+        if (! file_exists(\Craft::getAlias('@config/project/project.yaml'))) {
+            $args = array_merge($args, [
+                '--siteName=' . (App::env('CRAFT_INSTALL_SITENAME') ?? '"Craft CMS"'),
+                '--siteUrl=' . (App::env('CRAFT_INSTALL_SITEURL') ?? 'http://localhost:8080'),
+                '--language=' . (App::env('CRAFT_INSTALL_LANGUAGE') ?? 'en-US'),
+            ]);
+        }
 
         $craftExePath = getenv('CRAFT_EXE_PATH') ?: './craft';
         $process = new Process([$craftExePath, 'install', ...$args]);
