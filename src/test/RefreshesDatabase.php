@@ -52,13 +52,6 @@ trait RefreshesDatabase {
     function setUpRefreshesDatabase()
     {
         $this->listenForStores();
-        
-        // Removed 2023-10-30 because it's causing issues with warning reporting. It's
-        // also overly aggressive to assume that each test should run project config
-        // apply. Without this tests will run faster. If users actually want this
-        // feature they can call beforeEach()->refreshDatabase();
-        // $this->refreshDatabase();
-        
         $this->beginTransaction();
     }
 
@@ -114,64 +107,6 @@ trait RefreshesDatabase {
 
             $transaction->commit();
             $this->beginTransaction();
-        }
-    }
-
-    function refreshDatabase()
-    {
-        if (static::$projectConfigCheckedOnce) {
-            return;
-        }
-        static::$projectConfigCheckedOnce = true;
-
-        if ($this->hasPendingMigrations()) {
-            $this->runMigrations();
-        }
-
-        if ($this->isProjectConfigDirty()) {
-            $this->projectConfigApply();
-        }
-    }
-
-    /**
-     * @todo
-     */
-    protected function hasPendingMigrations()
-    {
-        return false;
-    }
-
-    /**
-     * @todo
-     */
-    protected function runMigrations()
-    {
-
-    }
-
-    protected function isProjectConfigDirty()
-    {
-        return ProjectConfig::diff() !== '';
-    }
-
-    protected function projectConfigApply()
-    {
-        $craftExePath = getenv('CRAFT_EXE_PATH') ?: './craft';
-        $process = new Process([$craftExePath, 'project-config/apply'], null, $_SERVER);
-        $process->setTty(Process::isTtySupported());
-        $process->setTimeout(null);
-        $process->start();
-
-        foreach ($process as $type => $data) {
-            if ($type === $process::OUT) {
-                echo $data;
-            } else {
-                echo $data;
-            }
-        }
-
-        if (!$process->isSuccessful()) {
-            throw new \Exception('Project config apply failed');
         }
     }
 

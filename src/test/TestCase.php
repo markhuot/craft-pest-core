@@ -2,7 +2,9 @@
 
 namespace markhuot\craftpest\test;
 
+use craft\helpers\App;
 use markhuot\craftpest\actions\RenderCompiledClasses;
+use Symfony\Component\Process\Process;
 
 class TestCase extends \PHPUnit\Framework\TestCase {
 
@@ -17,9 +19,11 @@ class TestCase extends \PHPUnit\Framework\TestCase {
     protected function setUp(): void
     {
         $this->createApplication();
-        $this->renderCompiledClasses();
 
         $this->callTraits('setUp');
+
+        // Have to do this after setup to make sure the app is installed first
+        $this->renderCompiledClasses();
     }
 
     protected function tearDown(): void
@@ -47,11 +51,130 @@ class TestCase extends \PHPUnit\Framework\TestCase {
 
     public function createApplication()
     {
-        if ($this->needsRequireStatements()) {
-            $this->requireCraft();
+        if (! $this->needsRequireStatements()) {
+            return \Craft::$app;
+        }
+
+        $this->requireCraft();
+
+        $needsRefresh = false;
+
+        if (! \Craft::$app->getIsInstalled(true)) {
+            $this->craftInstall();
+            $needsRefresh = true;
+        }
+
+        if (
+            \Craft::$app->getMigrator()->getNewMigrations() ||
+            \Craft::$app->getContentMigrator()->getNewMigrations()
+        ) {
+            $this->craftMigrateUp();
+            $needsRefresh = true;
+        }
+
+        if (\Craft::$app->getProjectConfig()->areChangesPending()) {
+            $this->projectConfigApply();
+            $needsRefresh = true;
+        }
+
+        // After installation, the Craft::$app may be out of sync because the installation happened in a sub
+        // process. We need to force the $app to reload its state.
+        if ($needsRefresh) {
+            exit($this->reRunPest());
         }
 
         return \Craft::$app;
+    }
+
+    protected function craftInstall()
+    {
+        $args = [
+            '--username=' . (App::env('CRAFT_INSTALL_USERNAME') ?? 'user@example.com'),
+            '--email=' . (App::env('CRAFT_INSTALL_EMAIL') ?? 'user@example.com'),
+            '--password=' . (App::env('CRAFT_INSTALL_PASSWORD') ?? 'secret'),
+            '--siteName=' . (App::env('CRAFT_INSTALL_SITENAME') ?? '"Craft CMS"'),
+            '--siteUrl=' . (App::env('CRAFT_INSTALL_SITEURL') ?? 'http://localhost:8080'),
+            '--language=' . (App::env('CRAFT_INSTALL_LANGUAGE') ?? 'en-US'),
+            '--interactive=' . (App::env('CRAFT_INSTALL_INTERACTIVE') ?? '0'),
+        ];
+
+        $craftExePath = getenv('CRAFT_EXE_PATH') ?: './craft';
+        $process = new Process([$craftExePath, 'install', ...$args]);
+        $process->setTty(Process::isTtySupported());
+        $process->setTimeout(null);
+        $process->start();
+
+        foreach ($process as $type => $data) {
+            if ($type === $process::OUT) {
+                echo $data;
+            } else {
+                echo $data;
+            }
+        }
+
+        if (!$process->isSuccessful()) {
+            throw new \Exception('Failed installing Craft');
+        }
+    }
+
+    protected function craftMigrateAll()
+    {
+        $craftExePath = getenv('CRAFT_EXE_PATH') ?: './craft';
+        $process = new Process([$craftExePath, 'migrate/all', '--interactive=0']);
+        $process->setTty(Process::isTtySupported());
+        $process->setTimeout(null);
+        $process->start();
+
+        foreach ($process as $type => $data) {
+            if ($type === $process::OUT) {
+                echo $data;
+            } else {
+                echo $data;
+            }
+        }
+
+        if (!$process->isSuccessful()) {
+            throw new \Exception('Failed migrating Craft');
+        }
+    }
+
+    protected function craftProjectConfigApply()
+    {
+        $craftExePath = getenv('CRAFT_EXE_PATH') ?: './craft';
+        $process = new Process([$craftExePath, 'project-config/apply', '--force']);
+        $process->setTty(Process::isTtySupported());
+        $process->setTimeout(null);
+        $process->start();
+
+        foreach ($process as $type => $data) {
+            if ($type === $process::OUT) {
+                echo $data;
+            } else {
+                echo $data;
+            }
+        }
+
+        if (!$process->isSuccessful()) {
+            throw new \Exception('Project config apply failed');
+        }
+    }
+
+    protected function reRunPest()
+    {
+        $process = new Process($_SERVER['argv']);
+        $process->setTty(Process::isTtySupported());
+        $process->setTimeout(null);
+        $process->start();
+
+        foreach ($process as $type => $data) {
+            if ($type === $process::OUT) {
+                echo $data;
+            } else {
+                echo $data;
+            }
+        }
+
+        return $process->getExitCode();
     }
 
     public function renderCompiledClasses()
