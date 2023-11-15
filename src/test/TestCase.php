@@ -68,7 +68,7 @@ class TestCase extends \PHPUnit\Framework\TestCase {
             \Craft::$app->getMigrator()->getNewMigrations() ||
             \Craft::$app->getContentMigrator()->getNewMigrations()
         ) {
-            $this->craftMigrateUp();
+            $this->craftMigrateAll();
             $needsRefresh = true;
         }
 
