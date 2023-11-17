@@ -33,15 +33,17 @@ function test()
 
 // The default dump() and dd() methods that ship with Craft don't play well with Pest so
 // set the correct versions early
-function dump($args)
+function dump(...$args)
 {
     $cloner = new \Symfony\Component\VarDumper\Cloner\VarCloner;
     $dumper = new \Symfony\Component\VarDumper\Dumper\CliDumper;
-    $dumper->dump($cloner->cloneVar($args));
+    foreach ($args as $arg) {
+        $dumper->dump($cloner->cloneVar($arg));
+    }
 }
 
-function dd($args)
+function dd(...$args)
 {
-    dump($args);
+    dump(...$args);
     die;
 }
