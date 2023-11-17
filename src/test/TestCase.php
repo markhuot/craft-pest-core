@@ -73,7 +73,7 @@ class TestCase extends \PHPUnit\Framework\TestCase {
         }
 
         if (\Craft::$app->getProjectConfig()->areChangesPending(null, true)) {
-            $this->projectConfigApply();
+            $this->craftProjectConfigApply();
             $needsRefresh = true;
         }
 
