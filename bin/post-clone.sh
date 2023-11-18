@@ -14,21 +14,14 @@ if ! grep -q "CRAFT_RUN_QUEUE_AUTOMATICALLY=false" .env.example; then
   echo "" >> .env
 fi
 
-if [ ! -f "config/app.php" ]; then
-  mkdir -p config
-  echo "<?php return [
-      'components' => [
-          'queue' => [
-              'class' => \yii\queue\sync\Queue::class,
-              'handle' => true, // if tasks should be executed immediately
-          ],
-      ],
-      'bootstrap' => [
-          function (\$app) {
-              (new \\markhuot\\craftpest\\Pest)->bootstrap(\$app);
-          },
-        ]
-  ];" > config/app.php
+if ! grep -q "CRAFT_TEMPLATES_PATH=./tests/templates" .env.example; then
+  echo "" >> .env
+  echo "CRAFT_TEMPLATES_PATH=./tests/templates" >> .env.example
+  echo "" >> .env
+fi
+
+if [ ! -d "config" ]; then
+  cp -r stubs/config ./
 fi
 
 if [ ! -d "web" ]; then

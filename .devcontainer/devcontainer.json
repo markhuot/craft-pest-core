@@ -11,5 +11,5 @@
       ]
     }
   },
-  "postCreateCommand": "composer install && ./bin/post-clone.sh && cp -R tests/fixtures/project/ config/project/ && php craft install --username=admin --email=michael@bluth.com --password=secret --siteName=pest --siteUrl=http://localhost:8080 --language=en-US && ./bin/post-install.sh"
+  "postCreateCommand": "composer install && ./bin/post-clone.sh && cp .env.example .env && php craft install --username=admin --email=michael@bluth.com --password=secret --siteName=pest --siteUrl=http://localhost:8080 --language=en-US && ./bin/post-install.sh"
 }
