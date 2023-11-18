@@ -47,8 +47,8 @@ class PestController extends Controller
      * Do the install
      */
     protected function runInit() {
-        if (file_exists(CRAFT_BASE_PATH . '/phpunit.xml') && !$this->force) {
-            echo 'A phpunit.xml file already exists in this project. If you want to replace the existing testing infrastructure re-run this command with the `--force` flag.'."\n";
+        if (file_exists(CRAFT_BASE_PATH . '/phpunit.xml')) {
+            return;
         }
 
         if (!is_dir(CRAFT_BASE_PATH . '/tests')) {

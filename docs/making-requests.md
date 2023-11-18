@@ -48,6 +48,15 @@ $this->http('post', '/comments')
   ->assertOk();
 ```
 
+## postJson(string $uri, array $body = array ())
+Similar to `->post()`, while adding aJSON `content-type` and `accept` headers.
+```php
+$this->postJson('/comments', [
+  'author' => '...',
+  'body' => '...',
+])->assertOk();
+```
+
 ## action(string $action, array $body = array ())
 Maes a `POST` request to Craft with the `action` param filled in to the
 passed value.
