@@ -84,6 +84,26 @@ trait RequestBuilders
     }
 
     /**
+     * Similar to `->post()`, while adding aJSON `content-type` and `accept` headers.
+     *
+     * ```php
+     * $this->postJson('/comments', [
+     *   'author' => '...',
+     *   'body' => '...',
+     * ])->assertOk();
+     * ```
+     */
+    function postJson(string $uri, array $body=[]): TestableResponse
+    {
+        return $this->http('post', $uri)
+            ->withCsrfToken()
+            ->setBody($body)
+            ->addHeader('Content-Type', 'application/json')
+            ->addHeader('Accept', 'application/json')
+            ->send();
+    }
+
+    /**
      * Maes a `POST` request to Craft with the `action` param filled in to the
      * passed value.
      */

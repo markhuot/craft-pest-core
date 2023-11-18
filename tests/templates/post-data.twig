@@ -1,0 +1,4 @@
+{% if craft.app.request.getAcceptsJson() %}
+    {% header "Content-Type: application/json" %}
+{% endif %}
+{{ craft.app.request.getBodyParams()|json_encode|raw }}

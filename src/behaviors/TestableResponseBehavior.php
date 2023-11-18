@@ -132,6 +132,11 @@ class TestableResponseBehavior extends Behavior
         return json_decode($this->response->content, true);
     }
 
+    function json()
+    {
+        return $this->getJsonContent();
+    }
+
     /**
      * If the response returns HTML you can `querySelector()` to inspect the
      * HTML for specific content. The `querySelector()` method takes a
