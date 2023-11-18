@@ -1,7 +1,7 @@
 {
   "dockerComposeFile": "docker-compose.yml",
   "service": "php",
-  "workspaceFolder": "/workspaces/craft-keystone",
+  "workspaceFolder": "/workspaces/craft-pest-core",
   "customizations": {
     "vscode": {
       "extensions": [
