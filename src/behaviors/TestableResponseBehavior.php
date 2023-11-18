@@ -444,13 +444,15 @@ class TestableResponseBehavior extends Behavior
         return $this->response;
     }
 
-    function assertJson() {
-        // TODO
+    function assertJson(array $data, $strict = false) {
+        Assert::assertEqualsCanonicalizing($data, $this->json());
+
         return $this->response;
     }
 
-    function assertJsonCount() {
-        // TODO
+    function assertJsonCount(int $count, ?string $path=null) {
+        Assert::assertCount($count, data_get($this->json(), $path));
+
         return $this->response;
     }
 
@@ -459,8 +461,9 @@ class TestableResponseBehavior extends Behavior
         return $this->response;
     }
 
-    function assertJsonMissing() {
-        // TODO
+    function assertJsonMissing(string $path) {
+        Assert::assertNull(data_get($this->json(), $path));
+
         return $this->response;
     }
 
@@ -474,8 +477,9 @@ class TestableResponseBehavior extends Behavior
         return $this->response;
     }
 
-    function assertJsonPath() {
-        // TODO
+    function assertJsonPath(string $path, mixed $value) {
+        Assert::assertSame($value, data_get($this->json(), $path));
+
         return $this->response;
     }
 

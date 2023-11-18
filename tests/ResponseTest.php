@@ -45,7 +45,27 @@ it('asserts a download')
 
 it('asserts json')
     ->get('/responses/json')
+    ->assertJson(['foo' => 'bar', 'baz' => ['qux']]);
+
+it('asserts exact json')
+    ->get('/responses/json')
     ->assertExactJson(['foo' => 'bar', 'baz' => ['qux']]);
+
+it('asserts json path')
+    ->get('/responses/json')
+    ->assertJsonPath('foo', 'bar');
+
+it('asserts json missing')
+    ->get('/responses/json')
+    ->assertJsonMissing('qux');
+
+it('asserts json count')
+    ->get('/responses/json')
+    ->assertJsonCount(2);
+
+it('asserts json count with path')
+    ->get('/responses/json')
+    ->assertJsonCount(1, 'baz');
 
 it('asserts 403 Forbidden status code')
     ->get('/responses/403')
