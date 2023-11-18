@@ -125,7 +125,7 @@ class TestableResponseBehavior extends Behavior
      */
     function getJsonContent()
     {
-        if ($this->response->headers->get('content-type') !== 'application/json') {
+        if (! str_contains($this->response->headers->get('content-type'), 'application/json')) {
             throw new \Exception('The response does not have a JSON content-type to get JSON data from');
         }
 
