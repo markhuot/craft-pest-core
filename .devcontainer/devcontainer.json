@@ -1,0 +1,15 @@
+{
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "php",
+  "workspaceFolder": "/workspaces/craft-keystone",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "m1guelpf.better-pest",
+        "bmewburn.vscode-intelephense-client",
+        "whatwedo.twig"
+      ]
+    }
+  },
+  "postCreateCommand": "composer install && ./bin/post-clone.sh && cp -R tests/fixtures/project/ config/project/ && php craft install --username=admin --email=michael@bluth.com --password=secret --siteName=pest --siteUrl=http://localhost:8080 --language=en-US && ./bin/post-install.sh"
+}

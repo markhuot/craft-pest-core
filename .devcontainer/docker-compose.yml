@@ -1,0 +1,34 @@
+version: '3.7'
+
+services:
+  php:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    environment:
+      - CRAFT_DB_DRIVER=mysql
+      - CRAFT_DB_SERVER=mysql
+      - CRAFT_DB_PORT=3306
+      - CRAFT_DB_DATABASE=pest
+      - CRAFT_DB_USER=root
+      - CRAFT_DB_PASSWORD=root
+      - CRAFT_DB_SCHEMA=public
+      - CRAFT_DB_TABLE_PREFIX=
+      - CRAFT_APP_ID=CraftCMS--0f6629c1-49b5-4f13-a492-0e0f81063911
+      - CRAFT_ENVIRONMENT=dev
+      - CRAFT_SECURITY_KEY=2UK5H8fUIgnTBSWVMnMXFlraQG8tLjC5
+      - CRAFT_DEV_MODE=true
+  mysql:
+    image: jbergstroem/mariadb-alpine:latest
+    cap_add:
+      - SYS_NICE  # CAP_SYS_NICE
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: pest
+    init: true
+    expose:
+      - "3306"
+    volumes:
+      - db-data:/var/lib/mysql
+volumes:
+  db-data:
