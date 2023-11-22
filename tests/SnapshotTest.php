@@ -1,5 +1,8 @@
 <?php
 
+use markhuot\craftpest\factories\Entry;
+use markhuot\craftpest\factories\Section;
+
 it('asserts html snapshots')
     ->get('/selectors')
     ->assertOk()
@@ -22,4 +25,42 @@ it('expects dom snapshots', function () {
         ->querySelector('ul');
 
     expect($dom)->assertMatchesSnapshot();
+});
+
+it('asserts view snapshots')
+    ->renderTemplate('selectors')
+    ->assertMatchesSnapshot();
+
+it('asserts view dom snapshots')
+    ->renderTemplate('selectors')
+    ->querySelector('h1')
+    ->assertMatchesSnapshot();
+
+it('renders views with variables')
+    ->renderTemplate('variable', ['foo' => 'bar'])
+    ->assertMatchesSnapshot();
+
+it('matches entry snapshots', function () {
+    $entry = Entry::factory()
+        ->section('posts')
+        ->title('foo bar')
+        ->create();
+
+    expect($entry)->toMatchElementSnapshot();
+});
+
+it('matches nested entry snapshots', function () {
+    $child = Entry::factory()
+        ->section('posts')
+        ->title('child');
+
+    $parent = Entry::factory()
+        ->section('posts')
+        ->title('foo bar')
+        ->entriesField([$child])
+        ->create();
+
+    $entry = \craft\elements\Entry::find()->id($parent->id)->with(['entriesField'])->one();
+
+    expect($entry)->toMatchElementSnapshot();
 });

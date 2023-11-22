@@ -7,6 +7,7 @@ use Illuminate\Support\Collection;
 use markhuot\craftpest\actions\CallSeeders;
 use markhuot\craftpest\actions\RenderCompiledClasses;
 use markhuot\craftpest\console\TestableResponse;
+use markhuot\craftpest\web\ViewResponse;
 use Symfony\Component\Process\Process;
 
 class TestCase extends \PHPUnit\Framework\TestCase {
@@ -233,6 +234,13 @@ class TestCase extends \PHPUnit\Framework\TestCase {
         $stderr = $process->getErrorOutput();
 
         return new TestableResponse($exitCode, $stdout, $stderr);
+    }
+
+    public function renderTemplate(...$args)
+    {
+        $content = \Craft::$app->getView()->renderTemplate(...$args);
+
+        return new \markhuot\craftpest\web\TestableResponse(['content' => $content]);
     }
 
 }

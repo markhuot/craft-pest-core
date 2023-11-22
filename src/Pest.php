@@ -14,6 +14,7 @@ use craft\services\Plugins;
 use markhuot\craftpest\actions\RenderCompiledClasses;
 use markhuot\craftpest\behaviors\ExpectableBehavior;
 use markhuot\craftpest\behaviors\FieldTypeHintBehavior;
+use markhuot\craftpest\behaviors\SnapshotableBehavior;
 use markhuot\craftpest\behaviors\TestableElementBehavior;
 use markhuot\craftpest\behaviors\TestableElementQueryBehavior;
 use markhuot\craftpest\console\PestController;
@@ -39,6 +40,7 @@ class Pest implements BootstrapInterface
             function (DefineBehaviorsEvent $event) {
                 $event->behaviors[] = ExpectableBehavior::class;
                 $event->behaviors[] = TestableElementBehavior::class;
+                $event->behaviors[] = SnapshotableBehavior::class;
             }
         );
 
