@@ -3,6 +3,7 @@
 namespace markhuot\craftpest\console;
 
 use craft\console\Controller;
+use craft\elements\Entry;
 use craft\helpers\FileHelper;
 use markhuot\craftpest\actions\RenderCompiledClasses;
 use markhuot\craftpest\Pest;
@@ -15,11 +16,19 @@ class PestController extends Controller
 
     public bool $force = false;
 
+    public ?string $namespace = null;
+
     function options($actionID): array
     {
         if (in_array($actionID, ['init', 'generate-mixins'], true)) {
             return [
                 'force',
+            ];
+        }
+
+        if (in_array($actionID, ['seed'], true)) {
+            return [
+                'namespace',
             ];
         }
 
@@ -47,10 +56,6 @@ class PestController extends Controller
      * Do the install
      */
     protected function runInit() {
-        if (file_exists(CRAFT_BASE_PATH . '/phpunit.xml')) {
-            return;
-        }
-
         if (!is_dir(CRAFT_BASE_PATH . '/tests')) {
             mkdir(CRAFT_BASE_PATH . '/tests');
         }
@@ -60,6 +65,10 @@ class PestController extends Controller
         }
         if (!file_exists(CRAFT_BASE_PATH . '/phpunit.xml')) {
             copy(__DIR__ . '/../../stubs/init/phpunit.xml', CRAFT_BASE_PATH . '/phpunit.xml');
+        }
+        if (is_dir(CRAFT_BASE_PATH . '/modules')) {
+            FileHelper::createDirectory(CRAFT_BASE_PATH . '/modules/pest/seeders');
+            copy(__DIR__ . '/../../stubs/seeders/DatabaseSeeder.php', CRAFT_BASE_PATH . '/modules/pest/seeders/DatabaseSeeder.php');
         }
     }
 
@@ -163,5 +172,17 @@ class PestController extends Controller
         }
 
         return ExitCode::OK;
+    }
+
+    function actionSeed()
+    {
+        $transaction = \Craft::$app->getDb()->beginTransaction();
+        $namespace = $this->namespace ?? getenv('PEST_SEEDER_NAMESPACE') ?: '\\modules\\pest\\seeders';
+        $namespace = '\\' . trim($namespace, '\\') . '\\';
+        $defaultSeeder = getenv('PEST_DEFAULT_SEEDER') ?: 'DatabaseSeeder';
+        $fqcn = $namespace.$defaultSeeder;
+        (new $fqcn)();
+        \markhuot\craftpest\helpers\test\dd(Entry::find()->count());
+        $transaction->rollBack();
     }
 }

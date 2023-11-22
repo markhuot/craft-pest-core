@@ -3,6 +3,7 @@
 namespace markhuot\craftpest\test;
 
 use craft\helpers\App;
+use markhuot\craftpest\actions\CallSeeders;
 use markhuot\craftpest\actions\RenderCompiledClasses;
 use Symfony\Component\Process\Process;
 
@@ -205,6 +206,13 @@ class TestCase extends \PHPUnit\Framework\TestCase {
     public function factory(string $class)
     {
         return $class::factory();
+    }
+
+    public function seed(callable|string ...$seeders): self
+    {
+        $this->seedData = (new CallSeeders)->handle(...$seeders);
+
+        return $this;
     }
 
 }
