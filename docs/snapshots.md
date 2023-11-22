@@ -7,3 +7,13 @@ it('matches responses')->get('/')->assertMatchesSnapshot();
 it('matches dom lists')->get('/')->querySelector('h1')->assertMatchesSnapshot();
 it('matches views')->renderTemplate('_news/entry', $variables)->assertMatchesSnapshot();
 ```
+## Elements
+Many elements can be snapshotted as well. Unfortunately, Pest is not smart enough to properly
+snapshot elements so you must call `->toSnapshot()` on them first.
+```php
+it('imports entries', function () {
+  $this->importEntries();
+  $entries = Entry::find()->section('news')->collect();
+  expect($entries->map->toSnapshot())->toMatchSnapshot();
+});
+```
