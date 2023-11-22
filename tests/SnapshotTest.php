@@ -64,3 +64,10 @@ it('matches nested entry snapshots', function () {
 
     expect($entry)->toMatchElementSnapshot();
 });
+
+it('matches collected snapshots', function () {
+    Entry::factory()->section('posts')->count(3)->sequence(fn ($index) => ['title' => 'Entry '.$index])->create();
+    $entries = \craft\elements\Entry::find()->section('posts')->collect();
+
+    expect($entries->map->toSnapshot())->toMatchSnapshot();
+});
