@@ -2,6 +2,11 @@
     "entriesField": [
         {
             "title": "child",
+            "slug": "child",
+            "isDraft": false,
+            "isRevision": false,
+            "isNewForSite": false,
+            "isUnpublishedDraft": false,
             "enabled": true,
             "archived": false,
             "uri": "posts\/child",
@@ -12,6 +17,11 @@
         }
     ],
     "title": "foo bar",
+    "slug": "foo-bar",
+    "isDraft": false,
+    "isRevision": false,
+    "isNewForSite": false,
+    "isUnpublishedDraft": false,
     "enabled": true,
     "archived": false,
     "uri": "posts\/foo-bar",

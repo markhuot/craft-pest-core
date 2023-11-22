@@ -13,7 +13,11 @@ use yii\base\Behavior;
  */
 class SnapshotableBehavior extends Behavior
 {
-    public function toSnapshot()
+    /**
+     * @param array $extraAttributes Any additional fields that should be included in the snapshot
+     * @param array $attributes The default list of attributes that should be included in a snapshot
+     */
+    public function toSnapshot(array $extraAttributes=[], array $attributes=['title', 'slug', 'isDraft', 'isRevision', 'isNewForSite', 'isUnpublishedDraft', 'enabled', 'archived', 'uri', 'trashed', 'ref', 'status', 'url'])
     {
         $customFields = collect($this->owner->getFieldLayout()->getCustomFields())
             ->mapWithKeys(function ($field) {
@@ -36,15 +40,12 @@ class SnapshotableBehavior extends Behavior
                 return $value;
             });
 
-        return $customFields->merge([
-            'title' => $this->owner->title,
-            'enabled' => $this->owner->enabled,
-            'archived' => $this->owner->archived,
-            'uri' => $this->owner->uri,
-            'trashed' => $this->owner->trashed,
-            'ref' => $this->owner->ref ?? null,
-            'status' => $this->owner->status ?? null,
-            'url' => $this->owner->url ?? null,
-        ])->all();
+        return $customFields->merge(
+            collect($attributes)->merge($extraAttributes)
+                ->mapWithKeys(fn ($attribute) => [
+                    $attribute => $this->owner->{$attribute} ?? null,
+                ])
+            )
+            ->all();
     }
 }

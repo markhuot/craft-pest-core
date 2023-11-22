@@ -40,6 +40,24 @@ it('renders views with variables')
     ->renderTemplate('variable', ['foo' => 'bar'])
     ->assertMatchesSnapshot();
 
+it('includes postDate in snapshots')
+    ->expect(fn () => Entry::factory()
+        ->section('posts')
+        ->postDate('2022-01-01 00:00:00')
+        ->title('foo bar')
+        ->create())
+    ->toMatchElementSnapshot(['postDate']);
+
+it('includes postDate in snapshot assertions', function () {
+    $entry = Entry::factory()
+        ->section('posts')
+        ->postDate('2022-01-01 00:00:00')
+        ->title('foo bar')
+        ->create();
+
+    $entry->assertMatchesSnapshot(['postDate']);
+});
+
 it('matches entry snapshots', function () {
     $entry = Entry::factory()
         ->section('posts')

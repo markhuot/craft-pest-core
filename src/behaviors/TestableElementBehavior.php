@@ -96,4 +96,18 @@ class TestableElementBehavior extends Behavior
 
         return $this->owner;
     }
+
+    /**
+     * Check that an element matches a snapshot of its attributes.
+     *
+     * ```php
+     * Entry::factory()->create()->assertMatchesSnapshot();
+     * ```
+     */
+    function assertMatchesSnapshot(...$args)
+    {
+        expect($this->owner)->toMatchElementSnapshot(...$args);
+
+        return $this->owner;
+    }
 }

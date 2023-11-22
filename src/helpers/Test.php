@@ -48,6 +48,6 @@ function dd(...$args)
     die;
 }
 
-expect()->extend('toMatchElementSnapshot', function () {
-    $this->toSnapshot()->toMatchSnapshot(); // @phpstan-ignore-line
+expect()->extend('toMatchElementSnapshot', function (...$args) {
+    $this->toSnapshot(...$args)->toMatchSnapshot(); // @phpstan-ignore-line
 });
