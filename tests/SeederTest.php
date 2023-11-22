@@ -26,3 +26,8 @@ it('runs class instance seeders', function () {
 it('runs multiple seeders', function () {
     expect((int)Entry::find()->count())->toBe(2);
 })->seed($functionSeed(...), $classSeed(...));
+
+it('runs seed console command', function () {
+    $this->console(['pest/seed', '--namespace', '\\markhuot\\craftpest\\seeders'])->assertSuccesful();
+    expect((int)Entry::find()->count())->toBe(1);
+})->todo();

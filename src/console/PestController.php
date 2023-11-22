@@ -174,15 +174,19 @@ class PestController extends Controller
         return ExitCode::OK;
     }
 
-    function actionSeed()
+    function actionSeed($seeder=null): int
     {
-        $transaction = \Craft::$app->getDb()->beginTransaction();
         $namespace = $this->namespace ?? getenv('PEST_SEEDER_NAMESPACE') ?: '\\modules\\pest\\seeders';
         $namespace = '\\' . trim($namespace, '\\') . '\\';
-        $defaultSeeder = getenv('PEST_DEFAULT_SEEDER') ?: 'DatabaseSeeder';
+
+        $defaultSeeder = $seeder ?? (getenv('PEST_DEFAULT_SEEDER') ?: 'DatabaseSeeder');
+        if (substr($defaultSeeder, 0, 1) === '\\') {
+            $namespace = '';
+        }
+
         $fqcn = $namespace.$defaultSeeder;
         (new $fqcn)();
-        \markhuot\craftpest\helpers\test\dd(Entry::find()->count());
-        $transaction->rollBack();
+
+        return 0;
     }
 }

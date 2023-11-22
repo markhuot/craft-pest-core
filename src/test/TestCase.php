@@ -5,6 +5,7 @@ namespace markhuot\craftpest\test;
 use craft\helpers\App;
 use markhuot\craftpest\actions\CallSeeders;
 use markhuot\craftpest\actions\RenderCompiledClasses;
+use markhuot\craftpest\console\TestableResponse;
 use Symfony\Component\Process\Process;
 
 class TestCase extends \PHPUnit\Framework\TestCase {
@@ -213,6 +214,21 @@ class TestCase extends \PHPUnit\Framework\TestCase {
         $this->seedData = (new CallSeeders)->handle(...$seeders);
 
         return $this;
+    }
+
+    public function console(array|string $command)
+    {
+        if (! is_array($command)) {
+            $command = [$command];
+        }
+
+        $craft = getenv('CRAFT_EXE_PATH') ?: './craft';
+        $process = new Process([$craft, ...$command]);
+        $exitCode = $process->run();
+        $stdout = $process->getOutput();
+        $stderr = $process->getErrorOutput();
+
+        return new TestableResponse($exitCode, $stdout, $stderr);
     }
 
 }
