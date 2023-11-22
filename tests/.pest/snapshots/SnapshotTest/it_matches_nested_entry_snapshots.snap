@@ -22,7 +22,7 @@
     "ref": "posts\/foo-bar",
     "status": "live",
     "structureId": null,
-    "url": "http:\/\/localhost:8080\/posts\/foo-bar",
+    "url": "http:\/\/localhost:8080\/index.php?p=posts\/foo-bar",
     "authorId": null,
     "entriesField": [
         {
@@ -49,7 +49,7 @@
             "ref": "posts\/child",
             "status": "live",
             "structureId": null,
-            "url": "http:\/\/localhost:8080\/posts\/child",
+            "url": "http:\/\/localhost:8080\/index.php?p=posts\/child",
             "authorId": null
         }
     ]

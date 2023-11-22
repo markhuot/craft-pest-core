@@ -27,10 +27,6 @@ uses(
 |
 */
 
-expect()->extend('toMatchElementSnapshot', function () {
-    $this->toSnapshot()->toMatchSnapshot();
-});
-
 /*
 |--------------------------------------------------------------------------
 | Functions
