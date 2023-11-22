@@ -19,7 +19,7 @@ class SnapshotableBehavior extends Behavior
             ->except([
                 'id', 'postDate', 'sectionId', 'uid', 'siteSettingsId',
                 'fieldLayoutId', 'contentId', 'dateCreated', 'dateUpdated',
-                'canonicalId', 'typeId',
+                'canonicalId', 'typeId', 'siteId',
             ])
 
             // filter out any non-eager loaded queries because we can't snapshot on them, their

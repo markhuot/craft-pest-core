@@ -8,7 +8,6 @@
     "isProvisionalDraft": false,
     "enabled": true,
     "archived": false,
-    "siteId": 2,
     "title": "foo bar",
     "slug": "foo-bar",
     "uri": "posts\/foo-bar",
@@ -22,6 +21,6 @@
     "ref": "posts\/foo-bar",
     "status": "live",
     "structureId": null,
-    "url": "http:\/\/localhost:8080\/index.php?p=posts\/foo-bar",
+    "url": "http:\/\/localhost:8080\/posts\/foo-bar",
     "authorId": null
 }
