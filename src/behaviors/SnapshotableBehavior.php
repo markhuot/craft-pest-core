@@ -29,15 +29,15 @@ class SnapshotableBehavior extends Behavior
                 return $value;
             });
 
-        return $customFields->set([
+        return $customFields->merge([
             'title' => $this->owner->title,
             'enabled' => $this->owner->enabled,
             'archived' => $this->owner->archived,
             'uri' => $this->owner->uri,
             'trashed' => $this->owner->trashed,
-            'ref' => $this->owner->ref,
-            'status' => $this->owner->status,
-            'url' => $this->owner->url,
+            'ref' => $this->owner->ref ?? null,
+            'status' => $this->owner->status ?? null,
+            'url' => $this->owner->url ?? null,
         ])->all();
     }
 }
