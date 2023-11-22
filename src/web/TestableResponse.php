@@ -5,6 +5,7 @@ namespace markhuot\craftpest\web;
 use markhuot\craftpest\behaviors\ExpectableBehavior;
 use markhuot\craftpest\behaviors\TestableResponseBehavior;
 use markhuot\craftpest\test\Dd;
+use markhuot\craftpest\test\SnapshotAssertions;
 
 /**
  * @mixin ExpectableBehavior
@@ -13,6 +14,7 @@ use markhuot\craftpest\test\Dd;
 class TestableResponse extends \craft\web\Response
 {
     use Dd;
+    use SnapshotAssertions;
 
     public function behaviors(): array
     {
@@ -34,5 +36,10 @@ class TestableResponse extends \craft\web\Response
     public function prepare(): void
     {
         parent::prepare();
+    }
+
+    public function toString()
+    {
+        return $this->content;
     }
 }

@@ -17,7 +17,8 @@ class TestCase extends \PHPUnit\Framework\TestCase {
         Benchmark,
         CookieState,
         Dd,
-        WithExceptionHandling;
+        WithExceptionHandling,
+        SnapshotAssertions;
 
     public Collection $seedData;
 

@@ -3,6 +3,7 @@
 namespace markhuot\craftpest\dom;
 
 use markhuot\craftpest\http\RequestBuilder;
+use markhuot\craftpest\test\SnapshotAssertions;
 use Pest\Expectation;
 use PHPUnit\Framework\Assert;
 
@@ -19,6 +20,8 @@ use PHPUnit\Framework\Assert;
  */
 class NodeList implements \Countable
 {
+    use SnapshotAssertions;
+
     /** @var \Symfony\Component\DomCrawler\Crawler */
     public $crawler;
 
@@ -231,5 +234,17 @@ class NodeList implements \Countable
         Assert::assertCount($expected, $this);
 
         return $this;
+    }
+
+    public function toArray()
+    {
+        $result = [];
+
+        for ($i=0; $i<$this->crawler->count(); $i++) {
+            $node = $this->crawler->eq($i);
+            $result[] = $node->outerHtml();
+        }
+
+        return $result;
     }
 }
