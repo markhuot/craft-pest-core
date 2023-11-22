@@ -49,5 +49,5 @@ function dd(...$args)
 }
 
 expect()->extend('toMatchElementSnapshot', function () {
-    $this->toSnapshot()->toMatchSnapshot();
+    $this->toSnapshot()->toMatchSnapshot(); // @phpstan-ignore-line
 });

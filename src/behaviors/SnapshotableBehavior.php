@@ -2,15 +2,15 @@
 
 namespace markhuot\craftpest\behaviors;
 
+use craft\base\ElementInterface;
 use craft\elements\db\ElementQuery;
-use craft\elements\db\EntryQuery;
-use craft\elements\db\MatrixBlockQuery;
 use craft\elements\ElementCollection;
-use craft\elements\Entry;
-use craft\fields\Entries;
-use craft\fields\Matrix;
+use Illuminate\Support\Collection;
 use yii\base\Behavior;
 
+/**
+ * @property ElementInterface $owner
+ */
 class SnapshotableBehavior extends Behavior
 {
     public function toSnapshot()
@@ -29,7 +29,8 @@ class SnapshotableBehavior extends Behavior
             // Remap any element collections (eager loaded relations) to their nested snapshots
             ->map(function ($value, $handle) {
                 if ($this->owner->{$handle} instanceof ElementCollection) {
-                    return $this->owner->{$handle}->map->toSnapshot();
+                    $value = $this->owner->{$handle};
+                    return $value->map->toSnapshot(); // @phpstan-ignore-line can't get PHPStan to reason about the ->map higher order callable
                 }
 
                 return $value;
