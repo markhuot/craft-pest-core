@@ -32,7 +32,6 @@ jobs:
 
       - name: Generate docs
         run: |
-          cat src/bin/generate-docs.php
           php src/bin/generate-docs.php src/factories/Factory.php docs/factories.md
           php src/bin/generate-docs.php src/factories/Entry.php docs/factories/entry.md
           php src/bin/generate-docs.php src/factories/Asset.php docs/factories/asset.md
