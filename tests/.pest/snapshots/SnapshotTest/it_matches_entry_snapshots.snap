@@ -1,26 +1,10 @@
 {
-    "expiryDate": null,
-    "deletedWithEntryType": false,
-    "_authorId": null,
-    "tempId": null,
-    "draftId": null,
-    "revisionId": null,
-    "isProvisionalDraft": false,
+    "title": "foo bar",
     "enabled": true,
     "archived": false,
-    "title": "foo bar",
-    "slug": "foo-bar",
     "uri": "posts\/foo-bar",
-    "dateLastMerged": null,
-    "dateDeleted": null,
     "trashed": false,
-    "isNewForSite": true,
-    "isDraft": false,
-    "isRevision": false,
-    "isUnpublishedDraft": false,
     "ref": "posts\/foo-bar",
     "status": "live",
-    "structureId": null,
-    "url": "http:\/\/localhost:8080\/posts\/foo-bar",
-    "authorId": null
+    "url": "http:\/\/localhost:8080\/posts\/foo-bar"
 }

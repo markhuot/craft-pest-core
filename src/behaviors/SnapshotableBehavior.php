@@ -15,18 +15,11 @@ class SnapshotableBehavior extends Behavior
 {
     public function toSnapshot()
     {
-        return collect($this->owner->toArray())
-            ->except([
-                'id', 'postDate', 'sectionId', 'uid', 'siteSettingsId',
-                'fieldLayoutId', 'contentId', 'dateCreated', 'dateUpdated',
-                'canonicalId', 'typeId', 'siteId',
-            ])
-
-            // filter out any non-eager loaded queries because we can't snapshot on them, their
-            // values change too often between runs
-            ->filter(fn ($value, $handle) => ! ($this->owner->{$handle} instanceof ElementQuery))
-
-            // Remap any element collections (eager loaded relations) to their nested snapshots
+        $customFields = collect($this->owner->getFieldLayout()->getCustomFields())
+            ->mapWithKeys(function ($field) {
+                return [$field->handle => $field];
+            })
+            ->filter(fn ($field, $handle) => ! ($this->owner->{$handle} instanceof ElementQuery))
             ->map(function ($value, $handle) {
                 if ($this->owner->{$handle} instanceof ElementCollection) {
                     $value = $this->owner->{$handle};
@@ -34,7 +27,17 @@ class SnapshotableBehavior extends Behavior
                 }
 
                 return $value;
-            })
-            ->all();
+            });
+
+        return $customFields->set([
+            'title' => $this->owner->title,
+            'enabled' => $this->owner->enabled,
+            'archived' => $this->owner->archived,
+            'uri' => $this->owner->uri,
+            'trashed' => $this->owner->trashed,
+            'ref' => $this->owner->ref,
+            'status' => $this->owner->status,
+            'url' => $this->owner->url,
+        ])->all();
     }
 }
