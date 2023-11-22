@@ -3,6 +3,7 @@
 namespace markhuot\craftpest\test;
 
 use craft\helpers\App;
+use Illuminate\Support\Collection;
 use markhuot\craftpest\actions\CallSeeders;
 use markhuot\craftpest\actions\RenderCompiledClasses;
 use markhuot\craftpest\console\TestableResponse;
@@ -17,6 +18,8 @@ class TestCase extends \PHPUnit\Framework\TestCase {
         CookieState,
         Dd,
         WithExceptionHandling;
+
+    public Collection $seedData;
 
     protected function setUp(): void
     {
