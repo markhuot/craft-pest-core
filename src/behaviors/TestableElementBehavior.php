@@ -12,7 +12,7 @@ use function markhuot\craftpest\helpers\test\test;
  * 
  * Elements, like entries, and be tested in Craft via the following assertions.
  * 
- * @property \craft\base\Element $owner
+ * @property \craft\base\Element|SnapshotableBehavior $owner
  */
 class TestableElementBehavior extends Behavior
 {
@@ -93,6 +93,20 @@ class TestableElementBehavior extends Behavior
     function assertNotTrashed()
     {
         test()->assertNotTrashed($this->owner);
+
+        return $this->owner;
+    }
+
+    /**
+     * Check that an element matches a snapshot of its attributes.
+     *
+     * ```php
+     * Entry::factory()->create()->assertMatchesSnapshot();
+     * ```
+     */
+    function assertMatchesSnapshot(...$args)
+    {
+        expect($this->owner->toSnapshot(...$args))->toMatchSnapshot();
 
         return $this->owner;
     }

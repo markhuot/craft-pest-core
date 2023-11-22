@@ -13,7 +13,7 @@ use function markhuot\craftpest\helpers\base\array_wrap;
  * @method self name(string $name)
  * @method self handle(string $name)
  * @method self type(string $type)
- * @method \craft\models\Section|Collection create()
+ * @method \craft\models\Section|Collection<\craft\models\Section> create(array $definition = [])
  */
 class Section extends Factory {
 
@@ -72,13 +72,23 @@ class Section extends Factory {
      */
     function definition(int $index = 0) {
         $name = $this->faker->words(2, true);
-        $handle = StringHelper::toCamelCase($name);
 
         return [
             'name' => $name,
-            'handle' => $handle,
             'type' => 'channel',
-            'siteSettings' => collect(\Craft::$app->sites->getAllSites())->mapWithkeys(function ($site) use ($name, $handle) {
+        ];
+    }
+
+    public function inferences(array $definition = [])
+    {
+        if (! empty($definition['name']) && empty($definition['handle'])) {
+            $definition['handle'] = StringHelper::toCamelCase($definition['name']);
+        }
+
+        $name = $definition['name'];
+        $handle = $definition['handle'];
+        $definition['siteSettings'] = collect(\Craft::$app->sites->getAllSites())
+            ->mapWithkeys(function ($site) use ($name, $handle) {
                 $settings = new Section_SiteSettings();
                 $settings->siteId = $site->id;
                 $settings->hasUrls = $this->hasUrls;
@@ -90,8 +100,9 @@ class Section extends Factory {
                 ]);
 
                 return [$site->id => $settings];
-            })->toArray(),
-        ];
+            })->toArray();
+
+        return $definition;
     }
 
     /**

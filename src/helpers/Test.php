@@ -47,3 +47,7 @@ function dd(...$args)
     dump(...$args);
     die;
 }
+
+expect()->extend('toMatchElementSnapshot', function (...$args) {
+    $this->toSnapshot(...$args)->toMatchSnapshot(); // @phpstan-ignore-line
+});

@@ -1,0 +1,15 @@
+{
+    "title": "foo bar",
+    "slug": "foo-bar",
+    "isDraft": false,
+    "isRevision": false,
+    "isNewForSite": true,
+    "isUnpublishedDraft": false,
+    "enabled": true,
+    "archived": false,
+    "uri": "posts\/foo-bar",
+    "trashed": false,
+    "ref": "posts\/foo-bar",
+    "status": "live",
+    "url": "http:\/\/localhost:8080\/posts\/foo-bar"
+}

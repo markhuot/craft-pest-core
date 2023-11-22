@@ -1,0 +1,20 @@
+{
+    "title": "foo bar",
+    "slug": "foo-bar",
+    "isDraft": false,
+    "isRevision": false,
+    "isNewForSite": true,
+    "isUnpublishedDraft": false,
+    "enabled": true,
+    "archived": false,
+    "uri": "posts\/foo-bar",
+    "trashed": false,
+    "ref": "posts\/foo-bar",
+    "status": "live",
+    "url": "http:\/\/localhost:8080\/posts\/foo-bar",
+    "postDate": {
+        "date": "2022-01-01 00:00:00.000000",
+        "timezone_type": 3,
+        "timezone": "America\/Los_Angeles"
+    }
+}

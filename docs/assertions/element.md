@@ -40,3 +40,9 @@ Check that the element does not have its `dateDeleted` flag set
 ```php
 Entry::factory()->create()->assertNotTrashed();
 ```
+
+## assertMatchesSnapshot($args)
+Check that an element matches a snapshot of its attributes.
+```php
+Entry::factory()->create()->assertMatchesSnapshot();
+```
