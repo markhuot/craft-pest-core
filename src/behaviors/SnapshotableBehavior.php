@@ -19,7 +19,14 @@ class SnapshotableBehavior extends Behavior
             ->mapWithKeys(function ($field) {
                 return [$field->handle => $field];
             })
+
+            // remove any ElementQueries from the element so we don't try to snapshot
+            // a serialized query. It will never match because it may have a dynamic `->where()`
+            // or an `->ownerId` that changes with each generated element.
             ->filter(fn ($field, $handle) => ! ($this->owner->{$handle} instanceof ElementQuery))
+
+            // snapshot any eager loaded element queries so nested elements are downcasted
+            // to a reproducible array
             ->map(function ($value, $handle) {
                 if ($this->owner->{$handle} instanceof ElementCollection) {
                     $value = $this->owner->{$handle};
