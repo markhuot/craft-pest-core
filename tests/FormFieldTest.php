@@ -42,6 +42,7 @@ it('can deal with many forms on one page')
 
 
 it('can fill fields with array style names')
+    ->withExceptionHandling()
     ->get('/page-with-multiple-forms')
     ->assertOk()
     ->form('#form3')
@@ -58,7 +59,8 @@ it('can fill fields with array style names')
 
 
 it('does not see disabled fields', function () {
-    $this->get('/page-with-multiple-forms')
+    $this->withExceptionHandling()
+        ->get('/page-with-multiple-forms')
         ->assertOk()
         ->form('#form4')
         ->submit()

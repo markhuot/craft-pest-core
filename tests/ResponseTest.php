@@ -176,6 +176,7 @@ it('asserts location path by shorthand')
     ->assertLocationPath('/');
 
 it('returns HTML for exceptions')
+    ->withExceptionHandling()
     ->get('/responses/500')
     ->assertStatus(500);
 
