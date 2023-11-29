@@ -4,7 +4,7 @@ namespace markhuot\craftpest\test;
 
 trait WithExceptionHandling
 {
-    protected bool $withExceptionHandling = true;
+    protected bool $withExceptionHandling = false;
 
     public function withExceptionHandling(): self
     {
