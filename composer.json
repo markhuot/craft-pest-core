@@ -2,6 +2,15 @@
     "name": "markhuot/craft-pest-core",
     "type": "yii2-extension",
     "description": "A Pest runner",
+    "keywords": [
+        "php",
+        "framework",
+        "pest",
+        "unit",
+        "test",
+        "testing",
+        "plugin"
+    ],
     "license": "proprietary",
     "authors": [
         {
@@ -16,9 +25,10 @@
         "symfony/dom-crawler": "^6.0.3",
         "symfony/process": "^5.3|^6.0",
         "illuminate/collections": "^8.23|^9.1|^10.0",
-        "pestphp/pest": "^2.8",
+        "pestphp/pest": "^2.26",
         "vlucas/phpdotenv": "^2.4|^3.4|^5.4",
-        "craftcms/cms": "^4.5"
+        "craftcms/cms": "^4.5",
+        "nikic/php-parser": "^4.17"
     },
     "autoload": {
         "psr-4": {
@@ -36,7 +46,8 @@
         "bootstrap": "markhuot\\craftpest\\Pest",
         "pest": {
             "plugins": [
-                "markhuot\\craftpest\\pest\\Coverage"
+                "markhuot\\craftpest\\pest\\Coverage",
+                "markhuot\\craftpest\\pest\\MonkeyPatches"
             ]
         }
     },

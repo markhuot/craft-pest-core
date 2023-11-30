@@ -40,7 +40,6 @@ class Pest implements BootstrapInterface
             function (DefineBehaviorsEvent $event) {
                 $event->behaviors[] = ExpectableBehavior::class;
                 $event->behaviors[] = TestableElementBehavior::class;
-                $event->behaviors[] = SnapshotableBehavior::class;
             }
         );
 

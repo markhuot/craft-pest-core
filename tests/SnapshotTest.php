@@ -1,7 +1,6 @@
 <?php
 
 use markhuot\craftpest\factories\Entry;
-use markhuot\craftpest\factories\Section;
 
 it('asserts html snapshots')
     ->get('/selectors')
@@ -46,7 +45,7 @@ it('includes postDate in snapshots')
         ->postDate('2022-01-01 00:00:00')
         ->title('foo bar')
         ->create())
-    ->toMatchElementSnapshot(['postDate']);
+    ->toSnapshot(['postDate'])->toMatchSnapshot();
 
 it('includes postDate in snapshot assertions', function () {
     $entry = Entry::factory()
@@ -64,7 +63,7 @@ it('matches entry snapshots', function () {
         ->title('foo bar')
         ->create();
 
-    expect($entry)->toMatchElementSnapshot();
+    expect($entry)->toMatchSnapshot();
 });
 
 it('matches nested entry snapshots', function () {
@@ -80,12 +79,12 @@ it('matches nested entry snapshots', function () {
 
     $entry = \craft\elements\Entry::find()->id($parent->id)->with(['entriesField'])->one();
 
-    expect($entry)->toMatchElementSnapshot();
+    expect($entry)->toMatchSnapshot();
 });
 
 it('matches collected snapshots', function () {
     Entry::factory()->section('posts')->count(3)->sequence(fn ($index) => ['title' => 'Entry '.$index])->create();
     $entries = \craft\elements\Entry::find()->section('posts')->collect();
 
-    expect($entries->map->toSnapshot())->toMatchSnapshot();
+    expect($entries->map->toSnapshotArray())->toMatchSnapshot();
 });

@@ -14,6 +14,20 @@ use yii\base\Behavior;
 class SnapshotableBehavior extends Behavior
 {
     /**
+     * Check that an element matches a snapshot of its attributes.
+     *
+     * ```php
+     * Entry::factory()->create()->assertMatchesSnapshot();
+     * ```
+     */
+    function assertMatchesSnapshot(...$args)
+    {
+        expect($this->toSnapshot(...$args))->toMatchSnapshot();
+
+        return $this->owner;
+    }
+
+    /**
      * @param array $extraAttributes Any additional fields that should be included in the snapshot
      * @param array $attributes The default list of attributes that should be included in a snapshot
      */
