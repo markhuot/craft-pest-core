@@ -152,7 +152,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
     protected function craftProjectConfigApply()
     {
         $craftExePath = getenv('CRAFT_EXE_PATH') ?: './craft';
-        $process = new Process([$craftExePath, 'project-config/apply', '--force']);
+        $process = new Process([$craftExePath, 'project-config/apply', '--force', '--interactive=0']);
         $process->setTty(Process::isTtySupported());
         $process->setTimeout(null);
         $process->start();
