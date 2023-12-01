@@ -58,8 +58,6 @@ jobs:
           composer.lock
           vendor
         key: ${{ runner.os }}-craft-vendor-${{ hashFiles('composer.json') }}
-        restore-keys: |
-          ${{ runner.os }}-craft-vendor-
 
     - name: Install dependencies
       run: |
