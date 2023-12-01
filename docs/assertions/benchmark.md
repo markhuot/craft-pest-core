@@ -80,7 +80,6 @@ it('loads an article', function () {
 Assert that the peak memory load of the benchmark is less than the given memory limit
 in megabytes.
 
-
 ```php
 it('loads the homepage')
   ->beginBenchmark()
@@ -92,7 +91,6 @@ it('loads the homepage')
 
 ## assertAllQueriesFasterThan(float $expectedQueryTime)
 Assert that every query is faster than the given threshold in seconds.
-
 
 ```php
 it('loads the homepage')

@@ -37,7 +37,6 @@ $response->tick('#checkbox');
 ## untick(string $fieldNameOrSelector)
 Unset the checked state of a checkbox
 
-
 ```php
 $response->untick('#checkbox');
 ```

@@ -240,7 +240,6 @@ request for the redirected page. If the redirected page also contains
 a redirect, follow the resulting redirects until you reach a non-300
 response code.
 
-
 ```php
 $response->assertRedirect()->followRedirects()->assertOk();
 ```
