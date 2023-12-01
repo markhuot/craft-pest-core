@@ -81,4 +81,4 @@ function parseComment(string $comment)
 if (! is_dir(dirname($output))) {
     mkdir(dirname($output), 0777, true);
 }
-file_put_contents($output, implode("\n\n", $contents));
+file_put_contents($output, trim(implode("\n\n", $contents))."\n");
