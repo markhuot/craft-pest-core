@@ -12,18 +12,15 @@ it('renders detail views', function () {
   $plainTextField = Field::factory()
     ->type(\craft\fields\PlainText::class)
     ->create();
-
   $section = Section::factory()
     ->template('_test/entry')
     ->fields([$plainTextField])
     ->create();
-   
   $text = 'plain text value';
   $entry = Entry::factory()
     ->section($section->handle)
     ->{$plainTextField->handle}($text)
-    ->create(); 
-  
+    ->create();
   get($entry->uri)
     ->assertOk()
     ->assertSee($text)
@@ -43,20 +40,16 @@ the unsaved element with the `->errors` property filled out.
 ## set($key, $value = NULL)
 Set an attribute and return the factory so you can chain on multiple field
 in one call, for example,
-
 ```php
 Asset::factory()
   ->set('volume', 'someVolumeHandle')
   ->set('fooField', 'the value of fooField')
 ```
-
 The an attributes value can be set in three ways,
-
 1. a scalar value, like a string or integer
 2. a callable that returns a scalar. In this case the callable will be
 passed an instance of faker
 3. an array containing either of the first two ways
-
 ```php
 Entry::factory()
   ->set('title, 'SOME GREAT TITLE')
@@ -66,18 +59,15 @@ Entry::factory()
     'title' => fn ($faker) => str_to_upper($faker->sentence())
   ])
 ```
-
 Sometimes you need to ensure an attribute is unset, not just null. If you
 set an attribute's value to `Factory::NULL` it will be removed from the
 model before it is made.
 
 ## count(int $count = 1)
 Set the number of entries to be created.
-
 This method affects the return of `->create()` and `->make()`. When only a
 single model is created the single model will be returned. When 2 or more
 models are created a collection of models will be returned.
-
 ```php
 Entry::factory()->count(3)->make() // array of three Entry objects
 Entry::factory()->count(1)->make() // returns a single Entry
@@ -85,11 +75,9 @@ Entry::factory()->count(1)->make() // returns a single Entry
 ## definition(int $index = 0)
 The faker definition for this model. Each model has its own unique definitions. For example
 an Entry will automatically set the title, while an Asset will automatically set the source.
-
-Factories are meant to be extended and subclasses should almost certainly overwrite the 
+Factories are meant to be extended and subclasses should almost certainly overwrite the
 `definition()` method to set sensible defaults for the model. The definition can overwrite
 any fields that the model may need. For example a `Post` factory may look like this,
-
 ```php
 use \markhuot\craftpest\factories\Category;
 class Post extends \markhuot\craftpest\factories\Entry
@@ -100,7 +88,7 @@ class Post extends \markhuot\craftpest\factories\Entry
       // The entry's title field
       'title' => $this->faker->sentence(),
       // A Category field takes an array of category ids or category factories
-      'category' => Category::factory()->count(3), 
+      'category' => Category::factory()->count(3),
       // Generate three body paragraphs of text
       'body' => $this->faker->paragraphs(3),
     ];
@@ -112,10 +100,8 @@ class Post extends \markhuot\craftpest\factories\Entry
 When building a model's definition the inferences are the last step before the
 model is built. This provides a place to take all the statically defined attributes
 and make some dynamic assumptions based on it.
-
 For example the `Entry` factory uses this to set the `slug` after the title has been
 set by definition or through a `->set()` call.
-
 When creating custom factories, this will most likely meed to be overridden.
 
 ## sequence($sequence)
@@ -137,15 +123,12 @@ item in the sequence. E.g., this will iterate around true/false admins creating
 
 ## make($definition = array ())
 Instantiate an Model without persisting it to the database.
-
 You may pass additional definition to further customize the model's attributes.
-
 Because the model is not persisted it is up to the caller to ensure the model is saved
 via something like `->saveElement($model)`.
 
 ## create(array $definition = array ())
 Instantiate an Model and persist it to the database.
-
 You may pass additional definition to further customize the model's attributes.
 
 ## getMadeModels()

@@ -12,7 +12,6 @@ Get the requesr that triggered this reaponse.
 ## getJsonContent()
 Fetch the response body as a JSON array. This can be run through the expectation API
 as well for a fluent chain,
-
 ```php
 $response->expect()->jsonContent->toBe(['foo' => 'bar']);
 ```
@@ -21,11 +20,9 @@ $response->expect()->jsonContent->toBe(['foo' => 'bar']);
 If the response returns HTML you can `querySelector()` to inspect the
 HTML for specific content. The `querySelector()` method takes a
 CSS selector to look for (just like in Javascript).
-
 The return from `querySelector()` is always a `NodeList` containing zero
 or more nodes. You can interact with the `NodeList` regardless of the return
 and you will get back a scalar value or a collection of values.
-
 ```php
 $response->querySelector('h1')->text; // returns the string contents of the h1 element
 $response->querySelector('li')->text; // returns a collection containing the text of all list items
@@ -34,18 +31,15 @@ $response->querySelector('li')->text; // returns a collection containing the tex
 ## form(?string $selector = NULL)
 The entry point for interactions with forms. This returns a testable
 implementaion of the [Symfony DomCrawler's Form](#) class.
-
 If a response only has one form you may call `->form()` without any parameters
 to get the only form in the response. If the response contains more than
 one form then you must pass in a selector matching a specific form.
-
 To submit the form use `->submit()` or `->click('.button-selector')`.
 
 ## expectSelector(string $selector)
 Runs the same `querySelector()` against the response's HTML but instead
 of returning a `NodeList` it returns an expectation against the `NodeList`.
 This allows you to use Pest's expectation API against the found nodes.
-
 ```php
 $response->expectSelector('h1')->text->toBe('Hello World!');
 ```
@@ -148,13 +142,11 @@ Checks that the location header matches the given location
 ```php
 $response->assertLocation('/foo/bar');
 ```
-
 By default the full location will be checked including the path,
 host, port, etc... If you would like to check only a portion of
 the location you can pass in an array of keys in the second
 parameter. The keys take their names from PHP's [`parse_url`](https://www.php.net/parse_url)
 function.
-
 ```php
 $response->assertLocation('/foo', ['host', 'path']);
 ```
@@ -163,14 +155,12 @@ $response->assertLocation('/foo', ['host', 'path']);
 Assert that the given path marches the path of the returned
 `location` header. The other parts of the location, like the
 host name, are ignored.
-
 ```php
 $response->assertLocationPath('/foo');
 ```
 
 ## assertFlash(?string $message = NULL, ?string $key = NULL)
 Check that the given message/key is present in the flashed data.
-
 ```php
 $response->assertFlash('The title is required');
 $response->assertFlash('Field is required', 'title');
@@ -209,7 +199,6 @@ $response->assertRedirectTo('/foo/bar');
 ## followRedirect()
 For a 300 class response with a `Location` header, trigger a new
 request for the redirected page.
-
 ```php
 $response->assertRedirect()->followRedirect()->assertOk();
 ```
@@ -219,8 +208,6 @@ For a 300 class response with a `Location` header, trigger a new
 request for the redirected page. If the redirected page also contains
 a redirect, follow the resulting redirects until you reach a non-300
 response code.
-
-
 ```php
 $response->assertRedirect()->followRedirects()->assertOk();
 ```
@@ -253,7 +240,6 @@ $response->assertSeeTextInOrder(['first', 'second', 'third']);
 
 ## assertStatus($code)
 Asserts the given status code matches the response status code.
-
 ```php
 $response->assertStatus(404);
 ```
@@ -263,7 +249,6 @@ Asserts a successfull (200-class) response code.
 
 ## assertTitle(string $title)
 Assert the given title matches the title of the page.
-
 ```php
 $response->assertTitle('The Title');
 ```
@@ -275,7 +260,6 @@ Asserts that the response's status code is 401
 Benchmarks are started on your test case by calling `->beginBenchmark()`. You are
 free to start as many benchmarks as needed, however, note that starting a new
 benchmark will clear out any existing benchmarks already in progress.
-
 > **Warning**
 > In order to use a benchmark you must enable Craft's `devMode` (which
 will enable the Yii Debug Bar).
@@ -284,7 +268,6 @@ will enable the Yii Debug Bar).
 Ending a benchmark returns a testable Benchmark class. You can end a benchmark
 by calling `->endBenchmark()` on the test case or on a response. Either of the
 following will work,
-
 ```php
 it('ends on the test case', function () {
   $this->beginBenchmark();
@@ -292,7 +275,6 @@ it('ends on the test case', function () {
   $benchmark = $this->endBenchmark();
 });
 ```
-
 ```php
 it('ends on the response', function () {
   $this->beginBenchmark()
@@ -300,7 +282,6 @@ it('ends on the response', function () {
      ->endBenchmark();
 });
 ```
-
 > **Note**
 > Unlike the traditional Craft request/response lifecycle you are
 free to make multiple requests in a single benchmark.
