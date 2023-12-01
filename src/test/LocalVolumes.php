@@ -16,10 +16,11 @@ namespace markhuot\craftpest\test;
  * );
  * ```
  */
-trait LocalVolumes {
-
-    function setUpLocalVolumes() {
-        \Craft::$container->set(\craft\awss3\Volume::class, function($container, $params, $config) {
+trait LocalVolumes
+{
+    public function setUpLocalVolumes()
+    {
+        \Craft::$container->set(\craft\awss3\Volume::class, function ($container, $params, $config) {
             if (empty($config['id'])) {
                 return new \craft\awss3\Volume($config);
             }
@@ -39,5 +40,4 @@ trait LocalVolumes {
             ]);
         });
     }
-
 }

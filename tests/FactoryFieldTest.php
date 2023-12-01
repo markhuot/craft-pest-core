@@ -1,8 +1,10 @@
 <?php
 
-use markhuot\craftpest\factories\{Section,Entry,Field};
+use markhuot\craftpest\factories\Entry;
+use markhuot\craftpest\factories\Field;
+use markhuot\craftpest\factories\Section;
 
-it ('creates entries and rolls back', function () {
+it('creates entries and rolls back', function () {
     $section = Section::factory()->create();
     $entryCount = \craft\elements\Entry::find()->count();
     Entry::factory()->section($section->handle)->count(5)->create();
@@ -11,7 +13,7 @@ it ('creates entries and rolls back', function () {
     expect(\craft\elements\Entry::find()->count())->toBe($entryCount);
 });
 
-it ('creates fields and rolls back', function () {
+it('creates fields and rolls back', function () {
     Field::factory()->type(\craft\fields\PlainText::class)->create();
 
     $section = Section::factory()->create();
@@ -22,7 +24,7 @@ it ('creates fields and rolls back', function () {
     expect(\craft\elements\Entry::find()->count())->toBe($entryCount);
 });
 
-it ('errors when trying to create fields after content elements', function () {
+it('errors when trying to create fields after content elements', function () {
     $this->expectException(\markhuot\craftpest\exceptions\AutoCommittingFieldsException::class);
 
     Section::factory()->create();

@@ -1,11 +1,11 @@
 <?php
 
 use craft\fields\PlainText;
-use markhuot\craftpest\factories\Field;
-use markhuot\craftpest\factories\User;
-use markhuot\craftpest\factories\Section;
-use markhuot\craftpest\factories\Entry;
 use markhuot\craftpest\exceptions\ModelStoreException;
+use markhuot\craftpest\factories\Entry;
+use markhuot\craftpest\factories\Field;
+use markhuot\craftpest\factories\Section;
+use markhuot\craftpest\factories\User;
 
 it('fails on required fields', function () {
     $field = Field::factory()->type(PlainText::class)->required(true)->create();

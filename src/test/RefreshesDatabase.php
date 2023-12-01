@@ -2,18 +2,16 @@
 
 namespace markhuot\craftpest\test;
 
-use craft\helpers\ProjectConfig;
 use markhuot\craftpest\events\FactoryStoreEvent;
 use markhuot\craftpest\events\RollbackTransactionEvent;
 use markhuot\craftpest\exceptions\AutoCommittingFieldsException;
 use markhuot\craftpest\factories\Factory;
 use markhuot\craftpest\factories\Field;
-use Symfony\Component\Process\Process;
 use yii\base\Event;
 use yii\db\Transaction;
 
-trait RefreshesDatabase {
-
+trait RefreshesDatabase
+{
     /**
      * @var bool
      */
@@ -49,7 +47,7 @@ trait RefreshesDatabase {
      */
     protected $autoCommittedModels = [];
 
-    function setUpRefreshesDatabase()
+    public function setUpRefreshesDatabase()
     {
         $this->listenForStores();
         $this->beginTransaction();
@@ -76,19 +74,20 @@ trait RefreshesDatabase {
         Event::off(Factory::class, Factory::EVENT_AFTER_STORE, [$this, 'afterStore']);
     }
 
-    function beforeStore(FactoryStoreEvent $event) {
+    public function beforeStore(FactoryStoreEvent $event)
+    {
         $isFieldFactory = is_a($event->sender, Field::class) || is_subclass_of($event->sender, Field::class);
 
         if ($isFieldFactory && $this->hasStoredNonFieldContent) {
             throw new AutoCommittingFieldsException('You can not create fields after creating elements while refreshesDatabase is in use.');
         }
 
-        if (!$isFieldFactory) {
+        if (! $isFieldFactory) {
             $this->hasStoredNonFieldContent = true;
         }
     }
 
-    function afterStore(FactoryStoreEvent $event)
+    public function afterStore(FactoryStoreEvent $event)
     {
         // If Yii thinks we're in a transaction but the transaction isn't
         // active anymore (probably because it was autocommitted) then we
@@ -102,7 +101,7 @@ trait RefreshesDatabase {
         // (so it can be manually cleaned up later) and re-set our state so
         // subsequent stores can go in to a transaction, as normal.
         $transaction = \Craft::$app->db->getTransaction();
-        if ($transaction && !\Craft::$app->db->pdo->inTransaction()) {
+        if ($transaction && ! \Craft::$app->db->pdo->inTransaction()) {
             $this->autoCommittedModels[] = $event->model;
 
             $transaction->commit();
@@ -110,13 +109,13 @@ trait RefreshesDatabase {
         }
     }
 
-    function beginTransaction()
+    public function beginTransaction()
     {
         $this->oldConfigVersion = \Craft::$app->info->configVersion;
         $this->transaction = \Craft::$app->db->beginTransaction();
     }
 
-    function rollBackTransaction()
+    public function rollBackTransaction()
     {
         if (empty($this->transaction)) {
             return;
@@ -132,16 +131,14 @@ trait RefreshesDatabase {
         $this->transaction = null;
     }
 
-    function rollBackAutoCommittedModels()
+    public function rollBackAutoCommittedModels()
     {
         foreach ($this->autoCommittedModels as $model) {
             if (is_a($model, \craft\base\Field::class) || is_subclass_of($model, \craft\base\Field::class)) {
                 \Craft::$app->fields->deleteField($model);
-            }
-            else {
-                throw new \Exception('Found orphaned model [' . get_class($model) . '] that was not cleaned up in a transaction and of an unknown type for craft-pest to clean up. You must remove this model manually.');
+            } else {
+                throw new \Exception('Found orphaned model ['.get_class($model).'] that was not cleaned up in a transaction and of an unknown type for craft-pest to clean up. You must remove this model manually.');
             }
         }
     }
-
 }

@@ -15,13 +15,14 @@ abstract class WebRequest extends \craft\web\Request
     use Dd;
 
     private const HEADER_USER_AGENT = 'Pest-Agent';
+
     private const HEADER_X_FORWARDED_FOR = '127.0.0.1';
 
     public static function make($uri): WebRequest
     {
         $config = App::webRequestConfig();
         $config['class'] = static::class;
-        
+
         /** @var self $request */
         $request = \Craft::createObject($config);
         $request->setDefaultProperties($uri);
@@ -31,19 +32,21 @@ abstract class WebRequest extends \craft\web\Request
         return $request;
     }
 
-    function __isset($key)
+    public function __isset($key)
     {
-        $method = 'get' . ucfirst($key);
+        $method = 'get'.ucfirst($key);
+
         return method_exists($this, $method);
     }
 
-    function __get($key)
+    public function __get($key)
     {
-        $method = 'get' . ucfirst($key);
+        $method = 'get'.ucfirst($key);
+
         return $this->{$method}();
     }
 
-    function expect()
+    public function expect()
     {
         return new Expectation($this);
     }
@@ -82,9 +85,10 @@ abstract class WebRequest extends \craft\web\Request
     /**
      * Populate private properties
      */
-    protected function setRaw(array $props) {
+    protected function setRaw(array $props)
+    {
         $findProperty = function (\ReflectionClass $ref, $property) {
-            while ($ref && !$ref->hasProperty($property)) {
+            while ($ref && ! $ref->hasProperty($property)) {
                 $ref = $ref->getParentClass();
             }
 
@@ -106,14 +110,14 @@ abstract class WebRequest extends \craft\web\Request
         return $this;
     }
 
-    function setDefaultProperties(string $url)
+    public function setDefaultProperties(string $url)
     {
         // Split path and query params
         $parts = parse_url($url);
-        
+
         $uri = $parts['path'] ?? '';
         $uri = ltrim($uri, '/');
-        
+
         $queryString = $parts['query'] ?? '';
         parse_str($queryString, $queryParams);
 
@@ -156,21 +160,20 @@ abstract class WebRequest extends \craft\web\Request
         $path = parse_url($uri, PHP_URL_PATH);
         $slug = \Craft::$app->getConfig()->getGeneral()->cpTrigger ?? 'admin';
 
-        return str_starts_with(ltrim($path,'/'), $slug);
+        return str_starts_with(ltrim($path, '/'), $slug);
     }
 
-    function assertMethod($method)
+    public function assertMethod($method)
     {
         Assert::assertSame(strtoupper($method), $this->getMethod());
 
         return $this;
     }
 
-    function assertBody($body)
+    public function assertBody($body)
     {
         expect($body)->toBe($this->getBodyParams());
 
         return $this;
     }
-
 }

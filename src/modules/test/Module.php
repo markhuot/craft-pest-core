@@ -6,7 +6,7 @@ use yii\base\Module as BaseModule;
 
 class Module extends BaseModule
 {
-    function init()
+    public function init()
     {
         $this->controllerNamespace = 'markhuot\craftpest\modules\test\controllers';
 

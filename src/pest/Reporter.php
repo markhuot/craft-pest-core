@@ -11,7 +11,7 @@ abstract class Reporter
 
     protected File $file;
 
-    function __construct(File $file)
+    public function __construct(File $file)
     {
         $this->file = $file;
     }
@@ -19,36 +19,36 @@ abstract class Reporter
     /**
      * @return bool|string
      */
-    function canReportOn()
+    public function canReportOn()
     {
         return true;
     }
 
-    function getName(): string
+    public function getName(): string
     {
         return $this->file->id();
     }
 
-    function getSourceLineFor(int $line)
+    public function getSourceLineFor(int $line)
     {
         return $line;
     }
 
-    function getLineCoverageData()
+    public function getLineCoverageData()
     {
         return collect($this->file->lineCoverageData())
             ->mapWithKeys(fn ($value, $key) => [$this->getSourceLineFor($key) => $value])
-            ->filter(fn ($value, $key) => !empty($key));
+            ->filter(fn ($value, $key) => ! empty($key));
     }
 
-    function getUncoveredLines(): Collection
+    public function getUncoveredLines(): Collection
     {
         return $this->getLineCoverageData()
             ->filter(fn ($line) => empty($line))
             ->keys();
     }
 
-    function getUncoveredLineRanges(): Collection
+    public function getUncoveredLineRanges(): Collection
     {
         $ranges = [];
         $lastLineMerged = false;
@@ -61,12 +61,10 @@ abstract class Reporter
             if ($missingCoverage && $lastLineMerged) {
                 $ranges[count($ranges) - 1][1] = $line;
                 $lastLineMerged = true;
-            }
-            else if ($missingCoverage) {
+            } elseif ($missingCoverage) {
                 $ranges[] = [$line];
                 $lastLineMerged = true;
-            }
-            else {
+            } else {
                 $lastLineMerged = false;
             }
         }
@@ -74,12 +72,12 @@ abstract class Reporter
         return collect($ranges)->map(fn ($r) => implode('..', $r))->flatten();
     }
 
-    function getNumberOfExecutableLines(): int
+    public function getNumberOfExecutableLines(): int
     {
         return $this->file->numberOfExecutableLines();
     }
 
-    function getNumberOfExecutedLines(): int
+    public function getNumberOfExecutedLines(): int
     {
         return $this->file->numberOfExecutedLines();
     }

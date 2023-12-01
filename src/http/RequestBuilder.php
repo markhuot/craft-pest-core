@@ -2,7 +2,6 @@
 
 namespace markhuot\craftpest\http;
 
-use craft\web\twig\Extension;
 use craft\web\User;
 use markhuot\craftpest\http\requests\GetRequest;
 use markhuot\craftpest\http\requests\PostRequest;
@@ -13,16 +12,21 @@ use yii\web\Cookie;
 class RequestBuilder
 {
     private WebRequest $request;
+
     private \craft\web\Application $app;
+
     private RequestHandler $handler;
+
     protected string $method;
+
     protected array $body = [];
+
     protected array $originalGlobals;
 
     public function __construct(
-        string         $method,
-        string         $uri,
-        \craft\web\Application    $app = null,
+        string $method,
+        string $uri,
+        \craft\web\Application $app = null,
         RequestHandler $handler = null,
     ) {
         $this->method = $method;
@@ -33,7 +37,8 @@ class RequestBuilder
 
     public function addHeader(string $name, $value): self
     {
-        $this->request->headers->add( $name, $value);
+        $this->request->headers->add($name, $value);
+
         return $this;
     }
 
@@ -63,8 +68,9 @@ class RequestBuilder
 
     public function setReferrer(?string $value): self
     {
-       $this->request->headers->set('Referer', $value);
-       return $this;
+        $this->request->headers->set('Referer', $value);
+
+        return $this;
     }
 
     public function asUser(User|string $user): self
@@ -94,10 +100,10 @@ class RequestBuilder
         if (\Craft::$app->config->getGeneral()->devMode) {
             $this->request->headers->add('X-Debug', 'enable');
         }
-        
+
         $_POST = $body = $this->body ?? [];
 
-        if (!empty($body)) {
+        if (! empty($body)) {
             $contentType = $this->request->getContentType();
             $isJson = strpos($contentType, 'json') !== false;
 
@@ -108,7 +114,7 @@ class RequestBuilder
             $this->request->setBody(
                 $isJson ? json_encode($body) : http_build_query($body)
             );
-            $this->request->headers->add('content-type', 
+            $this->request->headers->add('content-type',
                 $isJson ? 'application/json' : 'multipart/form-data'
             );
         }

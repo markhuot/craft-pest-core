@@ -23,30 +23,24 @@ trait ActingAs
      * 4. A callable that returns a User element, `->actingAs(fn () => $someUser)`
      * 5. `null` to log the user out for the given request
      */
-    function actingAs(UserFactory|User|string|callable|null $userOrName = null): self
+    public function actingAs(UserFactory|User|string|callable $userOrName = null): self
     {
         if (is_null($userOrName)) {
             \Craft::$app->getUser()->logout(false);
 
             return $this;
-        }
-        else if (is_string($userOrName)) {
+        } elseif (is_string($userOrName)) {
             $user = \Craft::$app->getUsers()->getUserByUsernameOrEmail($userOrName);
-        }
-        else if (is_a($userOrName, User::class)) {
+        } elseif (is_a($userOrName, User::class)) {
             $user = $userOrName;
-        }
-        else if (is_a($userOrName, UserFactory::class))
-        {
+        } elseif (is_a($userOrName, UserFactory::class)) {
             $user = $userOrName->create();
-        }
-        else if (is_callable($userOrName)) {
+        } elseif (is_callable($userOrName)) {
             $user = $userOrName();
         }
 
-
         if (empty($user)) {
-            throw new \Exception('Unknown user `' . $userOrName . '`');
+            throw new \Exception('Unknown user `'.$userOrName.'`');
         }
 
         \Craft::$app->getUser()->setIdentity($user);
@@ -60,7 +54,7 @@ trait ActingAs
      * works, not whether the permissions for that thing are accurate. For more fine-tuned permission
      * testing you should use `->actingAs()` with a curated user element.
      */
-    function actingAsAdmin()
+    public function actingAsAdmin()
     {
         return $this->actingAs(UserFactory::factory()->admin(true)->create());
     }
@@ -73,16 +67,15 @@ trait ActingAs
      * $this->withToken($token)->get('/')->assertOk();
      * ```
      */
-    function withToken(string $token)
+    public function withToken(string $token)
     {
         $this->withToken = $token;
 
         return $this;
     }
 
-    function tearDownActingAs()
+    public function tearDownActingAs()
     {
         \Craft::$app->getUser()->logout(false);
     }
-
 }

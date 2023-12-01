@@ -23,12 +23,12 @@ class TestableElementQueryBehavior extends Behavior
      *   ->assertCount(10)
      * ```
      */
-    function assertCount(int $count)
+    public function assertCount(int $count)
     {
         $actualCount = $this->owner->count();
 
         if (is_numeric($actualCount)) {
-            $actualCount = (int)$actualCount;
+            $actualCount = (int) $actualCount;
         }
 
         expect($count)->toBe($actualCount);

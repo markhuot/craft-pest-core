@@ -3,22 +3,21 @@
 namespace markhuot\craftpest\console;
 
 use craft\console\Controller;
-use craft\elements\Entry;
 use craft\helpers\FileHelper;
 use markhuot\craftpest\actions\RenderCompiledClasses;
 use markhuot\craftpest\Pest;
 use Symfony\Component\Process\Process;
 use yii\console\ExitCode;
+
 use function markhuot\craftpest\helpers\base\version_greater_than_or_equal_to;
 
 class PestController extends Controller
 {
-
     public bool $force = false;
 
     public ?string $namespace = null;
 
-    function options($actionID): array
+    public function options($actionID): array
     {
         if (in_array($actionID, ['init', 'generate-mixins'], true)) {
             return [
@@ -38,44 +37,50 @@ class PestController extends Controller
     /**
      * Run the Pest tests
      */
-    function actionIndex() {
+    public function actionIndex()
+    {
         $this->runInit();
         $this->runTests();
+
         return ExitCode::OK;
     }
 
     /**
      * Install Pest
      */
-    function actionInit() {
+    public function actionInit()
+    {
         $this->runInit();
+
         return ExitCode::OK;
     }
 
     /**
      * Do the install
      */
-    protected function runInit() {
-        if (!is_dir(CRAFT_BASE_PATH . '/tests')) {
-            mkdir(CRAFT_BASE_PATH . '/tests');
+    protected function runInit()
+    {
+        if (! is_dir(CRAFT_BASE_PATH.'/tests')) {
+            mkdir(CRAFT_BASE_PATH.'/tests');
         }
-        if (!file_exists(CRAFT_BASE_PATH . '/tests/Pest.php')) {
-            copy(__DIR__ . '/../../stubs/init/ExampleTest.php', CRAFT_BASE_PATH . '/tests/ExampleTest.php');
-            copy(__DIR__ . '/../../stubs/init/Pest.php', CRAFT_BASE_PATH . '/tests/Pest.php');
+        if (! file_exists(CRAFT_BASE_PATH.'/tests/Pest.php')) {
+            copy(__DIR__.'/../../stubs/init/ExampleTest.php', CRAFT_BASE_PATH.'/tests/ExampleTest.php');
+            copy(__DIR__.'/../../stubs/init/Pest.php', CRAFT_BASE_PATH.'/tests/Pest.php');
         }
-        if (!file_exists(CRAFT_BASE_PATH . '/phpunit.xml')) {
-            copy(__DIR__ . '/../../stubs/init/phpunit.xml', CRAFT_BASE_PATH . '/phpunit.xml');
+        if (! file_exists(CRAFT_BASE_PATH.'/phpunit.xml')) {
+            copy(__DIR__.'/../../stubs/init/phpunit.xml', CRAFT_BASE_PATH.'/phpunit.xml');
         }
-        if (is_dir(CRAFT_BASE_PATH . '/modules')) {
-            FileHelper::createDirectory(CRAFT_BASE_PATH . '/modules/pest/seeders');
-            copy(__DIR__ . '/../../stubs/seeders/DatabaseSeeder.php', CRAFT_BASE_PATH . '/modules/pest/seeders/DatabaseSeeder.php');
+        if (is_dir(CRAFT_BASE_PATH.'/modules')) {
+            FileHelper::createDirectory(CRAFT_BASE_PATH.'/modules/pest/seeders');
+            copy(__DIR__.'/../../stubs/seeders/DatabaseSeeder.php', CRAFT_BASE_PATH.'/modules/pest/seeders/DatabaseSeeder.php');
         }
     }
 
     /**
      * Run the tests
      */
-    protected function runTests() {
+    protected function runTests()
+    {
         $params = $this->request->getParams();
         $pestOptions = [];
         $stdOutIndex = array_search('--', $params, true);
@@ -98,14 +103,13 @@ class PestController extends Controller
         }
     }
 
-    function actionCompileTemplates()
+    public function actionCompileTemplates()
     {
         $compiledTemplatesDir = \Craft::$app->path->getCompiledTemplatesPath();
         FileHelper::removeDirectory($compiledTemplatesDir);
 
-        $compileTemplates = function ($path, $base='')
-        {
-            if (!is_string($path)) {
+        $compileTemplates = function ($path, $base = '') {
+            if (! is_string($path)) {
                 return;
             }
 
@@ -123,8 +127,7 @@ class PestController extends Controller
                 if (version_greater_than_or_equal_to(\Craft::$app->version, '4')) {
                     // @phpstan-ignore-next-line Ignored because one of these will fail based on the installed version of Craft
                     $twig->loadTemplate($twig->getTemplateClass($logicalName), $logicalName);
-                }
-                else if (version_greater_than_or_equal_to(\Craft::$app->version, '3')) {
+                } elseif (version_greater_than_or_equal_to(\Craft::$app->version, '3')) {
                     // @phpstan-ignore-next-line Ignored because one of these will fail based on the installed version of Craft
                     $twig->loadTemplate($logicalName);
                 }
@@ -160,24 +163,23 @@ class PestController extends Controller
         return 0;
     }
 
-    function actionGenerateMixins()
+    public function actionGenerateMixins()
     {
         $result = (new RenderCompiledClasses)->handle($this->force);
 
         if ($result) {
             echo "Mixins successfully generated!\n";
-        }
-        else {
+        } else {
             echo "Mixins already exist, skipping.\n";
         }
 
         return ExitCode::OK;
     }
 
-    function actionSeed($seeder=null): int
+    public function actionSeed($seeder = null): int
     {
         $namespace = $this->namespace ?? getenv('PEST_SEEDER_NAMESPACE') ?: '\\modules\\pest\\seeders';
-        $namespace = '\\' . trim($namespace, '\\') . '\\';
+        $namespace = '\\'.trim($namespace, '\\').'\\';
 
         $defaultSeeder = $seeder ?? (getenv('PEST_DEFAULT_SEEDER') ?: 'DatabaseSeeder');
         if (substr($defaultSeeder, 0, 1) === '\\') {

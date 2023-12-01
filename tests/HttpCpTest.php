@@ -4,7 +4,7 @@ use markhuot\craftpest\factories\Entry;
 use markhuot\craftpest\factories\Section;
 use markhuot\craftpest\factories\User;
 
-it('determines cp URLs with index.php', function() {
+it('determines cp URLs with index.php', function () {
     \Craft::$app->config->general->omitScriptNameInUrls = false;
     $section = Section::factory()->create();
     $entry = Entry::factory()->section($section)->create();
@@ -16,7 +16,7 @@ it('determines cp URLs with index.php', function() {
         ->assertOk();
 });
 
-it('determines cp URLs without index.php', function() {
+it('determines cp URLs without index.php', function () {
     \Craft::$app->config->general->omitScriptNameInUrls = true;
     $section = Section::factory()->create();
     $entry = Entry::factory()->section($section)->create();
@@ -54,25 +54,25 @@ it('supports non-standard cpTrigger', function () {
         ->assertOk();
 });
 
-it ('gets web requests in plugins', function () {
+it('gets web requests in plugins', function () {
     $user = User::factory()->admin(true)->create();
     $this->actingAs($user);
 
     $actionTrigger = \Craft::$app->config->general->actionTrigger;
-    $this->get($actionTrigger . '/pest/test/testable-web-response')
+    $this->get($actionTrigger.'/pest/test/testable-web-response')
         ->assertOk();
 })->skip();
 
-it ('gets web requests in modules', function () {
+it('gets web requests in modules', function () {
     $user = User::factory()->admin(true)->create();
     $this->actingAs($user);
 
     $actionTrigger = \Craft::$app->config->general->actionTrigger;
-    $this->get($actionTrigger . '/pest-module-test/test/testable-web-response')
+    $this->get($actionTrigger.'/pest-module-test/test/testable-web-response')
         ->assertOk();
 })->skip();
-    
-it ('posts action requests', function () {
+
+it('posts action requests', function () {
     $user = User::factory()->admin(true)->create();
     $this->actingAs($user);
 

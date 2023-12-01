@@ -6,8 +6,8 @@ use Faker\Factory as Faker;
 use Illuminate\Support\Collection;
 use markhuot\craftpest\events\FactoryStoreEvent;
 use markhuot\craftpest\exceptions\ModelStoreException;
-use yii\base\BaseObject;
 use yii\base\Event;
+
 use function markhuot\craftpest\helpers\base\collection_wrap;
 
 /**
@@ -28,18 +28,18 @@ use function markhuot\craftpest\helpers\base\collection_wrap;
  *   $plainTextField = Field::factory()
  *     ->type(\craft\fields\PlainText::class)
  *     ->create();
- * 
+ *
  *   $section = Section::factory()
  *     ->template('_test/entry')
  *     ->fields([$plainTextField])
  *     ->create();
- *    
+ *
  *   $text = 'plain text value';
  *   $entry = Entry::factory()
  *     ->section($section->handle)
  *     ->{$plainTextField->handle}($text)
- *     ->create(); 
- *   
+ *     ->create();
+ *
  *   get($entry->uri)
  *     ->assertOk()
  *     ->assertSee($text)
@@ -50,8 +50,8 @@ use function markhuot\craftpest\helpers\base\collection_wrap;
  *
  * @template T
  */
-abstract class Factory {
-
+abstract class Factory
+{
     /**
      * A null placeholder to signify that a field should not be set during the make flow
      */
@@ -104,36 +104,40 @@ abstract class Factory {
      * The stored sequence for this factory generation.
      *
      * @see sequence()
+     *
      * @var array|callable
      */
     protected mixed $sequence = [];
 
     /**
      * Insert deps
+     *
      * @internal
      */
-    final function __construct($faker=null)
+    final public function __construct($faker = null)
     {
         $this->faker = $faker ?? Faker::create();
     }
 
     /**
      * Set custom fields
+     *
      * @internal
      */
-    function __call(string $method, array $args)
+    public function __call(string $method, array $args)
     {
         $reflect = new \ReflectionClass($this);
         $traits = $reflect->getTraits();
-        while($reflect=$reflect->getParentClass()) {
+        while ($reflect = $reflect->getParentClass()) {
             $traits = array_merge($traits, $reflect->getTraits());
         }
         foreach ($traits as $trait) {
-            $handlesMethodName = 'handlesMagic' . $trait->getShortName() . 'Call';
-            $callsMethodName = 'callMagic' . $trait->getShortName() . 'Call';
+            $handlesMethodName = 'handlesMagic'.$trait->getShortName().'Call';
+            $callsMethodName = 'callMagic'.$trait->getShortName().'Call';
             if ($trait->hasMethod($handlesMethodName)) {
                 if ($this->$handlesMethodName($method, $args)) {
                     $this->$callsMethodName($method, $args);
+
                     return $this;
                 }
             }
@@ -141,8 +145,7 @@ abstract class Factory {
 
         if (count($args) > 1) {
             $this->attributes[$method] = array_merge($this->attributes[$method] ?? [], $args);
-        }
-        else {
+        } else {
             $this->attributes[$method] = $args[0] ?? null;
         }
 
@@ -151,9 +154,10 @@ abstract class Factory {
 
     /**
      * Whether an attribute has been set
+     *
      * @internal
      */
-    function __isset($key)
+    public function __isset($key)
     {
         return isset($this->attributes[$key]);
     }
@@ -162,8 +166,9 @@ abstract class Factory {
      * Create a new factory by calling `::factory()` on the type of element to be
      * created, such as `Entry::factory()` or `Asset::factory()`.
      */
-    static function factory() {
-        return (new static);
+    public static function factory()
+    {
+        return new static;
     }
 
     /**
@@ -171,7 +176,7 @@ abstract class Factory {
      * occurs. Calling `->muteValidationErrors()` will mute those exceptions and return
      * the unsaved element with the `->errors` property filled out.
      */
-    function muteValidationErrors(bool $muted = true)
+    public function muteValidationErrors(bool $muted = true)
     {
         $this->muted = $muted;
 
@@ -181,20 +186,20 @@ abstract class Factory {
     /**
      * Set an attribute and return the factory so you can chain on multiple field
      * in one call, for example,
-     * 
+     *
      * ```php
      * Asset::factory()
      *   ->set('volume', 'someVolumeHandle')
      *   ->set('fooField', 'the value of fooField')
      * ```
-     * 
+     *
      * The an attributes value can be set in three ways,
-     * 
+     *
      * 1. a scalar value, like a string or integer
      * 2. a callable that returns a scalar. In this case the callable will be
      * passed an instance of faker
      * 3. an array containing either of the first two ways
-     * 
+     *
      * ```php
      * Entry::factory()
      *   ->set('title, 'SOME GREAT TITLE')
@@ -204,46 +209,46 @@ abstract class Factory {
      *     'title' => fn ($faker) => str_to_upper($faker->sentence())
      *   ])
      * ```
-     * 
+     *
      * Sometimes you need to ensure an attribute is unset, not just null. If you
      * set an attribute's value to `Factory::NULL` it will be removed from the
      * model before it is made.
      */
-    function set($key, $value=null)
+    public function set($key, $value = null)
     {
         if (is_array($key)) {
             foreach ($key as $k => $v) {
                 $this->set($k, $v);
             }
-        }
-        else {
+        } else {
             $this->attributes[$key] = $value;
         }
-
 
         return $this;
     }
 
     /**
      * Get the element to be generated.
+     *
      * @internal
      *
      * @return T
      */
-    abstract function newElement();
+    abstract public function newElement();
 
     /**
      * Set the number of entries to be created.
-     * 
+     *
      * This method affects the return of `->create()` and `->make()`. When only a
      * single model is created the single model will be returned. When 2 or more
      * models are created a collection of models will be returned.
-     * 
+     *
      * ```php
      * Entry::factory()->count(3)->make() // array of three Entry objects
      * Entry::factory()->count(1)->make() // returns a single Entry
      */
-    function count(int $count=1) {
+    public function count(int $count = 1)
+    {
         $this->count = $count;
 
         return $this;
@@ -252,11 +257,11 @@ abstract class Factory {
     /**
      * The faker definition for this model. Each model has its own unique definitions. For example
      * an Entry will automatically set the title, while an Asset will automatically set the source.
-     * 
-     * Factories are meant to be extended and subclasses should almost certainly overwrite the 
+     *
+     * Factories are meant to be extended and subclasses should almost certainly overwrite the
      * `definition()` method to set sensible defaults for the model. The definition can overwrite
      * any fields that the model may need. For example a `Post` factory may look like this,
-     * 
+     *
      * ```php
      * use \markhuot\craftpest\factories\Category;
      *
@@ -269,7 +274,7 @@ abstract class Factory {
      *       'title' => $this->faker->sentence(),
      *
      *       // A Category field takes an array of category ids or category factories
-     *       'category' => Category::factory()->count(3), 
+     *       'category' => Category::factory()->count(3),
      *
      *       // Generate three body paragraphs of text
      *       'body' => $this->faker->paragraphs(3),
@@ -278,7 +283,8 @@ abstract class Factory {
      * }
      * ```
      */
-    function definition(int $index = 0) {
+    public function definition(int $index = 0)
+    {
         return [];
     }
 
@@ -287,14 +293,16 @@ abstract class Factory {
      * to an actionable array here.
      *
      * @internal
+     *
      * @return array
      */
-    function resolveDefinition($definition) {
+    public function resolveDefinition($definition)
+    {
         if (is_callable($definition)) {
             $definition = $definition($this->faker);
         }
 
-        if (!is_array($definition)) {
+        if (! is_array($definition)) {
             $definition = [];
         }
 
@@ -302,7 +310,7 @@ abstract class Factory {
         // we can run the callables and pass in the existing
         // values for reference
         foreach ($definition as &$value) {
-            if (!is_callable($value)) {
+            if (! is_callable($value)) {
                 continue;
             }
 
@@ -316,13 +324,14 @@ abstract class Factory {
      * When building a model's definition the inferences are the last step before the
      * model is built. This provides a place to take all the statically defined attributes
      * and make some dynamic assumptions based on it.
-     * 
+     *
      * For example the `Entry` factory uses this to set the `slug` after the title has been
      * set by definition or through a `->set()` call.
-     * 
+     *
      * When creating custom factories, this will most likely meed to be overridden.
      */
-    function inferences(array $definition=[]) {
+    public function inferences(array $definition = [])
+    {
         return $definition;
     }
 
@@ -346,7 +355,7 @@ abstract class Factory {
      * ->sequence(['isAdmin' => true], ['isAdmin' => false])
      * ```
      */
-    function sequence(...$sequence): self
+    public function sequence(...$sequence): self
     {
         $this->sequence = $sequence;
 
@@ -373,15 +382,16 @@ abstract class Factory {
 
     /**
      * Instantiate an Model without persisting it to the database.
-     * 
+     *
      * You may pass additional definition to further customize the model's attributes.
-     * 
+     *
      * Because the model is not persisted it is up to the caller to ensure the model is saved
      * via something like `->saveElement($model)`.
      *
      * @return \craft\elements\Entry|Collection
      */
-    function make($definition=[]) {
+    public function make($definition = [])
+    {
         // Create the models
         $elements = collect([])
             ->pad($this->count, null)
@@ -397,15 +407,16 @@ abstract class Factory {
         // the full collection of models
         return ($this->count === 1) ? $elements->first() : $elements;
     }
-    
+
     /**
      * Instantiate an Model and persist it to the database.
-     * 
+     *
      * You may pass additional definition to further customize the model's attributes.
      *
      * @return T
      */
-    function create(array $definition=[]) {
+    public function create(array $definition = [])
+    {
         $elements = collection_wrap($this->make($definition));
 
         $elements = $elements->map(function ($element) {
@@ -417,7 +428,7 @@ abstract class Factory {
             // If our event has been canceled and is no longer valid do not perform the
             // native storage routine. Instead we'll just return the element as-is assuming
             // the event has already handled persisting it.
-            if (!$beforeStoreEvent->isValid) {
+            if (! $beforeStoreEvent->isValid) {
                 return $element;
             }
 
@@ -428,7 +439,7 @@ abstract class Factory {
             // will be thrown and the next `catch` block will determine what to do
             // with it.
             try {
-                if (!$this->store($element)) {
+                if (! $this->store($element)) {
                     throw new ModelStoreException($element);
                 }
             }
@@ -437,7 +448,7 @@ abstract class Factory {
             // the error and allow code to continue processing. You would want to do
             // this if you're expecting a validation exception.
             catch (\Throwable $e) {
-                if (!$this->muted) {
+                if (! $this->muted) {
                     throw $e;
                 }
             }
@@ -480,14 +491,14 @@ abstract class Factory {
      *   );
      * ```
      */
-    function getMadeModels()
+    public function getMadeModels()
     {
         return $this->models;
     }
 
-    abstract function store($element);
+    abstract public function store($element);
 
-    protected function getAttributes($definition=[])
+    protected function getAttributes($definition = [])
     {
         $attributes = array_merge(
             $this->resolveDefinition($this->definition()),
@@ -536,7 +547,7 @@ abstract class Factory {
     /**
      * Generate the element
      */
-    protected function internalMake(array $definition=[])
+    protected function internalMake(array $definition = [])
     {
         $element = $this->newElement();
 
@@ -552,5 +563,4 @@ abstract class Factory {
 
         return $element;
     }
-
 }

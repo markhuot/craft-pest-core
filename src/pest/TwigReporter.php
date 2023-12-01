@@ -2,7 +2,6 @@
 
 namespace markhuot\craftpest\pest;
 
-use Illuminate\Support\Collection;
 use SebastianBergmann\CodeCoverage\Node\File;
 use Twig\Environment;
 use Twig\Loader\ArrayLoader;
@@ -12,23 +11,23 @@ class TwigReporter extends Reporter
 {
     protected Template $template;
 
-    function __construct(File $file)
+    public function __construct(File $file)
     {
         parent::__construct($file);
 
         $firstClass = array_keys($this->file->classes())[0] ?? '';
-        if (!(strpos($firstClass, '__TwigTemplate_') === 0)) {
+        if (! (strpos($firstClass, '__TwigTemplate_') === 0)) {
             return;
         }
 
-        if (!class_exists($firstClass)) {
+        if (! class_exists($firstClass)) {
             require $this->file->pathAsString();
         }
 
         $this->template = new $firstClass(new Environment(new ArrayLoader([])));
     }
 
-    function canReportOn()
+    public function canReportOn()
     {
         if (empty($this->template)) {
             return false;
@@ -42,16 +41,16 @@ class TwigReporter extends Reporter
         return true;
     }
 
-    function getName(): string
+    public function getName(): string
     {
-        return str_replace(getcwd() . '/', '', $this->template->getSourceContext()->getPath());
+        return str_replace(getcwd().'/', '', $this->template->getSourceContext()->getPath());
     }
 
-    function getSourceLineFor(int $line)
+    public function getSourceLineFor(int $line)
     {
         $debugInfo = $this->template->getDebugInfo();
 
-        if (!empty($debugInfo[$line])) {
+        if (! empty($debugInfo[$line])) {
             return $debugInfo[$line];
         }
 
@@ -79,12 +78,12 @@ class TwigReporter extends Reporter
         return null;
     }
 
-    function getNumberOfExecutableLines(): int
+    public function getNumberOfExecutableLines(): int
     {
         return count($this->template->getDebugInfo());
     }
 
-    function getNumberOfExecutedLines(): int
+    public function getNumberOfExecutedLines(): int
     {
         return $this->getNumberOfExecutableLines() - $this->getUncoveredLines()->count();
     }

@@ -21,8 +21,9 @@ use yii\base\Behavior;
  * tests will perform a `get()` and want to check that the response did
  * not return an error. You may use `->assertOk()` to check that the
  * status code was 200.
- * 
+ *
  * @property \craft\web\Response $owner
+ *
  * @method self fill(string $key, string $value)
  * @method self tick(string $key)
  * @method self untick(string $key)
@@ -34,7 +35,7 @@ class TestableResponseBehavior extends Behavior
     use Benchmark;
 
     /**
-     * The request that 
+     * The request that
      */
     public WebRequest $request;
 
@@ -71,7 +72,7 @@ class TestableResponseBehavior extends Behavior
         }
     }
 
-    function setRequest(WebRequest $request)
+    public function setRequest(WebRequest $request)
     {
         $this->request = $request;
 
@@ -81,7 +82,7 @@ class TestableResponseBehavior extends Behavior
     /**
      * Get the requesr that triggered this reaponse.
      */
-    function getRequest(): WebRequest
+    public function getRequest(): WebRequest
     {
         return $this->request;
     }
@@ -89,10 +90,10 @@ class TestableResponseBehavior extends Behavior
     /**
      * We're proxying some methods from the underlying Form
      * class.
-     * 
+     *
      * @internal
      */
-    function hasMethod($method)
+    public function hasMethod($method)
     {
         if (in_array($method, array_keys(static::FORM_METHODS))) {
             return true;
@@ -104,7 +105,7 @@ class TestableResponseBehavior extends Behavior
     /**
      * If this is a form method, proxy the call to the form
      */
-    function __call($method, $args)
+    public function __call($method, $args)
     {
         if (in_array($method, array_keys(static::FORM_METHODS))) {
             $result = $this->form()->{$method}(...$args);
@@ -112,18 +113,18 @@ class TestableResponseBehavior extends Behavior
             return static::FORM_METHODS[$method] === 'self' ? $this : $result;
         }
 
-        throw new \Exception('Unknown method ' . $method . ' called.');
+        throw new \Exception('Unknown method '.$method.' called.');
     }
 
     /**
      * Fetch the response body as a JSON array. This can be run through the expectation API
      * as well for a fluent chain,
-     * 
+     *
      * ```php
      * $response->expect()->jsonContent->toBe(['foo' => 'bar']);
      * ```
      */
-    function getJsonContent()
+    public function getJsonContent()
     {
         if (! str_contains($this->response->headers->get('content-type'), 'application/json')) {
             throw new \Exception('The response does not have a JSON content-type to get JSON data from');
@@ -132,7 +133,7 @@ class TestableResponseBehavior extends Behavior
         return json_decode($this->response->content, true);
     }
 
-    function json()
+    public function json()
     {
         return $this->getJsonContent();
     }
@@ -141,34 +142,35 @@ class TestableResponseBehavior extends Behavior
      * If the response returns HTML you can `querySelector()` to inspect the
      * HTML for specific content. The `querySelector()` method takes a
      * CSS selector to look for (just like in Javascript).
-     * 
+     *
      * The return from `querySelector()` is always a `NodeList` containing zero
      * or more nodes. You can interact with the `NodeList` regardless of the return
      * and you will get back a scalar value or a collection of values.
-     * 
+     *
      * ```php
      * $response->querySelector('h1')->text; // returns the string contents of the h1 element
      * $response->querySelector('li')->text; // returns a collection containing the text of all list items
      * ```
      */
-    function querySelector(string $selector)
+    public function querySelector(string $selector)
     {
         $html = $this->response->content;
         $crawler = new Crawler($html);
+
         return new NodeList($crawler->filter($selector));
     }
 
     /**
      * The entry point for interactions with forms. This returns a testable
      * implementaion of the [Symfony DomCrawler's Form](#) class.
-     * 
+     *
      * If a response only has one form you may call `->form()` without any parameters
      * to get the only form in the response. If the response contains more than
      * one form then you must pass in a selector matching a specific form.
-     * 
+     *
      * To submit the form use `->submit()` or `->click('.button-selector')`.
      */
-    public function form(string|null $selector=null): Form
+    public function form(string $selector = null): Form
     {
         if ($selector === null) {
             if ($this->form) {
@@ -185,13 +187,14 @@ class TestableResponseBehavior extends Behavior
      * Runs the same `querySelector()` against the response's HTML but instead
      * of returning a `NodeList` it returns an expectation against the `NodeList`.
      * This allows you to use Pest's expectation API against the found nodes.
-     * 
+     *
      * ```php
      * $response->expectSelector('h1')->text->toBe('Hello World!');
      * ```
      */
-    function expectSelector(string $selector) {
-       return $this->querySelector($selector)->expect();
+    public function expectSelector(string $selector)
+    {
+        return $this->querySelector($selector)->expect();
     }
 
     /**
@@ -205,7 +208,7 @@ class TestableResponseBehavior extends Behavior
      * $response->assertCacheTag('el1234');
      * ```
      */
-    function assertCacheTag(string ...$tags)
+    public function assertCacheTag(string ...$tags)
     {
         $cacheTags = $this->response->headers->get('cache-tags');
 
@@ -226,11 +229,11 @@ class TestableResponseBehavior extends Behavior
      * $response->assertCookie('cookieName', 'cookie value'); // checks that the values match
      * ```
      */
-    function assertCookie(string $name, string $value=null) {
+    public function assertCookie(string $name, string $value = null)
+    {
         if ($value === null) {
             Assert::assertContains($name, array_keys($this->response->cookies->toArray()));
-        }
-        else {
+        } else {
             Assert::assertSame($this->response->cookies->getValue($name), $value);
         }
 
@@ -246,14 +249,15 @@ class TestableResponseBehavior extends Behavior
      * $response->assertCookieExpired('cookieName');
      * ```
      */
-    function assertCookieExpired(string $name) {
+    public function assertCookieExpired(string $name)
+    {
         // First check that the cookie exists
         $this->assertCookie($name);
 
         // Then check the expiration of it
         $cookie = $this->response->cookies->get($name);
         if ($cookie->expire === 0 || $cookie->expire >= time()) {
-            Assert::fail('Cookie `' . $name . '` does not have an expiration in the past.');
+            Assert::fail('Cookie `'.$name.'` does not have an expiration in the past.');
         }
 
         return $this->response;
@@ -266,14 +270,15 @@ class TestableResponseBehavior extends Behavior
      * $response->assertCookieNotExpired('cookieName');
      * ```
      */
-    function assertCookieNotExpired(string $name) {
+    public function assertCookieNotExpired(string $name)
+    {
         // First check that the cookie exists
         $this->assertCookie($name);
 
         // Then check the expiration of it
         $cookie = $this->response->cookies->get($name);
         if ($cookie->expire !== 0 && $cookie->expire < time()) {
-            Assert::fail('Cookie `' . $name . '` does not have an expiration in the future.');
+            Assert::fail('Cookie `'.$name.'` does not have an expiration in the future.');
         }
 
         return $this->response;
@@ -286,7 +291,8 @@ class TestableResponseBehavior extends Behavior
      * $response->assertCookieMissing('cookieName');
      * ```
      */
-    function assertCookieMissing(string $name) {
+    public function assertCookieMissing(string $name)
+    {
         // First check that the cookie exists
         Assert::assertNotContains($name, array_keys($this->response->cookies->toArray()));
 
@@ -300,7 +306,8 @@ class TestableResponseBehavior extends Behavior
      * $response->assertCreated();
      * ```
      */
-    function assertCreated() {
+    public function assertCreated()
+    {
         return $this->assertStatus(201);
     }
 
@@ -311,7 +318,8 @@ class TestableResponseBehavior extends Behavior
      * $response->assertDontSee('text that should not be in the response');
      * ```
      */
-    function assertDontSee(string $text) {
+    public function assertDontSee(string $text)
+    {
         Assert::assertStringNotContainsString($text, $this->response->content);
 
         return $this->response;
@@ -325,8 +333,10 @@ class TestableResponseBehavior extends Behavior
      * $response->assertDontSeeText('foo bar');
      * ```
      */
-    function assertDontSeeText(string $text) {
+    public function assertDontSeeText(string $text)
+    {
         Assert::assertStringNotContainsString($text, preg_replace('/\s+/', ' ', strip_tags($this->response->data)));
+
         return $this->response;
     }
 
@@ -339,7 +349,8 @@ class TestableResponseBehavior extends Behavior
      * $response->assertDownload('file.jpg'); // checks that a download with the name `file.jpg` is returned
      * ```
      */
-    function assertDownload(string $filename=null) {
+    public function assertDownload(string $filename = null)
+    {
         $contentDisposition = explode(';', $this->response->headers->get('content-disposition'));
 
         if (trim($contentDisposition[0]) !== 'attachment') {
@@ -388,7 +399,8 @@ class TestableResponseBehavior extends Behavior
      * $response->assertExactJson(['foo' => 'bar']);
      * ```
      */
-    function assertExactJson(array $json) {
+    public function assertExactJson(array $json)
+    {
         Assert::assertEqualsCanonicalizing($json, json_decode($this->response->content, true));
 
         return $this->response;
@@ -401,7 +413,8 @@ class TestableResponseBehavior extends Behavior
      * $response->assertForbidden();
      * ```
      */
-    function assertForbidden() {
+    public function assertForbidden()
+    {
         return $this->assertStatus(403);
     }
 
@@ -414,17 +427,16 @@ class TestableResponseBehavior extends Behavior
      * $response->assertHeader('x-foo', 'bar'); // checks for header with matching value
      * ```
      */
-    function assertHeader(string $name, string $expected=null) {
+    public function assertHeader(string $name, string $expected = null)
+    {
         if ($expected === null) {
             Assert::assertContains($name, array_keys($this->response->headers->toArray()));
-        }
-        else {
+        } else {
             $value = $this->response->headers->get($name);
             if ($expected === $value) {
                 Assert::assertTrue(true);
-            }
-            else {
-                Assert::fail('Response header `' . $name . '` with value `' . $value . '` does not match `' . $expected . '`');
+            } else {
+                Assert::fail('Response header `'.$name.'` with value `'.$value.'` does not match `'.$expected.'`');
             }
         }
 
@@ -438,57 +450,67 @@ class TestableResponseBehavior extends Behavior
      * $response->assertHeaderMissing('x-foo');
      * ```
      */
-    function assertHeaderMissing(string $name) {
+    public function assertHeaderMissing(string $name)
+    {
         Assert::assertNotContains($name, array_keys($this->response->headers->toArray()));
 
         return $this->response;
     }
 
-    function assertJson(array $data, $strict = false) {
+    public function assertJson(array $data, $strict = false)
+    {
         Assert::assertEqualsCanonicalizing($data, $this->json());
 
         return $this->response;
     }
 
-    function assertJsonCount(int $count, ?string $path=null) {
+    public function assertJsonCount(int $count, string $path = null)
+    {
         Assert::assertCount($count, data_get($this->json(), $path));
 
         return $this->response;
     }
 
-    function assertJsonFragment() {
+    public function assertJsonFragment()
+    {
         // TODO
         return $this->response;
     }
 
-    function assertJsonMissing(string $path) {
+    public function assertJsonMissing(string $path)
+    {
         Assert::assertNull(data_get($this->json(), $path));
 
         return $this->response;
     }
 
-    function assertJsonMissingExact() {
+    public function assertJsonMissingExact()
+    {
         // TODO
         return $this->response;
     }
 
-    function assertJsonMissingValidationErrors() {
+    public function assertJsonMissingValidationErrors()
+    {
         // TODO
         return $this->response;
     }
 
-    function assertJsonPath(string $path, mixed $value) {
+    public function assertJsonPath(string $path, mixed $value)
+    {
         Assert::assertSame($value, data_get($this->json(), $path));
 
         return $this->response;
     }
 
-    function assertJsonStructure() {
+    public function assertJsonStructure()
+    {
         // TODO
         return $this->response;
     }
 
-    function assertJsonValidationErrors() {
+    public function assertJsonValidationErrors()
+    {
         // TODO
         return $this->response;
     }
@@ -499,18 +521,19 @@ class TestableResponseBehavior extends Behavior
      * ```php
      * $response->assertLocation('/foo/bar');
      * ```
-     * 
+     *
      * By default the full location will be checked including the path,
      * host, port, etc... If you would like to check only a portion of
      * the location you can pass in an array of keys in the second
      * parameter. The keys take their names from PHP's [`parse_url`](https://www.php.net/parse_url)
      * function.
-     * 
+     *
      * ```php
      * $response->assertLocation('/foo', ['host', 'path']);
      * ```
      */
-    function assertLocation(string $location, array $checkParts=null) {
+    public function assertLocation(string $location, array $checkParts = null)
+    {
         $header = $this->response->getHeaders()->get('Location');
         $headerParts = parse_url($header);
 
@@ -539,33 +562,31 @@ class TestableResponseBehavior extends Behavior
      * Assert that the given path marches the path of the returned
      * `location` header. The other parts of the location, like the
      * host name, are ignored.
-     * 
+     *
      * ```php
      * $response->assertLocationPath('/foo');
      * ```
      */
-    function assertLocationPath(string $uri)
+    public function assertLocationPath(string $uri)
     {
         return $this->assertLocation($uri, ['path']);
     }
 
     /**
      * Check that the given message/key is present in the flashed data.
-     * 
+     *
      * ```php
      * $response->assertFlash('The title is required');
      * $response->assertFlash('Field is required', 'title');
      * ```
      */
-    function assertFlash(?string $message = null, ?string $key = null)
+    public function assertFlash(string $message = null, string $key = null)
     {
         $flash = \Craft::$app->getSession()->getAllFlashes();
 
         if ($key) {
             expect($flash)->toMatchArray([$key => $message]);
-        }
-
-        else if ($message) {
+        } elseif ($message) {
             expect($flash)->toContain($message);
         }
 
@@ -579,7 +600,8 @@ class TestableResponseBehavior extends Behavior
      * $response->assertNoContent();
      * ```
      */
-    function assertNoContent($status=204) {
+    public function assertNoContent($status = 204)
+    {
         $this->assertStatus($status);
 
         Assert::assertEmpty($this->response->content, 'Response content is not empty.');
@@ -594,7 +616,8 @@ class TestableResponseBehavior extends Behavior
      * $response->assertNotFound();
      * ```
      */
-    function assertNotFound() {
+    public function assertNotFound()
+    {
         return $this->assertStatus(404);
     }
 
@@ -605,7 +628,8 @@ class TestableResponseBehavior extends Behavior
      * $response->assertOk();
      * ```
      */
-    function assertOk() {
+    public function assertOk()
+    {
         return $this->assertStatus(200);
     }
 
@@ -616,7 +640,8 @@ class TestableResponseBehavior extends Behavior
      * $response->assertRedirect();
      * ```
      */
-    function assertRedirect() {
+    public function assertRedirect()
+    {
         Assert::assertGreaterThanOrEqual(300, $this->response->getStatusCode());
         Assert::assertLessThan(400, $this->response->getStatusCode());
         Assert::assertContains('location', array_keys($this->response->headers->toArray()), 'The response does not contain a location header.');
@@ -631,7 +656,8 @@ class TestableResponseBehavior extends Behavior
      * $response->assertRedirectTo('/foo/bar');
      * ```
      */
-    function assertRedirectTo(string $location) {
+    public function assertRedirectTo(string $location)
+    {
         $this->assertRedirect();
         $this->assertLocation($location);
 
@@ -641,12 +667,12 @@ class TestableResponseBehavior extends Behavior
     /**
      * For a 300 class response with a `Location` header, trigger a new
      * request for the redirected page.
-     * 
+     *
      * ```php
      * $response->assertRedirect()->followRedirect()->assertOk();
      * ```
      */
-    function followRedirect()
+    public function followRedirect()
     {
         $this->assertRedirect();
 
@@ -658,13 +684,13 @@ class TestableResponseBehavior extends Behavior
      * request for the redirected page. If the redirected page also contains
      * a redirect, follow the resulting redirects until you reach a non-300
      * response code.
-     * 
-     * 
+     *
+     *
      * ```php
      * $response->assertRedirect()->followRedirects()->assertOk();
      * ```
      */
-    function followRedirects()
+    public function followRedirects()
     {
         $this->assertRedirect();
         $response = $this->response;
@@ -683,7 +709,8 @@ class TestableResponseBehavior extends Behavior
      * $response->assertSee('foo bar');
      * ```
      */
-    function assertSee(string $text) {
+    public function assertSee(string $text)
+    {
         Assert::assertStringContainsString($text, $this->response->content);
 
         return $this->response;
@@ -695,7 +722,7 @@ class TestableResponseBehavior extends Behavior
         foreach ($needles as $needle) {
             $lastPos = strpos($haystack, $needle, $lastPos);
             if ($lastPos === false) {
-                Assert::fail('The text `' . $needle . '` was not found in order');
+                Assert::fail('The text `'.$needle.'` was not found in order');
             }
         }
         expect(true)->toBe(true);
@@ -708,7 +735,8 @@ class TestableResponseBehavior extends Behavior
      * $response->assertSee(['first', 'second', 'third']);
      * ```
      */
-    function assertSeeInOrder(array $texts) {
+    public function assertSeeInOrder(array $texts)
+    {
         $this->seeInOrder($this->response->content, $texts);
 
         return $this->response;
@@ -722,7 +750,8 @@ class TestableResponseBehavior extends Behavior
      * $response->assertSeeText('foo bar');
      * ```
      */
-    function assertSeeText(string $text) {
+    public function assertSeeText(string $text)
+    {
         return $this->assertSeeTextInOrder([$text]);
     }
 
@@ -734,68 +763,80 @@ class TestableResponseBehavior extends Behavior
      * $response->assertSeeTextInOrder(['first', 'second', 'third']);
      * ```
      */
-    function assertSeeTextInOrder(array $texts) {
+    public function assertSeeTextInOrder(array $texts)
+    {
         $this->seeInOrder(preg_replace('/\s+/', ' ', strip_tags($this->response->content)), $texts);
 
         return $this->response;
     }
 
-    function assertSessionHas() {
+    public function assertSessionHas()
+    {
         // TODO
         return $this->response;
     }
 
-    function assertSessionHasInput() {
+    public function assertSessionHasInput()
+    {
         // TODO
         return $this->response;
     }
 
-    function assertSessionHasAll() {
+    public function assertSessionHasAll()
+    {
         // TODO
         return $this->response;
     }
 
-    function assertSessionHasErrors() {
+    public function assertSessionHasErrors()
+    {
         // TODO
         return $this->response;
     }
 
-    function assertSessionHasErrorsIn() {
+    public function assertSessionHasErrorsIn()
+    {
         // TODO
         return $this->response;
     }
 
-    function assertSessionHasNoErrors() {
+    public function assertSessionHasNoErrors()
+    {
         // TODO
         return $this->response;
     }
 
-    function assertSessionDoesntHaveErrors() {
+    public function assertSessionDoesntHaveErrors()
+    {
         // TODO
         return $this->response;
     }
 
-    function assertSessionMissing() {
+    public function assertSessionMissing()
+    {
         // TODO
         return $this->response;
     }
 
     /**
      * Asserts the given status code matches the response status code.
-     * 
+     *
      * ```php
      * $response->assertStatus(404);
      * ```
      */
-    function assertStatus($code) {
+    public function assertStatus($code)
+    {
         Assert::assertSame($code, $this->response->getStatusCode());
+
         return $this->response;
     }
 
     /**
      * Asserts a successfull (200-class) response code.
      */
-    function assertSuccessful() {
+    public function assertSuccessful()
+    {
         Assert::assertGreaterThanOrEqual(200, $this->response->getStatusCode());
         Assert::assertLessThan(300, $this->response->getStatusCode());
 
@@ -804,15 +845,15 @@ class TestableResponseBehavior extends Behavior
 
     /**
      * Assert the given title matches the title of the page.
-     * 
+     *
      * ```php
      * $response->assertTitle('The Title');
      * ```
      */
-    function assertTitle(string $title)
+    public function assertTitle(string $title)
     {
         $actualTitle = $this->querySelector('title')->text;
-        Assert::assertSame($title, $actualTitle, 'The given title did not match `' . $actualTitle . '`');
+        Assert::assertSame($title, $actualTitle, 'The given title did not match `'.$actualTitle.'`');
 
         return $this->response;
     }
@@ -820,7 +861,8 @@ class TestableResponseBehavior extends Behavior
     /**
      * Asserts that the response's status code is 401
      */
-    function assertUnauthorized() {
+    public function assertUnauthorized()
+    {
         return $this->assertStatus(401);
     }
 }

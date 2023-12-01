@@ -1,7 +1,5 @@
 <?php
 
-use markhuot\craftpest\factories\User;
-
 it('receives cookies')
     ->get('response-test')
     ->assertCookie('cookieName');
@@ -11,7 +9,7 @@ it('sends cookies', function () {
         ->addCookie('theName', 'theValue')
         ->send()
         ->content;
-        
+
     expect(trim($content))->toBe(json_encode(['theName' => 'theValue']));
 });
 
@@ -24,7 +22,7 @@ it('retains cookies', function () {
         ->assertOk()
         ->expect()
         ->jsonContent->toBe(['cookieName' => 'cookieValue']);
-    
+
     $this->get('responses/cookies')
         ->assertOk()
         ->expect()

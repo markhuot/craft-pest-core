@@ -76,5 +76,8 @@ jobs:
     - name: Run PHPStan
       run: ./vendor/bin/phpstan analyse src
 
+    - name: Run pint
+      run: ./vendor/bin/pint --test
+
     - name: Run test suite
       run: ./vendor/bin/pest

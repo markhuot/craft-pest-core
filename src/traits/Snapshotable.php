@@ -7,14 +7,14 @@ use craft\elements\ElementCollection;
 
 trait Snapshotable
 {
-    function assertMatchesSnapshot(...$args)
+    public function assertMatchesSnapshot(...$args)
     {
         expect($this->toSnapshot(...$args))->toMatchSnapshot();
 
         return $this;
     }
 
-    public function toSnapshotArray(array $extraAttributes=[], array $attributes=['title', 'slug', 'isDraft', 'isRevision', 'isNewForSite', 'isUnpublishedDraft', 'enabled', 'archived', 'uri', 'trashed', 'ref', 'status', 'url'])
+    public function toSnapshotArray(array $extraAttributes = [], array $attributes = ['title', 'slug', 'isDraft', 'isRevision', 'isNewForSite', 'isUnpublishedDraft', 'enabled', 'archived', 'uri', 'trashed', 'ref', 'status', 'url'])
     {
         $customFields = collect($this->getFieldLayout()->getCustomFields())
             ->mapWithKeys(function ($field) {
@@ -31,6 +31,7 @@ trait Snapshotable
             ->map(function ($value, $handle) {
                 if ($this->{$handle} instanceof ElementCollection) {
                     $value = $this->{$handle};
+
                     return $value->map->toSnapshotArray(); // @phpstan-ignore-line can't get PHPStan to reason about the ->map higher order callable
                 }
 
@@ -47,10 +48,10 @@ trait Snapshotable
     }
 
     /**
-     * @param array $extraAttributes Any additional fields that should be included in the snapshot
-     * @param array $attributes The default list of attributes that should be included in a snapshot
+     * @param  array  $extraAttributes Any additional fields that should be included in the snapshot
+     * @param  array  $attributes The default list of attributes that should be included in a snapshot
      */
-    public function toSnapshot(array $extraAttributes=[], array $attributes=['title', 'slug', 'isDraft', 'isRevision', 'isNewForSite', 'isUnpublishedDraft', 'enabled', 'archived', 'uri', 'trashed', 'ref', 'status', 'url'])
+    public function toSnapshot(array $extraAttributes = [], array $attributes = ['title', 'slug', 'isDraft', 'isRevision', 'isNewForSite', 'isUnpublishedDraft', 'enabled', 'archived', 'uri', 'trashed', 'ref', 'status', 'url'])
     {
         $result = $this->toSnapshotArray($extraAttributes, $attributes);
 

@@ -4,9 +4,9 @@ namespace markhuot\craftpest\factories;
 
 use craft\models\VolumeFolder;
 use Illuminate\Support\Collection;
-use markhuot\craftpest\test\LocalVolumes;
 use markhuot\craftpest\test\RefreshesDatabase;
 use yii\base\Event;
+
 use function markhuot\craftpest\helpers\base\collection_wrap;
 use function markhuot\craftpest\helpers\craft\volumeDeleteFileAtPath;
 
@@ -24,8 +24,8 @@ use function markhuot\craftpest\helpers\craft\volumeDeleteFileAtPath;
  * > **Note**
  * > Any assets created during a test will be cleaned up and deleted after the test.
  */
-class Asset extends Element {
-
+class Asset extends Element
+{
     /** @var string */
     protected $volumeHandle;
 
@@ -43,7 +43,8 @@ class Asset extends Element {
      *
      * @see \markhuot\craftpest\test\LocalVolumes
      */
-    function volume(string $handle) {
+    public function volume(string $handle)
+    {
         $this->volumeHandle = $handle;
 
         return $this;
@@ -52,7 +53,8 @@ class Asset extends Element {
     /**
      * Set the folder the asset should be created within.
      */
-    function folder(VolumeFolder $folder) {
+    public function folder(VolumeFolder $folder)
+    {
         $this->folder = $folder;
 
         return $this;
@@ -66,17 +68,19 @@ class Asset extends Element {
      * Asset::factory()->volume($volume)->source('/path/to/file.jpg')->create();
      * ```
      */
-    function source(string $source) {
+    public function source(string $source)
+    {
         $this->source = $source;
 
         return $this;
     }
 
-    function newElement() {
+    public function newElement()
+    {
         return new \craft\elements\Asset();
     }
 
-    function definition(int $index = 0)
+    public function definition(int $index = 0)
     {
         $volume = \Craft::$app->volumes->getVolumeByHandle($this->volumeHandle);
 
@@ -89,10 +93,9 @@ class Asset extends Element {
         if ($this->source) {
             $filename = basename($this->source);
             file_put_contents($tempFile, file_get_contents($this->source));
-        }
-        else {
-            $filename = 'asset' . mt_rand(1000, 9999) . '.jpg';
-            file_put_contents($tempFile, file_get_contents(__DIR__ . '/../../stubs/images/gray.jpg'));
+        } else {
+            $filename = 'asset'.mt_rand(1000, 9999).'.jpg';
+            file_put_contents($tempFile, file_get_contents(__DIR__.'/../../stubs/images/gray.jpg'));
         }
 
         return array_merge(parent::definition($index), [
@@ -105,7 +108,7 @@ class Asset extends Element {
     /**
      * @return \craft\elements\Asset|Collection
      */
-    function create(array $definition=[])
+    public function create(array $definition = [])
     {
         $assets = parent::create($definition);
 
@@ -117,5 +120,4 @@ class Asset extends Element {
 
         return $assets;
     }
-
 }

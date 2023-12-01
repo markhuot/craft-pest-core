@@ -7,7 +7,7 @@ use yii\base\Behavior;
 
 class ExpectableBehavior extends Behavior
 {
-    function expect()
+    public function expect()
     {
         return new Expectation($this->owner);
     }

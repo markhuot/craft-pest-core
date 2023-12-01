@@ -4,17 +4,13 @@ namespace markhuot\craftpest\pest;
 
 use Pest\Contracts\Plugins\AddsOutput;
 use Pest\Contracts\Plugins\HandlesArguments;
-use Symfony\Component\Console\Terminal;
-use SebastianBergmann\CodeCoverage\Node\File;
 use Pest\Support\Str;
+use SebastianBergmann\CodeCoverage\Node\File;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use craft\helpers\FileHelper;
 use Symfony\Component\Process\Process;
-use Twig\Environment;
-use Twig\Loader\ArrayLoader;
 
 class Coverage implements AddsOutput, HandlesArguments
 {
@@ -56,9 +52,9 @@ class Coverage implements AddsOutput, HandlesArguments
      * This method is called every time pest is executed
      * but we are only interested in the --twig-coverage option
      */
-    function handleArguments(array $originals): array
+    public function handleArguments(array $originals): array
     {
-        if (!in_array('--' . self::COVERAGE_OPTION, $originals)) {
+        if (! in_array('--'.self::COVERAGE_OPTION, $originals)) {
             return $originals;
         }
 
@@ -78,15 +74,15 @@ class Coverage implements AddsOutput, HandlesArguments
         }
         $originals = array_flip($originals);
 
-        $inputs   = [];
+        $inputs = [];
         $inputs[] = new InputOption(self::COVERAGE_OPTION, null, InputOption::VALUE_NONE);
         $inputs[] = new InputOption(self::MIN_OPTION, null, InputOption::VALUE_REQUIRED);
 
         $input = new ArgvInput($arguments, new InputDefinition($inputs));
         if ((bool) $input->getOption(self::COVERAGE_OPTION)) {
-            $this->coverage      = true;
-            $originals[]         = '--coverage-php';
-            $originals[]         = getcwd() . '/storage/coverage.php';
+            $this->coverage = true;
+            $originals[] = '--coverage-php';
+            $originals[] = getcwd().'/storage/coverage.php';
         }
 
         if ($input->getOption(self::MIN_OPTION) !== null) {
@@ -108,12 +104,12 @@ class Coverage implements AddsOutput, HandlesArguments
 
     public function addOutput(int $result): int
     {
-        if (!$this->coverage) {
+        if (! $this->coverage) {
             return $result;
         }
 
         if ($result === 0) {
-            if (!\Pest\Support\Coverage::isAvailable()) {
+            if (! \Pest\Support\Coverage::isAvailable()) {
                 $this->output->writeln(
                     "\n  <fg=white;bg=red;options=bold> ERROR </> No code coverage driver is available.</>",
                 );
@@ -121,7 +117,7 @@ class Coverage implements AddsOutput, HandlesArguments
             }
         }
 
-        $reportPath = getcwd() . '/storage/coverage.php';
+        $reportPath = getcwd().'/storage/coverage.php';
 
         /** @var \SebastianBergmann\CodeCoverage\CodeCoverage $codeCoverage */
         $codeCoverage = require $reportPath;
@@ -132,7 +128,7 @@ class Coverage implements AddsOutput, HandlesArguments
         $totalWhole = 0;
 
         foreach ($report->getIterator() as $file) {
-            if (!$file instanceof File) {
+            if (! $file instanceof File) {
                 continue;
             }
 
@@ -161,13 +157,11 @@ class Coverage implements AddsOutput, HandlesArguments
                     if ($percent === 100) {
                         $percent = '<fg=green>✓</>';
                         $lines = '';
-                    }
-                    else if ($percent === 0) {
+                    } elseif ($percent === 0) {
                         $percent = '';
                         $lines = '';
-                    }
-                    else {
-                        $percent = '<fg='.($percent>90?'green':($percent>75?'yellow':'red')).'>'.number_format($percent, 2) . ' %</>';
+                    } else {
+                        $percent = '<fg='.($percent > 90 ? 'green' : ($percent > 75 ? 'yellow' : 'red')).'>'.number_format($percent, 2).' %</>';
                         $lines = implode(', ', $lines->toArray());
                     }
 
@@ -176,7 +170,7 @@ class Coverage implements AddsOutput, HandlesArguments
                         $lines ? '<fg=yellow>'.$lines.'</>' : null,
                     ])), 60).' ';
                     $leftLines = preg_split('/[\r\n]+/', $left);
-                    $lastLineOfLeft = $leftLines[count($leftLines)-1];
+                    $lastLineOfLeft = $leftLines[count($leftLines) - 1];
 
                     $right = ($percent ? ' ' : '').$percent;
                     $hang = 0;
@@ -186,7 +180,7 @@ class Coverage implements AddsOutput, HandlesArguments
 
                     $dots = str_repeat('.', 70 - $hang - mb_strlen(strip_tags($lastLineOfLeft)) - mb_strlen(strip_tags($right)));
 
-                    $this->output->writeln($left . $dots . $right);
+                    $this->output->writeln($left.$dots.$right);
 
                     $totalPart += $part;
                     $totalWhole += $whole;

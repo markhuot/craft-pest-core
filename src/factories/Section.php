@@ -2,12 +2,10 @@
 
 namespace markhuot\craftpest\factories;
 
-use craft\base\ElementInterface;
 use craft\helpers\StringHelper;
 use craft\models\Section_SiteSettings;
 use Faker\Factory as Faker;
 use Illuminate\Support\Collection;
-use function markhuot\craftpest\helpers\base\array_wrap;
 
 /**
  * @method self name(string $name)
@@ -15,8 +13,8 @@ use function markhuot\craftpest\helpers\base\array_wrap;
  * @method self type(string $type)
  * @method \craft\models\Section|Collection<\craft\models\Section> create(array $definition = [])
  */
-class Section extends Factory {
-
+class Section extends Factory
+{
     use Fieldable;
 
     protected $hasUrls = true;
@@ -27,28 +25,28 @@ class Section extends Factory {
 
     protected $template = '_{handle}/entry';
 
-    function hasUrls(bool $hasUrls)
+    public function hasUrls(bool $hasUrls)
     {
         $this->hasUrls = $hasUrls;
 
         return $this;
     }
 
-    function uriFormat(string $uriFormat)
+    public function uriFormat(string $uriFormat)
     {
         $this->uriFormat = $uriFormat;
 
         return $this;
     }
 
-    function enabledByDefault(bool $enabledByDefault)
+    public function enabledByDefault(bool $enabledByDefault)
     {
         $this->enabledByDefault = $enabledByDefault;
 
         return $this;
     }
 
-    function template(string $template)
+    public function template(string $template)
     {
         $this->template = $template;
 
@@ -60,7 +58,7 @@ class Section extends Factory {
      *
      * @return \craft\models\Section
      */
-    function newElement()
+    public function newElement()
     {
         return new \craft\models\Section();
     }
@@ -70,7 +68,8 @@ class Section extends Factory {
      *
      * @return array
      */
-    function definition(int $index = 0) {
+    public function definition(int $index = 0)
+    {
         $name = $this->faker->words(2, true);
 
         return [
@@ -96,7 +95,7 @@ class Section extends Factory {
                 $settings->enabledByDefault = $this->enabledByDefault;
                 $settings->template = \Craft::$app->view->renderObjectTemplate($this->template, [
                     'name' => $name,
-                    'handle' => $handle
+                    'handle' => $handle,
                 ]);
 
                 return [$site->id => $settings];
@@ -108,13 +107,13 @@ class Section extends Factory {
     /**
      * Persist the entry to local
      *
-     * @param \craft\models\Section $element
+     * @param  \craft\models\Section  $element
      */
-    function store($element) {
+    public function store($element)
+    {
         $result = \Craft::$app->sections->saveSection($element);
         $this->storeFields($element->entryTypes[0]->fieldLayout);
 
         return $result;
     }
-
 }

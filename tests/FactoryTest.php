@@ -1,9 +1,6 @@
 <?php
 
 use craft\fields\Entries;
-use craft\fields\Matrix;
-use craft\fields\PlainText;
-use function markhuot\craftpest\helpers\http\get;
 
 it('can create singles', function () {
     $section = \markhuot\craftpest\factories\Section::factory()
@@ -70,10 +67,10 @@ it('can create entries with section id, handle, and object', function () {
 
     $setById = \markhuot\craftpest\factories\Entry::factory()->section($section->id)->create();
     expect($setById->errors)->toBeEmpty();
-    
+
     $setByHandle = \markhuot\craftpest\factories\Entry::factory()->section($section->handle)->create();
     expect($setByHandle->errors)->toBeEmpty();
-    
+
     $setByObject = \markhuot\craftpest\factories\Entry::factory()->section($section)->create();
     expect($setByObject->errors)->toBeEmpty();
 });
@@ -140,7 +137,7 @@ it('can create fields', function () {
                 ->one()
                 ->{$field->handle}
                 ->ids()
-            )
+        )
             ->toEqualCanonicalizing([$first->id, $second->id]);
     }
 });
@@ -148,8 +145,8 @@ it('can create fields', function () {
 dataset('entries field', function () {
     yield function () {
         $field = \markhuot\craftpest\factories\Field::factory()
-        ->type(Entries::class)
-        ->create();
+            ->type(Entries::class)
+            ->create();
 
         $section = \markhuot\craftpest\factories\Section::factory()
             ->fields([$field])
@@ -203,7 +200,7 @@ it('takes an array of entries', function ($props) {
             $children[0],
             $children[1],
             $children[2],
-        ]
+        ],
     ]);
 
     expect(\craft\elements\Entry::find()->id($entry->id)->one()->{$field->handle}->ids())->toEqualCanonicalizing($children->pluck('id')->toArray());

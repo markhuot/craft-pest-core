@@ -1,8 +1,8 @@
 <?php
 
 foreach ([
- __DIR__ . '/../../vendor/autoload.php', // if we're a top-level project/clone
- __DIR__ . '/../../../vendor/autoload.php', // if we're a dependency in the vendor folder
+    __DIR__.'/../../vendor/autoload.php', // if we're a top-level project/clone
+    __DIR__.'/../../../vendor/autoload.php', // if we're a dependency in the vendor folder
 ] as $autoloadPath) {
     if (file_exists($autoloadPath)) {
         require $autoloadPath;
@@ -12,7 +12,7 @@ foreach ([
 $input = $argv[1] ?? null;
 $output = $argv[2] ?? null;
 
-if (empty($input) || empty($output) || !file_exists($input)) {
+if (empty($input) || empty($output) || ! file_exists($input)) {
     throw new \Exception('Could not find source ['.$input.']');
 }
 
@@ -24,7 +24,7 @@ $className = $info['filename'];
 $namespace = str_replace('/', '\\', preg_replace('/^(.\/)?src\//', '', $info['dirname']));
 
 require $input;
-$contents = parseClass('markhuot\\craftpest\\' . $namespace . '\\' . $className);
+$contents = parseClass('markhuot\\craftpest\\'.$namespace.'\\'.$className);
 
 function parseClass(string $className)
 {
@@ -42,13 +42,13 @@ function parseClass(string $className)
             strpos($method->getDocComment(), '@internal') === false
         ) {
             $comment = parseComment($method->getDocComment());
-            if (!empty($comment)) {
+            if (! empty($comment)) {
                 $params = array_map(function (ReflectionParameter $param) {
-                    return ($param->getType() ? (string)$param->getType() . ' ' : '') . // @phpstan-ignore-line for some reason PHP stan doesn't like ->getName on a type
-                        '$' . $param->getName() .
-                        ($param->isDefaultValueAvailable() ? ' = ' . preg_replace('/[\r\n]+/', '', var_export($param->getDefaultValue(), true)) : '');
+                    return ($param->getType() ? (string) $param->getType().' ' : ''). // @phpstan-ignore-line for some reason PHP stan doesn't like ->getName on a type
+                        '$'.$param->getName().
+                        ($param->isDefaultValueAvailable() ? ' = '.preg_replace('/[\r\n]+/', '', var_export($param->getDefaultValue(), true)) : '');
                 }, $method->getParameters());
-                $contents[] = '## ' . $method->getName() . "(" . implode(', ', $params) . ")\n" . $comment;
+                $contents[] = '## '.$method->getName().'('.implode(', ', $params).")\n".$comment;
             }
         }
     }
@@ -60,7 +60,7 @@ function parseComment(string $comment)
 {
     preg_match_all('/@see\s+(.+)$/m', $comment, $sees);
     foreach (($sees[1] ?? []) as $index => $otherClass) {
-        $comment = str_replace($sees[0][$index], 'SEE[' . $otherClass . ']', $comment);
+        $comment = str_replace($sees[0][$index], 'SEE['.$otherClass.']', $comment);
     }
 
     $comment = preg_replace('/^\/\*\*/', '', $comment);
@@ -77,7 +77,7 @@ function parseComment(string $comment)
     return trim($comment);
 }
 
-if (!is_dir(dirname($output))) {
+if (! is_dir(dirname($output))) {
     mkdir(dirname($output), 0777, true);
 }
 file_put_contents($output, implode("\n\n", $contents));

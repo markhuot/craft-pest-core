@@ -7,19 +7,18 @@ use Illuminate\Support\Collection;
 use markhuot\craftpest\actions\CallSeeders;
 use markhuot\craftpest\actions\RenderCompiledClasses;
 use markhuot\craftpest\console\TestableResponse;
-use markhuot\craftpest\web\ViewResponse;
 use Symfony\Component\Process\Process;
 
-class TestCase extends \PHPUnit\Framework\TestCase {
-
+class TestCase extends \PHPUnit\Framework\TestCase
+{
     use ActingAs,
-        DatabaseAssertions,
-        RequestBuilders,
         Benchmark,
         CookieState,
+        DatabaseAssertions,
         Dd,
-        WithExceptionHandling,
-        SnapshotAssertions;
+        RequestBuilders,
+        SnapshotAssertions,
+        WithExceptionHandling;
 
     public Collection $seedData;
 
@@ -49,7 +48,7 @@ class TestCase extends \PHPUnit\Framework\TestCase {
         }
 
         foreach ($traits as $trait) {
-            $method = $prefix . $trait->getShortName();
+            $method = $prefix.$trait->getShortName();
             if ($trait->hasMethod($method)) {
                 $this->{$method}();
             }
@@ -96,17 +95,17 @@ class TestCase extends \PHPUnit\Framework\TestCase {
     protected function craftInstall()
     {
         $args = [
-            '--username=' . (App::env('CRAFT_INSTALL_USERNAME') ?? 'user@example.com'),
-            '--email=' . (App::env('CRAFT_INSTALL_EMAIL') ?? 'user@example.com'),
-            '--password=' . (App::env('CRAFT_INSTALL_PASSWORD') ?? 'secret'),
-            '--interactive=' . (App::env('CRAFT_INSTALL_INTERACTIVE') ?? '0'),
+            '--username='.(App::env('CRAFT_INSTALL_USERNAME') ?? 'user@example.com'),
+            '--email='.(App::env('CRAFT_INSTALL_EMAIL') ?? 'user@example.com'),
+            '--password='.(App::env('CRAFT_INSTALL_PASSWORD') ?? 'secret'),
+            '--interactive='.(App::env('CRAFT_INSTALL_INTERACTIVE') ?? '0'),
         ];
 
         if (! file_exists(\Craft::getAlias('@config/project/project.yaml'))) {
             $args = array_merge($args, [
-                '--siteName=' . (App::env('CRAFT_INSTALL_SITENAME') ?? '"Craft CMS"'),
-                '--siteUrl=' . (App::env('CRAFT_INSTALL_SITEURL') ?? 'http://localhost:8080'),
-                '--language=' . (App::env('CRAFT_INSTALL_LANGUAGE') ?? 'en-US'),
+                '--siteName='.(App::env('CRAFT_INSTALL_SITENAME') ?? '"Craft CMS"'),
+                '--siteUrl='.(App::env('CRAFT_INSTALL_SITEURL') ?? 'http://localhost:8080'),
+                '--language='.(App::env('CRAFT_INSTALL_LANGUAGE') ?? 'en-US'),
             ]);
         }
 
@@ -124,7 +123,7 @@ class TestCase extends \PHPUnit\Framework\TestCase {
             }
         }
 
-        if (!$process->isSuccessful()) {
+        if (! $process->isSuccessful()) {
             throw new \Exception('Failed installing Craft');
         }
     }
@@ -145,7 +144,7 @@ class TestCase extends \PHPUnit\Framework\TestCase {
             }
         }
 
-        if (!$process->isSuccessful()) {
+        if (! $process->isSuccessful()) {
             throw new \Exception('Failed migrating Craft');
         }
     }
@@ -166,7 +165,7 @@ class TestCase extends \PHPUnit\Framework\TestCase {
             }
         }
 
-        if (!$process->isSuccessful()) {
+        if (! $process->isSuccessful()) {
             throw new \Exception('Project config apply failed');
         }
     }
@@ -196,17 +195,18 @@ class TestCase extends \PHPUnit\Framework\TestCase {
 
     protected function needsRequireStatements()
     {
-        return !defined('CRAFT_BASE_PATH');
+        return ! defined('CRAFT_BASE_PATH');
     }
 
     protected function requireCraft()
     {
-        require __DIR__ . '/../bootstrap/bootstrap.php';
+        require __DIR__.'/../bootstrap/bootstrap.php';
     }
 
     /**
      * @template TClass
-     * @param class-string<TClass> $class
+     *
+     * @param  class-string<TClass>  $class
      * @return TClass
      */
     public function factory(string $class)
@@ -242,5 +242,4 @@ class TestCase extends \PHPUnit\Framework\TestCase {
 
         return new \markhuot\craftpest\web\TestableResponse(['content' => $content]);
     }
-
 }

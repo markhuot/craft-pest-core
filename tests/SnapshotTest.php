@@ -86,5 +86,6 @@ it('matches collected snapshots', function () {
     Entry::factory()->section('posts')->count(3)->sequence(fn ($index) => ['title' => 'Entry '.$index])->create();
     $entries = \craft\elements\Entry::find()->section('posts')->collect();
 
-    expect($entries->map->toSnapshotArray())->toMatchSnapshot();
+    $snapshots = collect($entries->map->toSnapshotArray())->sortBy('title')->values()->all();
+    expect(json_encode($snapshots))->toMatchSnapshot();
 });

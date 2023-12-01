@@ -5,16 +5,15 @@ it('asserts cache tag')
     ->assertOk()
     ->assertCacheTag('foo', 'baz');
 
-
 it('asserts cookie presence')
-  ->get('/response-test')
-  ->assertOk()
-  ->assertCookie('cookieName');
+    ->get('/response-test')
+    ->assertOk()
+    ->assertCookie('cookieName');
 
 it('asserts cookie value')
-  ->get('/response-test')
-  ->assertOk()
-  ->assertCookie('cookieName', 'cookieValue');
+    ->get('/response-test')
+    ->assertOk()
+    ->assertCookie('cookieName', 'cookieValue');
 
 it('asserts cookie valid')
     ->get('/response-test')
@@ -184,4 +183,3 @@ it('can skip html errors and bubble the actual exception')
     ->withoutExceptionHandling()
     ->expectException(\yii\web\ServerErrorHttpException::class)
     ->get('/responses/500');
-

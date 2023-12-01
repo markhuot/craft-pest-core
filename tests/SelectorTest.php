@@ -33,7 +33,7 @@ it('selects multiple matching nodes via expectation API', function () {
         ->text->toBe(['one', 'two', 'three']);
 });
 
-it ('selects multiple matching nodes via assertion API', function () {
+it('selects multiple matching nodes via assertion API', function () {
     get('/selectors')
         ->querySelector('#first ul li')
         ->assertCount(3)

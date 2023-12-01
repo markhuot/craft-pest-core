@@ -47,7 +47,7 @@ trait RequestBuilders
     /**
      * Makes a `GET` request to Craft.
      */
-    function get(string $uri): TestableResponse
+    public function get(string $uri): TestableResponse
     {
         return $this->http('get', $uri)->send();
     }
@@ -75,7 +75,7 @@ trait RequestBuilders
      *   ->assertOk();
      * ```
      */
-    function post(string $uri, array $body=[]): TestableResponse
+    public function post(string $uri, array $body = []): TestableResponse
     {
         return $this->http('post', $uri)
             ->withCsrfToken()
@@ -93,7 +93,7 @@ trait RequestBuilders
      * ])->assertOk();
      * ```
      */
-    function postJson(string $uri, array $body=[]): TestableResponse
+    public function postJson(string $uri, array $body = []): TestableResponse
     {
         return $this->http('post', $uri)
             ->withCsrfToken()
@@ -107,7 +107,7 @@ trait RequestBuilders
      * Maes a `POST` request to Craft with the `action` param filled in to the
      * passed value.
      */
-    function action(string $action, array $body=[]): TestableResponse
+    public function action(string $action, array $body = []): TestableResponse
     {
         return $this->http('post', '')
             ->withCsrfToken()
@@ -121,7 +121,7 @@ trait RequestBuilders
     /**
      * Generate a raw HTTP request without any conventions applied.
      */
-    function http(string $method, string $uri): RequestBuilder
+    public function http(string $method, string $uri): RequestBuilder
     {
         $builder = new RequestBuilder($method, $uri);
 

@@ -13,5 +13,5 @@ return [
         function ($app) {
             (new Pest)->bootstrap($app);
         },
-      ]
+    ],
 ];

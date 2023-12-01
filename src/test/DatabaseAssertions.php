@@ -3,7 +3,6 @@
 namespace markhuot\craftpest\test;
 
 use craft\base\Element;
-use craft\base\ElementInterface;
 use craft\db\Query;
 use craft\db\Table;
 
@@ -21,7 +20,7 @@ trait DatabaseAssertions
      * $this->assertDatabaseCount('{{%entries}}', 6);
      * ```
      */
-    function assertDatabaseCount(string $tableName, int $expectedCount)
+    public function assertDatabaseCount(string $tableName, int $expectedCount)
     {
         $actualCount = (new Query())->from($tableName)->count();
 
@@ -36,7 +35,7 @@ trait DatabaseAssertions
      * $this->assertDatabaseHas('{{%content}}', ['title' => 'My Great Title']);
      * ```
      */
-    function assertDatabaseHas(string $tableName, array $condition)
+    public function assertDatabaseHas(string $tableName, array $condition)
     {
         $actualCount = (new Query)->from($tableName)->where($condition)->count();
 
@@ -51,11 +50,11 @@ trait DatabaseAssertions
      * $this->assertDatabaseMissing('{{%content}}', ['title' => 'My Great Title']);
      * ```
      */
-    function assertDatabaseMissing(string $tableName, array $condition)
+    public function assertDatabaseMissing(string $tableName, array $condition)
     {
         $actualCount = (new Query)->from($tableName)->where($condition)->count();
 
-        $this->assertSame(0, (int)$actualCount);
+        $this->assertSame(0, (int) $actualCount);
     }
 
     /**
@@ -65,7 +64,7 @@ trait DatabaseAssertions
      * $this->assertTrashed($entry);
      * ```
      */
-    function assertTrashed(Element $element)
+    public function assertTrashed(Element $element)
     {
         $row = (new Query)->from(Table::ELEMENTS)->where(['id' => $element->id])->one();
 
@@ -79,7 +78,7 @@ trait DatabaseAssertions
      * $this->assertNotTrashed($entry);
      * ```
      */
-    function assertNotTrashed(Element $element)
+    public function assertNotTrashed(Element $element)
     {
         $row = (new Query)->from(Table::ELEMENTS)->where(['id' => $element->id])->one();
 

@@ -2,22 +2,17 @@
 
 namespace markhuot\craftpest\factories;
 
-use craft\base\ElementInterface;
-use craft\models\EntryType;
-use craft\models\Section;
-use Faker\Factory as Faker;
-use Illuminate\Support\Collection;
-
 /**
  * @method self admin(bool $isAdmin)
  */
-class User extends Element {
-
-    function newElement() {
+class User extends Element
+{
+    public function newElement()
+    {
         return new \craft\elements\User;
     }
 
-    function definition(int $index = 0)
+    public function definition(int $index = 0)
     {
         $email = $this->faker->email();
 
@@ -26,5 +21,4 @@ class User extends Element {
             'username' => $email,
         ];
     }
-
 }

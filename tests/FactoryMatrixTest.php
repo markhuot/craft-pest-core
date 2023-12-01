@@ -1,11 +1,11 @@
 <?php
 
-use markhuot\craftpest\factories\Entry as EntryFactory;
-use markhuot\craftpest\factories\MatrixField as MatrixFieldFactory;
-use markhuot\craftpest\factories\Block as BlockFactory;
-use markhuot\craftpest\factories\Field as FieldFactory;
 use craft\fields\PlainText as PlainTextField;
+use markhuot\craftpest\factories\Block as BlockFactory;
 use markhuot\craftpest\factories\BlockType as BlockTypeFactory;
+use markhuot\craftpest\factories\Entry as EntryFactory;
+use markhuot\craftpest\factories\Field as FieldFactory;
+use markhuot\craftpest\factories\MatrixField as MatrixFieldFactory;
 use markhuot\craftpest\factories\Section as SectionFactory;
 
 it('can fill matrix fields', function () {
@@ -106,8 +106,8 @@ it('can fill matrix blocks with a magic shorthand', function () {
     $blockTypeHandle = $blockType->getMadeModels()->first()->handle;
     $plainTextOneHandle = $plainTextOne->getMadeModels()->first()->handle;
     $plainTextTwoHandle = $plainTextTwo->getMadeModels()->first()->handle;
-    $matrixBlockMethod = 'add' . ucfirst($blockTypeHandle) . 'To' . ucfirst($matrix->handle);
-    $matrixFieldMethod = 'addBlockTo' . ucfirst($matrix->handle);
+    $matrixBlockMethod = 'add'.ucfirst($blockTypeHandle).'To'.ucfirst($matrix->handle);
+    $matrixFieldMethod = 'addBlockTo'.ucfirst($matrix->handle);
 
     $entry = EntryFactory::factory()
         ->section($section)

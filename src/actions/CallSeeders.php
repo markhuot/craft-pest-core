@@ -11,11 +11,9 @@ class CallSeeders
         foreach ($seeders as $seeder) {
             if (is_string($seeder) && class_exists($seeder)) {
                 $seedData[] = (new $seeder)($this);
-            }
-            else if (is_callable($seeder)) {
+            } elseif (is_callable($seeder)) {
                 $seedData[] = $seeder($this);
-            }
-            else {
+            } else {
                 throw new \RuntimeException('Invalid seed');
             }
         }

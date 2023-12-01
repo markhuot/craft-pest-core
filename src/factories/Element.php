@@ -5,6 +5,7 @@ namespace markhuot\craftpest\factories;
 use craft\fields\BaseRelationField;
 use craft\fields\Matrix;
 use Illuminate\Support\Collection;
+
 use function markhuot\craftpest\helpers\base\array_wrap;
 
 abstract class Element extends Factory
@@ -19,7 +20,8 @@ abstract class Element extends Factory
      *
      * @return array
      */
-    function definition(int $index = 0) {
+    public function definition(int $index = 0)
+    {
         return [
             'title' => $this->faker->sentence(),
         ];
@@ -29,7 +31,8 @@ abstract class Element extends Factory
      * Set the scenario for the save of the element, typically either DEFAULT
      * for quick saves or LIVE when testing validation.
      */
-    function scenario(string $scenario) {
+    public function scenario(string $scenario)
+    {
         $this->scenario = $scenario;
 
         return $this;
@@ -38,7 +41,8 @@ abstract class Element extends Factory
     /**
      * Persist the entry to storage
      */
-    function store($element) {
+    public function store($element)
+    {
         $element->setScenario($this->scenario ?? \craft\base\Element::SCENARIO_DEFAULT);
 
         return \Craft::$app->elements->saveElement($element);
@@ -47,7 +51,7 @@ abstract class Element extends Factory
     /**
      * Recursively resolve nested factories
      */
-    function resolveFactories(array $values)
+    public function resolveFactories(array $values)
     {
         // for legacy reasons ->create can either return a model or a collection of models.
         // Because of this, when we resolve factories we could end up with nested arrays of
@@ -76,8 +80,7 @@ abstract class Element extends Factory
         foreach ($values as $index => $value) {
             if (in_array($index, $flattenIndexes) && is_a($value, Collection::class)) {
                 $return = $return->concat($value);
-            }
-            else {
+            } else {
                 $return->push($value);
             }
         }
@@ -86,22 +89,22 @@ abstract class Element extends Factory
     }
 
     /**
-     * @param array $attributes
-     * @param \craft\base\Element $element
+     * @param  array  $attributes
+     * @param  \craft\base\Element  $element
      */
     protected function setAttributes($attributes, $element)
     {
         // Set the element native fields first (ignoring any custom fields)
         foreach ($attributes as $key => $value) {
             $fieldLayout = $element->getFieldLayout();
-            if (!$fieldLayout || !$fieldLayout->getFieldByHandle($key)) {
+            if (! $fieldLayout || ! $fieldLayout->getFieldByHandle($key)) {
                 $element->{$key} = $value;
                 unset($attributes[$key]);
             }
         }
 
         // No need to progress further if the element doesn't support content or has no field layout
-        if (!$element::hasContent() || !$element->getFieldLayout()) {
+        if (! $element::hasContent() || ! $element->getFieldLayout()) {
             return $element;
         }
 
@@ -123,7 +126,7 @@ abstract class Element extends Factory
             $field = $element->fieldLayout->getFieldByHandle($key);
 
             if (empty($field)) {
-                throw new \Exception('Could not find field with handle `' . $key . '` on `' . get_class($element) . '`');
+                throw new \Exception('Could not find field with handle `'.$key.'` on `'.get_class($element).'`');
             }
 
             if (is_subclass_of($field, BaseRelationField::class)) {
@@ -131,7 +134,7 @@ abstract class Element extends Factory
                     if (is_numeric($element)) {
                         return $element;
                     }
-                    if (is_object($element) && !empty($element->id)) {
+                    if (is_object($element) && ! empty($element->id)) {
                         return $element->id;
                     }
 
@@ -142,7 +145,7 @@ abstract class Element extends Factory
             if (is_a($field, Matrix::class)) {
                 $value = $this->resolveFactories(array_wrap($value))
                     ->mapWithKeys(function ($item, $index) {
-                        return ['new' . ($index + 1) => $item];
+                        return ['new'.($index + 1) => $item];
                     })->toArray();
             }
 
@@ -152,5 +155,4 @@ abstract class Element extends Factory
 
         return $element;
     }
-
 }

@@ -2,15 +2,14 @@
 
 namespace markhuot\craftpest\factories;
 
-use craft\base\VolumeInterface;
 use craft\helpers\StringHelper;
 use Illuminate\Support\Collection;
 
 /**
  * @method \craft\models\VolumeFolder|Collection create()
  */
-class VolumeFolder extends Factory {
-
+class VolumeFolder extends Factory
+{
     /**
      * I can't type this because Craft 3 expects a craft\base\VolumeInterface but
      * Craft 4 expects a \craft\models\Volume
@@ -24,21 +23,21 @@ class VolumeFolder extends Factory {
      * I can't type this because Craft 3 expects a craft\base\VolumeInterface but
      * Craft 4 expects a \craft\models\Volume
      */
-    function volume($volume)
+    public function volume($volume)
     {
         $this->volume = $volume;
 
         return $this;
     }
 
-    function parent(\craft\models\VolumeFolder $parent)
+    public function parent(\craft\models\VolumeFolder $parent)
     {
         $this->parent = $parent;
 
         return $this;
     }
 
-    function newElement()
+    public function newElement()
     {
         return new \craft\models\VolumeFolder;
     }
@@ -48,7 +47,8 @@ class VolumeFolder extends Factory {
      *
      * @return array
      */
-    function definition(int $index = 0) {
+    public function definition(int $index = 0)
+    {
         $name = $this->faker->words(2, true);
         $path = '/'.StringHelper::toCamelCase($name).'/';
         // @phpstan-ignore-next-line ignored because Craft 3.7 does not expose ->id in it's types
@@ -64,12 +64,12 @@ class VolumeFolder extends Factory {
     }
 
     /**
-     * @param \craft\models\VolumeFolder $element
+     * @param  \craft\models\VolumeFolder  $element
      */
-    function store($element) {
+    public function store($element)
+    {
         \Craft::$app->assets->createFolder($element);
 
         return true;
     }
-
 }
