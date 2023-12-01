@@ -29,6 +29,7 @@ jobs:
       CRAFT_DEV_MODE: true
       DEV_MODE: true
       CRAFT_EXE_PATH: ./src/bin/craft
+      PRIMARY_SITE_URL: http://localhost:8080
 
     services:
       mysql:
