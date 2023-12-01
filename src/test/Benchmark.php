@@ -12,12 +12,12 @@ trait Benchmark
      * Benchmarks are started on your test case by calling `->beginBenchmark()`. You are
      * free to start as many benchmarks as needed, however, note that starting a new
      * benchmark will clear out any existing benchmarks already in progress.
-     * 
+     *
      * > **Warning**
      * > In order to use a benchmark you must enable Craft's `devMode` (which
      * will enable the Yii Debug Bar).
      */
-    function beginBenchmark()
+    public function beginBenchmark()
     {
         // It would be nice to conditionally enable the debug bar when this is called
         // but theres a lot of setup in \craft\web\Application::bootstrapDebug() that
@@ -25,10 +25,10 @@ trait Benchmark
         // \Craft::$app->db->enableLogging = true;
         // \Craft::$app->db->enableProfiling = true;
         // \Craft::createObject(['class' => 'yiisoft\\debug\\Module']);
-        
+
         // Because we can't dynamically load the debug bar we'll require DEV_MODE be
         // enabled by the user if they get here.
-        if (!\Craft::$app->config->getGeneral()->devMode) {
+        if (! \Craft::$app->config->getGeneral()->devMode) {
             throw new \Exception('You must enable devMode to use benchmarking.');
         }
 
@@ -49,7 +49,7 @@ trait Benchmark
      * Ending a benchmark returns a testable Benchmark class. You can end a benchmark
      * by calling `->endBenchmark()` on the test case or on a response. Either of the
      * following will work,
-     * 
+     *
      * ```php
      * it('ends on the test case', function () {
      *   $this->beginBenchmark();
@@ -57,7 +57,7 @@ trait Benchmark
      *   $benchmark = $this->endBenchmark();
      * });
      * ```
-     * 
+     *
      * ```php
      * it('ends on the response', function () {
      *   $this->beginBenchmark()
@@ -65,12 +65,12 @@ trait Benchmark
      *      ->endBenchmark();
      * });
      * ```
-     * 
+     *
      * > **Note**
      * > Unlike the traditional Craft request/response lifecycle you are
      * free to make multiple requests in a single benchmark.
      */
-    function endBenchmark()
+    public function endBenchmark()
     {
         $this->activeBenchmark['end'] = count(\Craft::getLogger()->getProfiling());
 
@@ -79,7 +79,7 @@ trait Benchmark
         return new BenchmarkResult($this->activeBenchmark['start'], $this->activeBenchmark['end']);
     }
 
-    function tearDownBenchmark()
+    public function tearDownBenchmark()
     {
         $this->endBenchmark();
     }

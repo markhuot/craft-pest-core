@@ -1,22 +1,23 @@
 <?php
 
 use markhuot\craftpest\factories\Entry;
+
 use function markhuot\craftpest\helpers\model\entry;
 use function markhuot\craftpest\helpers\model\user;
 
-it ('creates entries with no props')
+it('creates entries with no props')
     ->expect(fn () => entry('posts')->create())
     ->errors->toBeEmpty()
     ->enabled->toBeTrue()
     ->expiryDate->toBeNull()
     ->author->toBeNull();
 
-it ('disables posts')
+it('disables posts')
     ->expect(fn () => entry('posts')->enabled(false)->create())
     ->enabled->toBeFalse()
     ->status->toBe(\craft\elements\Entry::STATUS_DISABLED);
 
-it ('sets post date')
+it('sets post date')
     ->expect(fn () => entry('posts')
         ->postDate('2122-12-13 12:01:01')
         ->create()
@@ -24,7 +25,7 @@ it ('sets post date')
     ->postDate->format('F j, Y g:i A')->toBe('December 13, 2122 12:01 PM')
     ->status->toBe(\craft\elements\Entry::STATUS_PENDING);
 
-it ('throws on bad post date', function () {
+it('throws on bad post date', function () {
     $this->expectException(Exception::class);
 
     entry('posts')->postDate('foo bar')->create();

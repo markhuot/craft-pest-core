@@ -1,12 +1,15 @@
 # Factories
+
 Elements (and some models) within Craft can be generated at test time utilizing
 Craft Pest's built in Factory methods. Factories abstract away the boilerplate
 of creating elements within the Craft database and allow you to concentrate
 more on the action of the test than the act of setting up the environment to
 be tested.
+
 For example, you could create a new section, with specific fields. Then, create
 an entry in that new section and, finally, test that a template renders the
 detail view of the entry correctly.
+
 ```php
 it('renders detail views', function () {
   $plainTextField = Field::factory()
@@ -17,18 +20,19 @@ it('renders detail views', function () {
     ->template('_test/entry')
     ->fields([$plainTextField])
     ->create();
-   
+
   $text = 'plain text value';
   $entry = Entry::factory()
     ->section($section->handle)
     ->{$plainTextField->handle}($text)
-    ->create(); 
-  
+    ->create();
+
   get($entry->uri)
     ->assertOk()
     ->assertSee($text)
 });
 ```
+
 That example uses most of the common factory methods.
 
 ## factory()
@@ -86,12 +90,13 @@ Entry::factory()->count(1)->make() // returns a single Entry
 The faker definition for this model. Each model has its own unique definitions. For example
 an Entry will automatically set the title, while an Asset will automatically set the source.
 
-Factories are meant to be extended and subclasses should almost certainly overwrite the 
+Factories are meant to be extended and subclasses should almost certainly overwrite the
 `definition()` method to set sensible defaults for the model. The definition can overwrite
 any fields that the model may need. For example a `Post` factory may look like this,
 
 ```php
 use \markhuot\craftpest\factories\Category;
+
 class Post extends \markhuot\craftpest\factories\Entry
 {
   function definition()
@@ -99,8 +104,10 @@ class Post extends \markhuot\craftpest\factories\Entry
     return [
       // The entry's title field
       'title' => $this->faker->sentence(),
+
       // A Category field takes an array of category ids or category factories
-      'category' => Category::factory()->count(3), 
+      'category' => Category::factory()->count(3),
+
       // Generate three body paragraphs of text
       'body' => $this->faker->paragraphs(3),
     ];
@@ -122,14 +129,17 @@ When creating custom factories, this will most likely meed to be overridden.
 Set a sequence that will be iterated on as multiple models are created. You can
 set this to a callback (which gets passed the index) or an array of definitions
 where each definition will be used in order.
+
 ```php
 ->sequence(fn ($index) => ['someField' => "the index is {$index}"])
 ->sequence(['someField' => 'the index is 1'], ['someField' => 'the index is 2'])
 ```
+
 With the array approach the sequence will be iterated over and looped so if you
 pass two items in to a sequence the third created element will re-use the first
 item in the sequence. E.g., this will iterate around true/false admins creating
 5 admins and 5 non-admins.
+
 ```php
 ->count(10)
 ->sequence(['isAdmin' => true], ['isAdmin' => false])
@@ -157,6 +167,7 @@ plain text field, a section with the matrix field and finally an entry in
 that section. Notice that we only call `->create()` on the section and let
 the system figure out the rest of the inter-dependencies (like which fields
 are global and which fields are matrix fields).
+
 ```php
 $plainText = Field::factory()->type(PlainText::class);
 $blockType = BlockType::factory()->fields($plainText);

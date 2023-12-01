@@ -2,11 +2,11 @@
 
 // Define path constants
 define('CRAFT_BASE_PATH', getcwd());
-define('CRAFT_VENDOR_PATH', CRAFT_BASE_PATH . '/vendor');
+define('CRAFT_VENDOR_PATH', CRAFT_BASE_PATH.'/vendor');
 define('YII_ENABLE_ERROR_HANDLER', false);
 
 // Load dotenv? 5.x vs 3.x vs 2.x
-if (file_exists(CRAFT_BASE_PATH . '/.env')) {
+if (file_exists(CRAFT_BASE_PATH.'/.env')) {
     if (method_exists('\Dotenv\Dotenv', 'createUnsafeImmutable')) {
         /** @phpstan-ignore-next-line */
         \Dotenv\Dotenv::createUnsafeImmutable(CRAFT_BASE_PATH)->safeLoad();
@@ -68,19 +68,19 @@ $_SERVER['SCRIPT_FILENAME'] = 'index.php';
 //
 // Note: I'm only okay with this because we're doing it in Test. I would _never_ do this
 // in a production environment with code that serves content to users.
-if (!function_exists('replace_class')) {
+if (! function_exists('replace_class')) {
     function replace_class(string $originalClass)
     {
-        $fsPath = str_replace('\\', DIRECTORY_SEPARATOR, $originalClass) . '.php';
+        $fsPath = str_replace('\\', DIRECTORY_SEPARATOR, $originalClass).'.php';
 
         // Move the original class to a new namespace so we can inherit from it
-        $originalClassContents = file_get_contents(CRAFT_VENDOR_PATH . '/craftcms/cms/src/' . $fsPath);
+        $originalClassContents = file_get_contents(CRAFT_VENDOR_PATH.'/craftcms/cms/src/'.$fsPath);
         $originalClassContents = preg_replace('/^<\?php/', '', $originalClassContents);
         $originalClassContents = preg_replace('/^namespace.*$/m', 'namespace markhuot\\craftpest\\overrides;', $originalClassContents);
         eval($originalClassContents);
 
         // Require the new class, replacing the original class
-        include __DIR__ . '/../craft/' . $fsPath;
+        include __DIR__.'/../craft/'.$fsPath;
     }
 }
 
@@ -88,6 +88,6 @@ replace_class('services\\Config');
 replace_class('services\\ProjectConfig');
 
 /** @var \craft\web\Application $app */
-$app = require CRAFT_VENDOR_PATH . '/craftcms/cms/bootstrap/web.php';
+$app = require CRAFT_VENDOR_PATH.'/craftcms/cms/bootstrap/web.php';
 
 return $app;

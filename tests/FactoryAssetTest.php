@@ -1,7 +1,7 @@
 <?php
 
-use markhuot\craftpest\factories\Volume;
 use markhuot\craftpest\factories\Asset;
+use markhuot\craftpest\factories\Volume;
 use markhuot\craftpest\factories\VolumeFolder;
 
 it('can create volumes and assets', function () {
@@ -20,7 +20,7 @@ it('can create an asset from a source', function () {
     $volume = Volume::factory()->create();
     $asset = Asset::factory()
         ->volume($volume->handle)
-        ->source(__DIR__ . '/../stubs/images/gray.jpg')
+        ->source(__DIR__.'/../stubs/images/gray.jpg')
         ->create();
 
     $assets = \craft\elements\Asset::find()->volume($volume)->filename($asset->filename)->all();
@@ -38,13 +38,13 @@ it('can set the folder', function () {
         ->folder($folder)
         ->create();
 
-    expect((int)\craft\elements\Asset::find()
+    expect((int) \craft\elements\Asset::find()
         ->volume($volume->handle)
         ->folderPath($folder->path)
         ->count())
         ->toBe(1);
 
-    expect((int)\craft\elements\Asset::find()
+    expect((int) \craft\elements\Asset::find()
         ->volume($volume->handle)
         ->folderPath('/')
         ->includeSubfolders(false)

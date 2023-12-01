@@ -6,9 +6,9 @@ use yii\base\Model;
 
 class ModelStoreException extends \Exception
 {
-    function __construct(Model $model)
+    public function __construct(Model $model)
     {
-        $message = implode(" ", $model->getErrorSummary(false));
+        $message = implode(' ', $model->getErrorSummary(false));
         parent::__construct($message);
     }
 }

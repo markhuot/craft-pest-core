@@ -24,12 +24,15 @@ $response->querySelector('li')->expect()->count->toBe(10);
 ## getNodeOrNodes(callable $callback)
 A poorly named map that either returns the result of the map on
 a single node or an array of mapped values on multiple nodes.
+
 This is called internally when you `__get` on a node list.
+
 If `$nodeList` contains 1 node, you'll get back the text content
 of that node.
 ```php
 $textContent = $nodeList->getNodeOrNodes(fn ($node) => $node->text()); // string
 ```
+
 If `$nodeList` contains 2 or more nodes, you'll get back an array
 containing the text content of each node.
 ```php
@@ -69,20 +72,24 @@ $response->querySelector('form')->assertAttribute('method', 'post');
 
 ## assertText($expected)
 Asserts that the given string matches the text content of the node list.
+
 Caution: if the node list contains multiple nodes then the assertion
 would expect an array of strings to match.
+
 ```php
 $nodeList->assertText('Hello World');
 ```
 
 ## assertContainsString($expected)
 Asserts that the given string is a part of the node list text content
+
 ```php
 $nodeList->assertContainsString('Hello');
 ```
 
 ## assertCount($expected)
 Asserts that the given count matches the count of nodes in the node list.
+
 ```php
 $nodeList->assertCount(2);
 ```

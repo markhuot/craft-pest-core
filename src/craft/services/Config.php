@@ -13,10 +13,10 @@ class Config extends \markhuot\craftpest\overrides\Config
     {
         $original = parent::getConfigFromFile($filename);
 
-        if (!is_array($original) || $filename !== 'app.web') {
+        if (! is_array($original) || $filename !== 'app.web') {
             return collect($original)->toArray();
         }
 
-        return array_merge($original, require __DIR__ . '/../../config/app.web.php');
+        return array_merge($original, require __DIR__.'/../../config/app.web.php');
     }
 }

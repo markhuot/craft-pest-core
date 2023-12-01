@@ -13,14 +13,14 @@ class Field extends Factory
 {
     protected $type;
 
-    function type(string $type)
+    public function type(string $type)
     {
         $this->type = $type;
 
         return $this;
     }
 
-    function group(string $groupName)
+    public function group(string $groupName)
     {
         $this->attributes['groupId'] = function () use ($groupName) {
             foreach (\Craft::$app->fields->getAllGroups() as $group) {
@@ -40,7 +40,7 @@ class Field extends Factory
      *
      * @return \craft\base\Field
      */
-    function newElement()
+    public function newElement()
     {
         $fieldClass = $this->type;
 
@@ -52,7 +52,8 @@ class Field extends Factory
      *
      * @return array
      */
-    function definition(int $index = 0) {
+    public function definition(int $index = 0)
+    {
         $name = $this->faker->words(2, true);
         $firstFieldGroupId = \Craft::$app->fields->getAllGroups()[0]->id;
 
@@ -62,9 +63,9 @@ class Field extends Factory
         ];
     }
 
-    function inferences(array $definition = [])
+    public function inferences(array $definition = [])
     {
-        if (empty($definition['handle']) && !empty($definition['name'])) {
+        if (empty($definition['handle']) && ! empty($definition['name'])) {
             $definition['handle'] = StringHelper::toCamelCase($definition['name']);
         }
 
@@ -74,9 +75,8 @@ class Field extends Factory
     /**
      * Persist the entry to local
      */
-    function store($element): bool
+    public function store($element): bool
     {
         return \Craft::$app->fields->saveField($element);
     }
-
 }

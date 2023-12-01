@@ -5,18 +5,16 @@ it('renders the page with a form')
     ->assertOk()
     ->form();
 
-
 it('is unhappy when no form found')
-    ->expectExceptionMessage("Unable to select form.")
+    ->expectExceptionMessage('Unable to select form.')
     ->get('/response-test')
     ->assertOk()
     ->form();
 
-
 it('can fill a field and collect existing fields', function () {
     $formResponse = $this->get('/page-with-basic-form')
         ->assertOk();
-    
+
     $formResponse->getRequest()
         ->assertMethod('get');
 
@@ -34,12 +32,10 @@ it('can fill a field and collect existing fields', function () {
         ]);
 });
 
-
 it('can deal with many forms on one page')
     ->get('/page-with-multiple-forms')
     ->assertOk()
     ->form('#form2');
-
 
 it('can fill fields with array style names')
     ->withExceptionHandling()
@@ -53,10 +49,9 @@ it('can fill fields with array style names')
         'row' => [
             'one' => 'one',
             'two' => 'updated',
-            'three' => 'three'
-        ]
+            'three' => 'three',
+        ],
     ]);
-
 
 it('does not see disabled fields', function () {
     $this->withExceptionHandling()
@@ -71,7 +66,6 @@ it('does not see disabled fields', function () {
         ->bodyParams->not->toHaveKey('row.one')
         ->bodyParams->toHaveKey('row.two');
 });
-
 
 it('works with select fields', function () {
     $form = $this->get('/page-with-multiple-forms')
@@ -97,9 +91,7 @@ it('works with select fields on single form pages', function () {
         ->bodyParams->toMatchArray(['third' => 'baz']);
 });
 
-
-
-it('can create virtual fields', function() {
+it('can create virtual fields', function () {
     $this->get('/page-with-basic-form')
         ->assertOk()
         ->form()
@@ -109,6 +101,6 @@ it('can create virtual fields', function() {
         ->expect()
         ->bodyParams->toMatchArray([
             'first' => 'prefilled',
-            'does-not-exist' => 'theValue'
+            'does-not-exist' => 'theValue',
         ]);
 });

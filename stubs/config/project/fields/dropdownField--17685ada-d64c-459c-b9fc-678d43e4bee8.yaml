@@ -1,0 +1,35 @@
+columnSuffix: vqczhrcp
+contentColumnType: string(3)
+fieldGroup: f948b9a4-6a4e-43da-84aa-65b91c0cd202 # Common
+handle: dropdownField
+instructions: null
+name: 'Dropdown Field'
+searchable: false
+settings:
+  columnType: null
+  options:
+    -
+      __assoc__:
+        -
+          - label
+          - One
+        -
+          - value
+          - one
+        -
+          - default
+          - ''
+    -
+      __assoc__:
+        -
+          - label
+          - Two
+        -
+          - value
+          - two
+        -
+          - default
+          - ''
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\Dropdown

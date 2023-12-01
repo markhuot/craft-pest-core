@@ -1,4 +1,5 @@
 # Response Assertions
+
 A testable response is returned whenever you perform a HTTP request
 with Pest. It is an extension of Craft's native Response with a
 number of convience methods added for testing. For example, most
@@ -55,6 +56,7 @@ Check that a response contains the given cache tag header. This is commonly used
 edge-side CDNs to "tag" pages with a unique identifier so that they can be purged
 from the cache by that unique tag later. In Craft this will usually be something like
 the element ID of any entries being rendered.
+
 ```php
 $response->assertCacheTag('my-tag');
 $response->assertCacheTag('el1234');
@@ -64,6 +66,7 @@ $response->assertCacheTag('el1234');
 Checks that the response contains the given cookie. When not passed a value
 the assertion only checks the presence of the cookie. When passed a value the
 value will be checked for strict equality.
+
 ```php
 $response->assertCookie('cookieName'); // checks presence, with any value
 $response->assertCookie('cookieName', 'cookie value'); // checks that the values match
@@ -73,30 +76,35 @@ $response->assertCookie('cookieName', 'cookie value'); // checks that the values
 Checks that the given cookie has an expiration in the past. Cookies are sent in headers and if left
 unset a cookie will persist from request to request. Therefore, the only way to "remove" a cookie
 is to set its expiration to a date in the past (negative number). This is common when logging people out.
+
 ```php
 $response->assertCookieExpired('cookieName');
 ```
 
 ## assertCookieNotExpired(string $name)
 Checks that the given cookie has an expiration in the future.
+
 ```php
 $response->assertCookieNotExpired('cookieName');
 ```
 
 ## assertCookieMissing(string $name)
 Checks that the given cookie is not present in the response
+
 ```php
 $response->assertCookieMissing('cookieName');
 ```
 
 ## assertCreated()
 Checks that the response has a 201 Created status code
+
 ```php
 $response->assertCreated();
 ```
 
 ## assertDontSee(string $text)
 Checks that the given string does not appear in thr response.
+
 ```php
 $response->assertDontSee('text that should not be in the response');
 ```
@@ -104,6 +112,7 @@ $response->assertDontSee('text that should not be in the response');
 ## assertDontSeeText(string $text)
 Checks that the given string does not appear in the response after first stripping all non-text elements (like HTML) from the response.
 For example, if the response contains `foo <em>bar</em>` you could check against the text `foo bar` because the `<em>` will be stripped.
+
 ```php
 $response->assertDontSeeText('foo bar');
 ```
@@ -111,6 +120,7 @@ $response->assertDontSeeText('foo bar');
 ## assertDownload(?string $filename = NULL)
 Checks that the response contains a file download, optionally checking that the filename of the download
 matches the given filename.
+
 ```php
 $response->assertDownload(); // checks that any download is returned
 $response->assertDownload('file.jpg'); // checks that a download with the name `file.jpg` is returned
@@ -119,12 +129,14 @@ $response->assertDownload('file.jpg'); // checks that a download with the name `
 ## assertExactJson(array $json)
 Checks that the given JSON exactly matches the returned JSON using PHPUnit's "canonicalizing" logic to
 validate the objects.
+
 ```php
 $response->assertExactJson(['foo' => 'bar']);
 ```
 
 ## assertForbidden()
 Checks that the response has a 403 Forbidden status code
+
 ```php
 $response->assertForbidden();
 ```
@@ -132,6 +144,7 @@ $response->assertForbidden();
 ## assertHeader(string $name, ?string $expected = NULL)
 Checks that the given header is present in the response and, if provided, that the value of the
 header matches the given value.
+
 ```php
 $response->assertHeader('x-foo'); // checks for presence of header, with any value
 $response->assertHeader('x-foo', 'bar'); // checks for header with matching value
@@ -139,12 +152,14 @@ $response->assertHeader('x-foo', 'bar'); // checks for header with matching valu
 
 ## assertHeaderMissing(string $name)
 Checks that the response headers do not contain the given header.
+
 ```php
 $response->assertHeaderMissing('x-foo');
 ```
 
 ## assertLocation(string $location, ?array $checkParts = NULL)
 Checks that the location header matches the given location
+
 ```php
 $response->assertLocation('/foo/bar');
 ```
@@ -178,30 +193,35 @@ $response->assertFlash('Field is required', 'title');
 
 ## assertNoContent($status = 204)
 Check that the response has the given status code and no content.
+
 ```php
 $response->assertNoContent();
 ```
 
 ## assertNotFound()
 Check that the response returns a 404 Not Found status code
+
 ```php
 $response->assertNotFound();
 ```
 
 ## assertOk()
 Check that the response returns a 200 OK status code
+
 ```php
 $response->assertOk();
 ```
 
 ## assertRedirect()
 Check that the response returns a 300 status code
+
 ```php
 $response->assertRedirect();
 ```
 
 ## assertRedirectTo(string $location)
 A sugar method that checks the status code as well as the location of the redirect.
+
 ```php
 $response->assertRedirectTo('/foo/bar');
 ```
@@ -220,19 +240,20 @@ request for the redirected page. If the redirected page also contains
 a redirect, follow the resulting redirects until you reach a non-300
 response code.
 
-
 ```php
 $response->assertRedirect()->followRedirects()->assertOk();
 ```
 
 ## assertSee(string $text)
 Checks that the response contains the given text
+
 ```php
 $response->assertSee('foo bar');
 ```
 
 ## assertSeeInOrder(array $texts)
 Checks that the response contains the given text, in successive order
+
 ```php
 $response->assertSee(['first', 'second', 'third']);
 ```
@@ -240,6 +261,7 @@ $response->assertSee(['first', 'second', 'third']);
 ## assertSeeText(string $text)
 Checks that the response contains the given text stripping tags. This would
 pass against source code of `<b>foo</b> bar`
+
 ```php
 $response->assertSeeText('foo bar');
 ```
@@ -247,6 +269,7 @@ $response->assertSeeText('foo bar');
 ## assertSeeTextInOrder(array $texts)
 Checks that the response contains the given text, in successive order
 while stripping tags.
+
 ```php
 $response->assertSeeTextInOrder(['first', 'second', 'third']);
 ```

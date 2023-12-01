@@ -6,12 +6,12 @@ use craft\web\Controller;
 
 class TestController extends Controller
 {
-    function actionTestableWebResponse()
+    public function actionTestableWebResponse()
     {
         return $this->asJson(['foo' => 'bar']);
     }
 
-    function actionTestableWebAction()
+    public function actionTestableWebAction()
     {
         $this->requirePostRequest();
 

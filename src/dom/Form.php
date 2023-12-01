@@ -28,12 +28,13 @@ class Form
     use Dd;
 
     private \Symfony\Component\DomCrawler\Form $form;
+
     private Crawler $crawler;
 
     public function __construct(?NodeList $nodeList)
     {
         if ($nodeList->count === 0) {
-            throw new \InvalidArgumentException("Unable to select form.");
+            throw new \InvalidArgumentException('Unable to select form.');
         }
 
         if ($nodeList->count > 1) {
@@ -44,7 +45,7 @@ class Form
         $this->crawler = $nodeList->crawler->eq(0);
         $node = $this->crawler->getNode(0);
 
-        if (!$node instanceof \DOMElement) {
+        if (! $node instanceof \DOMElement) {
             throw new \InvalidArgumentException(sprintf('The selected node should be instance of DOMElement, got "%s".', get_debug_type($node)));
         }
 
@@ -89,8 +90,6 @@ class Form
         return $this;
     }
 
-
-
     /**
      * Set the checked state of a checkbox.
      *
@@ -100,9 +99,9 @@ class Form
      */
     public function tick(string $fieldNameOrSelector): self
     {
-       if (!($this->form[$fieldNameOrSelector] instanceof ChoiceFormField)) {
-           throw new \InvalidArgumentException("Field '$fieldNameOrSelector' is not a checkbox, unable to tick()");
-       }
+        if (! ($this->form[$fieldNameOrSelector] instanceof ChoiceFormField)) {
+            throw new \InvalidArgumentException("Field '$fieldNameOrSelector' is not a checkbox, unable to tick()");
+        }
 
         $this->form[$fieldNameOrSelector]->tick();
 
@@ -119,7 +118,7 @@ class Form
      */
     public function untick(string $fieldNameOrSelector): self
     {
-        if (!($this->form[$fieldNameOrSelector] instanceof ChoiceFormField)) {
+        if (! ($this->form[$fieldNameOrSelector] instanceof ChoiceFormField)) {
             throw new \InvalidArgumentException("Field '$fieldNameOrSelector' is not a checkbox, unable to untick()");
         }
 
@@ -137,7 +136,7 @@ class Form
      */
     public function select(string $fieldNameOrSelector, string|array|bool $value): self
     {
-        if (!($this->form[$fieldNameOrSelector] instanceof ChoiceFormField)) {
+        if (! ($this->form[$fieldNameOrSelector] instanceof ChoiceFormField)) {
             throw new \InvalidArgumentException("Field '$fieldNameOrSelector' is not a select, unable to select()");
         }
 
@@ -153,7 +152,6 @@ class Form
         return $this;
     }
 
-
     /**
      * Clicks a button on the form and submits the form
      *
@@ -166,7 +164,7 @@ class Form
         $button = $this->crawler->selectButton($buttonSelectorOrLabel);
 
         if ($button->count() !== 1) {
-            throw new \InvalidArgumentException("Unable to find exact button to click on.");
+            throw new \InvalidArgumentException('Unable to find exact button to click on.');
         }
 
         $this->fill($button->attr('name'), $button->attr('value') ?: $button->attr('formaction'));
@@ -193,7 +191,7 @@ class Form
                 $action = UrlHelper::prependCpTrigger($action);
             }
         }
-    
+
         $request = new RequestBuilder(
             $this->form->getMethod(),
             $action,

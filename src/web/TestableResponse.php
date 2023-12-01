@@ -20,7 +20,7 @@ class TestableResponse extends \craft\web\Response
     {
         return [
             ExpectableBehavior::class,
-            TestableResponseBehavior::class
+            TestableResponseBehavior::class,
         ];
     }
 

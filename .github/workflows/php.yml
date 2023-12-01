@@ -29,6 +29,7 @@ jobs:
       CRAFT_DEV_MODE: true
       DEV_MODE: true
       CRAFT_EXE_PATH: ./src/bin/craft
+      PRIMARY_SITE_URL: http://localhost:8080
 
     services:
       mysql:
@@ -58,8 +59,6 @@ jobs:
           composer.lock
           vendor
         key: ${{ runner.os }}-craft-vendor-${{ hashFiles('composer.json') }}
-        restore-keys: |
-          ${{ runner.os }}-craft-vendor-
 
     - name: Install dependencies
       run: |
@@ -77,6 +76,9 @@ jobs:
 
     - name: Run PHPStan
       run: ./vendor/bin/phpstan analyse src
+
+    - name: Run pint
+      run: ./vendor/bin/pint --test src/
 
     - name: Run test suite
       run: ./vendor/bin/pest

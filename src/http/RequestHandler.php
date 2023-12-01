@@ -14,7 +14,7 @@ class RequestHandler
 {
     private \craft\web\Application $app;
 
-    public function __construct(?\craft\web\Application $app = null)
+    public function __construct(\craft\web\Application $app = null)
     {
         $this->app = $app ?? \Craft::$app;
     }
@@ -36,13 +36,9 @@ class RequestHandler
             test()->storeCookieCollection($response->cookies);
 
             return $response;
-        }
-
-        catch (\Throwable $exception) {
+        } catch (\Throwable $exception) {
             return $this->handleException($exception, $request);
-        }
-
-        finally {
+        } finally {
             // Clear out output buffering that may still be left open because of an exception. Ideally
             // we wouldn't need this but Yii/Craft leaves something open somewhere that we're not
             // handling correctly here.
@@ -72,8 +68,7 @@ class RequestHandler
         if ($exception instanceof ExitException) {
             /** @var TestableResponse $response */
             $response = \Craft::$app->response;
-        }
-        else {
+        } else {
             // Fake a response and set the HTTP status code
             $response = \Craft::createObject(TestableResponse::class);
             $response->setStatusCode($exception->statusCode ?? 500);

@@ -8,10 +8,11 @@ use markhuot\craftpest\storage\FactoryFields;
 
 /**
  * Entry Factory
- * 
+ *
  * You can easily build entries using the Entry factory.
- * 
+ *
  * @TODO a lot of these should be copied up to the element factory
+ *
  * @method title(string $title)
  * @method slug(string $slug)
  * @method uri(string $uri)
@@ -19,6 +20,7 @@ use markhuot\craftpest\storage\FactoryFields;
  * @method parent(\craft\elements\Entry|Entry|string|int $parent)
  *
  * @phpstan-ignore-next-line ignored because the file is generated
+ *
  * @mixin FactoryFields
  */
 class Entry extends Element
@@ -34,14 +36,15 @@ class Entry extends Element
     /**
      * Set the section for the entry to be created. You may pass a section
      * in three ways,
-     * 
+     *
      * 1. a section object (typically after creating one via the `Section` factory)
      * 2. a section id
      * 3. a section handle
-     * 
+     *
      * If you do not pass a section, one will be created automatically.
      */
-    function section($identifier) {
+    public function section($identifier)
+    {
         $this->sectionIdentifier = $identifier;
 
         return $this;
@@ -50,7 +53,8 @@ class Entry extends Element
     /**
      * Set the entry type
      */
-    function type($handle) {
+    public function type($handle)
+    {
 
     }
 
@@ -58,18 +62,18 @@ class Entry extends Element
      * Set the post date by passing a `DateTime`, a string representing the date like
      * "2022-04-25 04:00:00", or a unix timestamp as an integer.
      */
-    function postDate(\DateTime|string|int $value)
+    public function postDate(\DateTime|string|int $value)
     {
         $this->setDateField('postDate', $value);
-        
+
         return $this;
     }
-    
+
     /**
      * Set the expiration date by passing a `DateTime`, a string representing the date like
      * "2022-04-25 04:00:00", or a unix timestamp as an integer.
      */
-    function expiryDate(\DateTime|string|int $value)
+    public function expiryDate(\DateTime|string|int $value)
     {
         $this->setDateField('expiryDate', $value);
 
@@ -79,18 +83,17 @@ class Entry extends Element
     /**
      * Date fields in Craft require a `DateTime` object.  You can use `->setDateField` to pass
      * in other representations such as a timestamp or a string.
-     * 
+     *
      * ```php
      * Entry::factory()->setDateField('approvedOn', '2022-04-18 -04:00:00');
      * Entry::factory()->setDateField('approvedOn', 1665864918);
      * ```
      */
-    function setDateField($key, $value)
+    public function setDateField($key, $value)
     {
         if (is_numeric($value)) {
-            $value = new \DateTime('@' . $value);
-        }
-        else if (is_string($value)) {
+            $value = new \DateTime('@'.$value);
+        } elseif (is_string($value)) {
             $value = new \DateTime($value);
         }
 
@@ -101,16 +104,15 @@ class Entry extends Element
      * Set the author of the entry. You may pass a full user object, a user ID,
      * a username, email, or a user ID.
      */
-    function author(\craft\web\User|string|int $user)
+    public function author(\craft\web\User|string|int $user)
     {
         if (is_numeric($user)) {
             $user = \Craft::$app->users->getUserById($user);
-        }
-        else if (is_string($user)) {
+        } elseif (is_string($user)) {
             $user = \Craft::$app->users->getUserByUsernameOrEmail($user);
         }
 
-        if (!is_a($user, \craft\elements\User::class)) {
+        if (! is_a($user, \craft\elements\User::class)) {
             throw new \Exception('You must pass a User object or a valid user ID or username to the `author()` method.');
         }
 
@@ -121,27 +123,25 @@ class Entry extends Element
 
     /**
      * Infer the section based on the class name
+     *
      * @internal
      */
-    function inferSectionId() {
+    public function inferSectionId()
+    {
         if (is_a($this->sectionIdentifier, \craft\models\Section::class)) {
             $section = $this->sectionIdentifier;
-        }
-        else if (is_numeric($this->sectionIdentifier)) {
+        } elseif (is_numeric($this->sectionIdentifier)) {
             $section = \Craft::$app->sections->getSectionById($this->sectionIdentifier);
-        }
-        else if (is_string($this->sectionIdentifier)) {
+        } elseif (is_string($this->sectionIdentifier)) {
             $section = \Craft::$app->sections->getSectionByHandle($this->sectionIdentifier);
-        }
-        else {
+        } else {
             $reflector = new \ReflectionClass($this);
             $className = $reflector->getShortName();
             $sectionHandle = lcfirst($className);
             $section = \Craft::$app->sections->getSectionByHandle($sectionHandle);
         }
 
-        if (empty($section))
-        {
+        if (empty($section)) {
             $section = FactoriesSection::factory()->create();
         }
 
@@ -150,32 +150,38 @@ class Entry extends Element
 
     /**
      * Infer the type based on the class name
+     *
      * @internal
      */
-    function inferTypeId($sectionid): int {
+    public function inferTypeId($sectionid): int
+    {
         $reflector = new \ReflectionClass($this);
         $className = $reflector->getShortName();
         $typeHandle = lcfirst($className);
         $section = \Craft::$app->sections->getSectionById($sectionid);
-        $matches = array_filter($section->entryTypes, fn($e) => $e->handle === $typeHandle);
+        $matches = array_filter($section->entryTypes, fn ($e) => $e->handle === $typeHandle);
         if (count($matches) === 0) {
             $matches = $section->entryTypes;
         }
+
         return $matches[0]->id;
     }
 
     /**
      * Get the element to be generated
+     *
      * @internal
      */
-    function newElement() {
+    public function newElement()
+    {
         return new \craft\elements\Entry();
     }
 
     /**
      * @internal
      */
-    function inferences(array $definition = []) {
+    public function inferences(array $definition = [])
+    {
         $sectionId = $this->inferSectionId();
         $typeId = $this->inferTypeId($sectionId);
 
@@ -184,5 +190,4 @@ class Entry extends Element
             'typeId' => $typeId,
         ]);
     }
-
 }

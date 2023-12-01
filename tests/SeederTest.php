@@ -3,10 +3,12 @@
 use craft\elements\Entry;
 use markhuot\craftpest\seeders\DatabaseSeeder;
 
-$functionSeed = fn() => \markhuot\craftpest\factories\Entry::factory()->create();
+$functionSeed = fn () => \markhuot\craftpest\factories\Entry::factory()->create();
 
-$classSeed = new class {
-    public function __invoke() {
+$classSeed = new class
+{
+    public function __invoke()
+    {
         return \markhuot\craftpest\factories\Entry::factory()->create();
     }
 };
@@ -24,10 +26,10 @@ it('runs class instance seeders', function () {
 })->seed($classSeed(...));
 
 it('runs multiple seeders', function () {
-    expect((int)Entry::find()->count())->toBe(2);
+    expect((int) Entry::find()->count())->toBe(2);
 })->seed($functionSeed(...), $classSeed(...));
 
 it('runs seed console command', function () {
     $this->console(['pest/seed', '--namespace', '\\markhuot\\craftpest\\seeders'])->assertSuccesful();
-    expect((int)Entry::find()->count())->toBe(1);
+    expect((int) Entry::find()->count())->toBe(1);
 })->todo();

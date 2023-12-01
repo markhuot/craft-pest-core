@@ -4,25 +4,25 @@ namespace markhuot\craftpest\factories;
 
 use craft\fields\Matrix;
 use craft\models\MatrixBlockType;
+
 use function markhuot\craftpest\helpers\base\version_greater_than_or_equal_to;
 
 class MatrixField extends Field
 {
     protected $blockTypes = [];
 
-    function blockTypes(...$blockTypes)
+    public function blockTypes(...$blockTypes)
     {
         if (is_array($blockTypes[0])) {
             $this->blockTypes = array_merge($this->blockTypes, $blockTypes[0]);
-        }
-        else {
+        } else {
             $this->blockTypes = array_merge($this->blockTypes, $blockTypes);
         }
 
         return $this;
     }
 
-    function addBlockType($blockType)
+    public function addBlockType($blockType)
     {
         $this->blockTypes[] = $blockType;
 
@@ -32,29 +32,29 @@ class MatrixField extends Field
     /**
      * Get the element to be generated
      */
-    function newElement()
+    public function newElement()
     {
         return new \craft\fields\Matrix;
     }
 
     /**
-     * @param Matrix $element
+     * @param  Matrix  $element
      */
-    function store($element): bool
+    public function store($element): bool
     {
         // Push the block types in to the field
         $element->setBlockTypes(
             collect($this->blockTypes)
-            ->map
-            ->make()
-            ->flatten()
-            ->each(function ($blockType, $index) use ($element) {
-                $blockType->fieldId = $element->id;
-                $blockType->sortOrder = $index;
-            })
-            ->toArray()
+                ->map
+                ->make()
+                ->flatten()
+                ->each(function ($blockType, $index) use ($element) {
+                    $blockType->fieldId = $element->id;
+                    $blockType->sortOrder = $index;
+                })
+                ->toArray()
         );
-            
+
         // Store the field, which also saves the block types
         $result = parent::store($element);
 
@@ -63,7 +63,7 @@ class MatrixField extends Field
         if ($result === false) {
             return $result;
         }
-        
+
         // Add the fields in to the block types
         collect($this->blockTypes)
             ->zip($element->getBlockTypes())

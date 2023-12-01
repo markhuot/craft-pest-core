@@ -8,7 +8,7 @@ use craft\helpers\StringHelper;
 
 class RenderCompiledClasses
 {
-    function handle($forceRecreate=false)
+    public function handle($forceRecreate = false)
     {
         $contentService = \Craft::$app->getContent();
         $originalContentTable = $contentService->contentTable;
@@ -30,21 +30,21 @@ class RenderCompiledClasses
     protected function render(bool $forceRecreate)
     {
         $storedFieldVersion = \Craft::$app->fields->getFieldVersion();
-        $compiledClassesPath = __DIR__ . '/../storage/';
+        $compiledClassesPath = __DIR__.'/../storage/';
         $fieldVersionExists = $storedFieldVersion !== null;
-        if (!$fieldVersionExists) {
+        if (! $fieldVersionExists) {
             $storedFieldVersion = StringHelper::randomString(12);
         }
 
-        $compiledClassPath = $compiledClassesPath . DIRECTORY_SEPARATOR . 'FactoryFields_'.$storedFieldVersion.'.php';
+        $compiledClassPath = $compiledClassesPath.DIRECTORY_SEPARATOR.'FactoryFields_'.$storedFieldVersion.'.php';
 
-        if (file_exists($compiledClassPath) && !$forceRecreate) {
+        if (file_exists($compiledClassPath) && ! $forceRecreate) {
             return false;
         }
 
-        $this->cleanupOldMixins('FactoryFields_' . $storedFieldVersion . '.php');
+        $this->cleanupOldMixins('FactoryFields_'.$storedFieldVersion.'.php');
 
-        $template = file_get_contents(__DIR__ . '/../../stubs/compiled_classes/FactoryFields.twig');
+        $template = file_get_contents(__DIR__.'/../../stubs/compiled_classes/FactoryFields.twig');
 
         $compiledClass = \Craft::$app->view->renderString($template, [
             'fields' => \Craft::$app->fields->getAllFields(false),
@@ -53,17 +53,17 @@ class RenderCompiledClasses
         file_put_contents($compiledClassPath, $compiledClass);
     }
 
-    protected function cleanupOldMixins(string $except=null)
+    protected function cleanupOldMixins(string $except = null)
     {
-        $compiledClassesPath = __DIR__ . '/../storage/';
+        $compiledClassesPath = __DIR__.'/../storage/';
 
         FileHelper::clearDirectory($compiledClassesPath, [
-            'filter' => function(string $path) use ($except): bool {
+            'filter' => function (string $path) use ($except): bool {
                 $b = basename($path);
-                return (
+
+                return
                     str_starts_with($b, 'FactoryFields') &&
-                    ($except === null || $b !== $except)
-                );
+                    ($except === null || $b !== $except);
             },
         ]);
     }

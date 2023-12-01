@@ -1,8 +1,10 @@
 # Logging in
+
 You can log in users for your test by using the `->actingAs` method and it's companion `->actingAsAdmin` method.
 
 ## actingAs(markhuot\craftpest\factories\User|craft\web\User|callable|string|null $userOrName = NULL)
 Acting as accepts a number of "user-like" identifiers to log in a user for the test. You may pass,
+
 1. A user factory, `->actingAs(User::factory())`
 2. A user, `->actingAs(User::find()->id(1)->one())`
 3. A string that may be a username or email address, `->actingAs('my_great_username')`
@@ -18,6 +20,7 @@ testing you should use `->actingAs()` with a curated user element.
 ## withToken(string $token)
 For GQL requests (and other bearer token requests) you can set a token on the request by calling
 `->withToken()` and passing a valid bearer token.
+
 ```php
 $this->withToken($token)->get('/')->assertOk();
 ```

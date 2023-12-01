@@ -16,5 +16,12 @@
         "date": "2022-01-01 00:00:00.000000",
         "timezone_type": 3,
         "timezone": "America\/Los_Angeles"
+    },
+    "textField": null,
+    "dropdownField": {
+        "label": null,
+        "value": null,
+        "selected": true,
+        "valid": false
     }
 }

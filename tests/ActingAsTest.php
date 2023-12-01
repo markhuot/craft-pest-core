@@ -57,6 +57,6 @@ it('creates admin users', function () {
 it('resets globals during twig parsing', function () {
     $user = User::factory()->create();
 
-    expect((int)$this->actingAs($user)->get('current-user')->content)->toBe($user->id);
+    expect((int) $this->actingAs($user)->get('current-user')->content)->toBe($user->id);
     expect(trim($this->actingAs(null)->get('current-user')->content))->toBeEmpty();
 });

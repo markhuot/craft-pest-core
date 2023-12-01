@@ -6,6 +6,7 @@ use craft\fieldlayoutelements\CustomField;
 use craft\models\FieldLayout;
 use craft\models\FieldLayoutTab;
 use markhuot\craftpest\exceptions\ModelStoreException;
+
 use function markhuot\craftpest\helpers\base\array_wrap;
 use function markhuot\craftpest\helpers\base\version_greater_than_or_equal_to;
 
@@ -13,7 +14,7 @@ trait Fieldable
 {
     protected $fields = [];
 
-    function addField($field)
+    public function addField($field)
     {
         $this->fields[] = $field;
 
@@ -21,9 +22,9 @@ trait Fieldable
     }
 
     /**
-     * @param array|\craft\base\Field $fields
+     * @param  array|\craft\base\Field  $fields
      */
-    function fields(...$fields)
+    public function fields(...$fields)
     {
         if (is_array($fields[0])) {
             $fields = $fields[0];
@@ -34,7 +35,7 @@ trait Fieldable
         return $this;
     }
 
-    function storeFields(FieldLayout $fieldLayout, $context=null)
+    public function storeFields(FieldLayout $fieldLayout, $context = null)
     {
         if (empty($this->fields)) {
             return;
@@ -43,7 +44,8 @@ trait Fieldable
         $fields = collect($this->fields)
             ->map(function ($f) use ($context) {
                 if (is_a($f, Field::class)) {
-                    $f->context($context ? 'matrixBlockType:' . $context->uid : 'global');
+                    $f->context($context ? 'matrixBlockType:'.$context->uid : 'global');
+
                     return $f->create();
                 }
 
@@ -66,16 +68,16 @@ trait Fieldable
                     if ($field->required) {                    // @phpstan-ignore-line
                         $fieldElement->required = true;        // @phpstan-ignore-line
                     }                                          // @phpstan-ignore-line
+
                     return $fieldElement;                      // @phpstan-ignore-line
                 })->toArray()                                  // @phpstan-ignore-line
             );                                                 // @phpstan-ignore-line
-        }
-        else if (version_greater_than_or_equal_to(\Craft::$app->version, '3')) {
+        } elseif (version_greater_than_or_equal_to(\Craft::$app->version, '3')) {
             $fieldLayout->getTabs()[0]->setFields($fields);    // @phpstan-ignore-line
             $fieldLayout->setFields($fields);                  // @phpstan-ignore-line
         }
 
-        if (!\Craft::$app->fields->saveLayout($fieldLayout)) {
+        if (! \Craft::$app->fields->saveLayout($fieldLayout)) {
             throw new ModelStoreException($fieldLayout);
         }
     }

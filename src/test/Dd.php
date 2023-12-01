@@ -9,12 +9,11 @@ trait Dd
     /**
      * Does a dump on the class
      */
-    public function dd($var=null): void
+    public function dd($var = null): void
     {
         if (is_callable($var)) {
             $var = $var($this);
-        }
-        else {
+        } else {
             $var = $var ?? $this;
         }
 

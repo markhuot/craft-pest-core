@@ -4,17 +4,11 @@ namespace markhuot\craftpest;
 
 use Craft;
 use craft\base\Field;
-use craft\base\Plugin;
 use craft\elements\db\ElementQuery;
 use craft\elements\Entry;
 use craft\events\DefineBehaviorsEvent;
-use craft\events\PluginEvent;
-use craft\services\Fields;
-use craft\services\Plugins;
-use markhuot\craftpest\actions\RenderCompiledClasses;
 use markhuot\craftpest\behaviors\ExpectableBehavior;
 use markhuot\craftpest\behaviors\FieldTypeHintBehavior;
-use markhuot\craftpest\behaviors\SnapshotableBehavior;
 use markhuot\craftpest\behaviors\TestableElementBehavior;
 use markhuot\craftpest\behaviors\TestableElementQueryBehavior;
 use markhuot\craftpest\console\PestController;
@@ -26,7 +20,7 @@ use yii\base\Event;
  */
 class Pest implements BootstrapInterface
 {
-    function bootstrap($app)
+    public function bootstrap($app)
     {
         Craft::setAlias('@markhuot/craftpest', __DIR__);
 
@@ -40,7 +34,6 @@ class Pest implements BootstrapInterface
             function (DefineBehaviorsEvent $event) {
                 $event->behaviors[] = ExpectableBehavior::class;
                 $event->behaviors[] = TestableElementBehavior::class;
-                $event->behaviors[] = SnapshotableBehavior::class;
             }
         );
 

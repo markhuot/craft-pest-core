@@ -7,18 +7,22 @@ use Mockery;
 use Pest\Concerns\Expectable;
 use Pest\PendingCalls\TestCall;
 
-if (!function_exists('mock')) {
-    function mock($className) {
+if (! function_exists('mock')) {
+    function mock($className)
+    {
         $mock = Mockery::mock($className);
         \Craft::$container->set($className, $mock);
+
         return $mock;
     }
 }
 
-if (!function_exists('spy')) {
-    function spy($className) {
+if (! function_exists('spy')) {
+    function spy($className)
+    {
         $spy = Mockery::spy($className);
         \Craft::$container->set($className, $spy);
+
         return $spy;
     }
 }
@@ -45,9 +49,5 @@ function dump(...$args)
 function dd(...$args)
 {
     dump(...$args);
-    die;
+    exit;
 }
-
-expect()->extend('toMatchElementSnapshot', function (...$args) {
-    $this->toSnapshot(...$args)->toMatchSnapshot(); // @phpstan-ignore-line
-});

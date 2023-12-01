@@ -3,7 +3,6 @@
 namespace markhuot\craftpest\behaviors;
 
 use craft\base\Field;
-use craft\base\FieldInterface;
 use craft\fields\Assets;
 use craft\fields\Categories;
 use craft\fields\Color;
@@ -19,7 +18,7 @@ use yii\base\Behavior;
  */
 class FieldTypeHintBehavior extends Behavior
 {
-    function getFactoryTypeHint()
+    public function getFactoryTypeHint()
     {
         $handle = $this->owner->handle;
 

@@ -1,8 +1,5 @@
 <?php
 
-use markhuot\craftpest\factories\Entry;
-use markhuot\craftpest\factories\Section;
-
 it('benchmarks duplicate queries')
     ->beginBenchmark()
     ->get('/')
