@@ -1,0 +1,19 @@
+columnSuffix: irlrybem
+contentColumnType: text
+fieldGroup: f948b9a4-6a4e-43da-84aa-65b91c0cd202 # Common
+handle: textField
+instructions: null
+name: 'Text Field'
+searchable: false
+settings:
+  byteLimit: null
+  charLimit: null
+  code: false
+  columnType: null
+  initialRows: 4
+  multiline: false
+  placeholder: null
+  uiMode: normal
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\PlainText

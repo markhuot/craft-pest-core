@@ -35,15 +35,15 @@ trait Snapshotable
                     return $value->map->toSnapshotArray(); // @phpstan-ignore-line can't get PHPStan to reason about the ->map higher order callable
                 }
 
-                return $value;
+                return $this->{$handle};
             });
 
-        return $customFields->merge(
-            collect($attributes)->merge($extraAttributes)
-                ->mapWithKeys(fn ($attribute) => [
-                    $attribute => $this->{$attribute} ?? null,
-                ])
-        )
+        return collect($attributes)
+            ->merge($extraAttributes)
+            ->mapWithKeys(fn ($attribute) => [
+                $attribute => $this->{$attribute} ?? null,
+            ])
+            ->merge($customFields)
             ->toArray();
     }
 

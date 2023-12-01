@@ -61,6 +61,8 @@ it('matches entry snapshots', function () {
     $entry = Entry::factory()
         ->section('posts')
         ->title('foo bar')
+        ->textField('foo')
+        ->dropdownField('one')
         ->create();
 
     expect($entry)->toMatchSnapshot();

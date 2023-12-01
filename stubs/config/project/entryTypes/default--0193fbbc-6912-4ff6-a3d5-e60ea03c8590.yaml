@@ -54,6 +54,30 @@ fieldLayouts:
             userCondition: null
             warning: null
             width: 100
+          -
+            elementCondition: null
+            fieldUid: 7d1a7bf3-c346-48bc-bb77-f7d76fcacf2e # Text Field
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 189519d9-7809-47fc-bc54-d2441a85ae9d
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: 17685ada-d64c-459c-b9fc-678d43e4bee8 # Dropdown Field
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 1440d116-5fe9-45a3-8031-7f3c9b71ef9d
+            userCondition: null
+            warning: null
+            width: 100
         name: Content
         uid: a914e695-0910-4b04-841b-cbe6f689856b
         userCondition: null
