@@ -11,6 +11,9 @@ use yii\console\ExitCode;
 
 use function markhuot\craftpest\helpers\base\version_greater_than_or_equal_to;
 
+/**
+ * # CLI Commands
+ */
 class PestController extends Controller
 {
     public bool $force = false;
@@ -35,7 +38,11 @@ class PestController extends Controller
     }
 
     /**
-     * Run the Pest tests
+     * Run the Pest tests with `php craft pest`. This is a convienence function that internally calls the
+     * `pest/init` method and then `./vendor/bin/pest` executable.
+     *
+     * You may pass any pest options to this command by separating them with a `--`. For example, to filter
+     * down to a specific test you may run `php craft pest -- --filter="renders the homepage"`.
      */
     public function actionIndex()
     {
@@ -46,7 +53,13 @@ class PestController extends Controller
     }
 
     /**
-     * Install Pest
+     * Running `php craft pest/init` will create the `tests` directory, an associated `tests/Pest.php` file, a
+     * default `phpunit.xml` file, and a `modules/pest/seeders` directory. If any of these files or directories
+     * already exist they will be skipped.
+     *
+     * This command id idempotent and can be run multiple times without issue. If you even want to reset your
+     * setup to the default `Pest.php`, for example, you can delete your `Pest.php` and re-run `php craft pest/init`
+     * to have the file recreated.
      */
     public function actionInit()
     {
@@ -55,9 +68,6 @@ class PestController extends Controller
         return ExitCode::OK;
     }
 
-    /**
-     * Do the install
-     */
     protected function runInit()
     {
         if (! is_dir(CRAFT_BASE_PATH.'/tests')) {
@@ -76,9 +86,6 @@ class PestController extends Controller
         }
     }
 
-    /**
-     * Run the tests
-     */
     protected function runTests()
     {
         $params = $this->request->getParams();
@@ -135,28 +142,6 @@ class PestController extends Controller
             }
         };
 
-        // // Site specific templates
-        // foreach (\Craft::$app->sites->getAllSites() as $site) {
-        //     $sitePath = implode(DIRECTORY_SEPARATOR, [CRAFT_BASE_PATH, 'templates', $site->handle]);
-        //     if (is_dir($sitePath)) {
-        //         $compileTemplates($sitePath);
-        //     }
-        // }
-        //
-        // // Template Alias
-        // $aliasPath = \Craft::getAlias('@templates');
-        // if (is_dir($aliasPath)) {
-        //     $compileTemplates($aliasPath);
-        // }
-        //
-        // // Template roots
-        // foreach (array_filter(array_merge([
-        //     \Craft::$app->view->getSiteTemplateRoots(),
-        //     \Craft::$app->view->getCpTemplateRoots(),
-        // ])) as $templateRoot => $basePath) {
-        //     $compileTemplates($basePath, $templateRoot);
-        // }
-
         // hack
         $compileTemplates(\Craft::getAlias('@templates'));
 
@@ -176,6 +161,32 @@ class PestController extends Controller
         return ExitCode::OK;
     }
 
+    /**
+     * Pest comes with a built-in database seeder that can be called in your own tests or via the command
+     * line. You may run the seeder with `php craft pest/seed`. By default, this will look for a class
+     * called \modules\pest\seeders\DatabaseSeeder. You may override this by passing a fully qualified class
+     * name as the first argument. For example, `php craft pest/seed \\modules\\pest\\seeders\\UserSeeder`.
+     *
+     * Seeders are __invoke-able classes. Inside the invoke method you are free to seed your database however
+     * you would like, although commonly you'll use factories to create your data. For example:
+     *
+     * ```php
+     * class DatabaseSeeder
+     * {
+     *     public function __invoke()
+     *     {
+     *         return \markhuot\craftpest\factories\Entry::factory()->count(10)->create();
+     *     }
+     * }
+     * ```
+     *
+     * You can override the defaults with the following environment variables,
+     *
+     * ```bash
+     * PEST_SEEDER_NAMESPACE="\modules\pest\seeders"
+     * PEST_DEFAULT_SEEDER=DatabaseSeeder
+     * ```
+     */
     public function actionSeed($seeder = null): int
     {
         $namespace = $this->namespace ?? getenv('PEST_SEEDER_NAMESPACE') ?: '\\modules\\pest\\seeders';

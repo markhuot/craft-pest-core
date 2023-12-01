@@ -65,8 +65,8 @@ function parseComment(string $comment)
 
     $comment = preg_replace('/^\/\*\*/', '', $comment);
     $comment = preg_replace('/^\s*\*\s@\w+.*$/m', '', $comment);
-    $comment = preg_replace('/^\s*\*\s/m', '', $comment);
-    $comment = preg_replace('/\*\/$/m', '', $comment);
+    $comment = preg_replace('/^\s*\* ?/m', '', $comment);
+    $comment = preg_replace('/\/$/', '', $comment);
     $comment = preg_replace('/(^\s+|\s+$)/', '', $comment);
 
     preg_match_all('/^SEE\[(.+)\]$/m', $comment, $sees);
