@@ -2,14 +2,15 @@
 
 namespace markhuot\craftpest\pest;
 
-use craft\elements\Entry;
 use Pest\Contracts\Plugins\Bootable;
+
+use function markhuot\craftpest\helpers\test\dd;
 
 class MonkeyPatches implements Bootable
 {
     public function boot(): void
     {
-        $vendorDir = __DIR__ . '/../../vendor/';
+        $vendorDir = dirname(\Composer\Factory::getComposerFile()) . '/vendor/';
 
         $entry = file_get_contents($vendorDir . '/craftcms/cms/src/elements/Entry.php');
         $entry = preg_replace('/^<\?php/', '', $entry);
