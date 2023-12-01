@@ -18,8 +18,7 @@
         "illuminate/collections": "^8.23|^9.1|^10.0",
         "pestphp/pest": "^2.26",
         "vlucas/phpdotenv": "^2.4|^3.4|^5.4",
-        "craftcms/cms": "^4.5",
-        "laravel/pint": "^1.13"
+        "craftcms/cms": "^4.5"
     },
     "autoload": {
         "psr-4": {
@@ -53,7 +52,8 @@
     "prefer-stable": true,
     "require-dev": {
         "craftcms/phpstan": "dev-main",
+        "craftcms/craft": "^2.0",
         "symfony/var-dumper": "^5.0|^6.0",
-        "craftcms/craft": "^2.0"
+        "laravel/pint": "^1.13"
     }
 }
