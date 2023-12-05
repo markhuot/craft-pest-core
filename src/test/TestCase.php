@@ -78,6 +78,15 @@ class TestCase extends \PHPUnit\Framework\TestCase
             $needsRefresh = true;
         }
 
+        // We have to flush the data cache to make sure we're getting an accurate look at whether or not there
+        // are pending changes.
+        //
+        // If you are using a separate test database from your dev database you may have an updated project
+        // config on the dev side and have cached that the project-config is updated. Then, when you run the
+        // tests you'll reach in to the same cache as the dev side and pull that the project config is unchanged
+        // even though it actually _is_ changed. This ensures that there isn't any cache sharing between dev
+        // and test.
+        \Craft::$app->getCache()->flush();
         if (\Craft::$app->getProjectConfig()->areChangesPending(null, true)) {
             $this->craftProjectConfigApply();
             $needsRefresh = true;
