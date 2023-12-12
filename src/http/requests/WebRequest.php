@@ -123,9 +123,12 @@ abstract class WebRequest extends \craft\web\Request
 
         $pathParam = \Craft::$app->config->general->pathParam ?? 'p';
         $omitScriptNameInUrls = \Craft::$app->config->general->omitScriptNameInUrls;
-        if ($omitScriptNameInUrls === false && ($queryParams[$pathParam] ?? false)) {
+        if (in_array($omitScriptNameInUrls, [true, null], true) && ($queryParams[$pathParam] ?? false)) {
             $uri = $queryParams[$pathParam];
             unset($queryParams[$pathParam]);
+        }
+        if ($omitScriptNameInUrls === false) {
+            $uri = $queryParams[$pathParam] ?? $uri;
         }
 
         $isCpRequest = $this->uriContainsAdminSlug($uri);

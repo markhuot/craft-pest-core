@@ -13,6 +13,10 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        version: [~4.5.0, ~4.6.0]
+
     env:
       CRAFT_APP_ID: pest
       CRAFT_ENVIRONMENT: dev
@@ -39,11 +43,11 @@ jobs:
           MYSQL_DATABASE: pest
         ports:
           - 3306:3306
-        options: >-
-          --health-cmd "mysqladmin ping --silent"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+        #options: >-
+        #  --health-cmd "mysqladmin ping --silent"
+        #  --health-interval 10s
+        #  --health-timeout 5s
+        #  --health-retries 5
 
     steps:
     - uses: actions/checkout@v3
@@ -62,7 +66,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        composer install --prefer-dist --no-progress
+        composer require "craftcms/cms:${{ matrix.version }}" --prefer-dist --no-progress
         ./bin/post-clone.sh
 
     - name: Copy config files
@@ -70,6 +74,9 @@ jobs:
         mkdir -p ./storage
         cp -r ./stubs/config ./
         cat config/app.php
+
+    - name: Wait for MySQL
+      run: until mysqladmin ping -h 127.0.0.1 -u root -proot; do sleep 1; done
 
     - name: Install Craft
       run: php craft install --interactive=0 --username=admin --email=michael@bluth.com --password=secret --siteName=Pest --siteUrl=http://localhost:8080 --language=en-US
@@ -81,4 +88,4 @@ jobs:
       run: ./vendor/bin/pint --test src/
 
     - name: Run test suite
-      run: ./vendor/bin/pest
+      run: ./vendor/bin/pest --compact -vvv
