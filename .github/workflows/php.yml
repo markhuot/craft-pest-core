@@ -88,4 +88,4 @@ jobs:
       run: ./vendor/bin/pint --test src/
 
     - name: Run test suite
-      run: ./vendor/bin/pest --parallel --processes=10 -vvv
+      run: ./vendor/bin/pest --compact -vvv
