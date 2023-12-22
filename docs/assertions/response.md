@@ -126,7 +126,7 @@ $response->assertDownload(); // checks that any download is returned
 $response->assertDownload('file.jpg'); // checks that a download with the name `file.jpg` is returned
 ```
 
-## assertExactJson(array $json)
+## assertExactJson(array $data)
 Checks that the given JSON exactly matches the returned JSON using PHPUnit's "canonicalizing" logic to
 validate the objects.
 
