@@ -89,7 +89,7 @@ jobs:
       run: ./vendor/bin/phpstan analyse src
 
     - name: Run pint
-      run: ./vendor/bin/pint --test src/
+      run: ./vendor/bin/pint --test -vvv src/
 
     - name: Run test suite
       run: ./vendor/bin/pest --compact -vvv
