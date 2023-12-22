@@ -25,8 +25,6 @@ final class ArraySubset extends Constraint
     /**
      * Create a new array subset constraint instance.
      *
-     * @param  iterable  $subset
-     * @param  bool  $strict
      * @return void
      */
     public function __construct(iterable $subset, bool $strict = false)
@@ -46,9 +44,6 @@ final class ArraySubset extends Constraint
      * failure.
      *
      * @param  mixed  $other
-     * @param  string  $description
-     * @param  bool  $returnResult
-     * @return bool|null
      *
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
@@ -89,7 +84,6 @@ final class ArraySubset extends Constraint
     /**
      * Returns a string representation of the constraint.
      *
-     * @return string
      *
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
@@ -105,7 +99,6 @@ final class ArraySubset extends Constraint
      * cases. This method should return the second part of that sentence.
      *
      * @param  mixed  $other
-     * @return string
      *
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
@@ -119,9 +112,6 @@ final class ArraySubset extends Constraint
      *
      * The beginning of failure messages is "Failed asserting that" in most
      * cases. This method should return the second part of that sentence.
-     *
-     * @param  iterable  $other
-     * @return array
      */
     private function toArray(iterable $other): array
     {
