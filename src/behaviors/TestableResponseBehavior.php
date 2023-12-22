@@ -475,13 +475,14 @@ class TestableResponseBehavior extends Behavior
         if (is_array($value)) {
             $json->assertSubset($value, $strict);
         } else {
-            $assert = AssertableJson::fromAssertableJsonString($json);
-
-            $value($assert);
-
-            if (Arr::isAssoc($assert->toArray())) {
-                $assert->interacted();
-            }
+            PHPUnit::fail('Not implemented');
+//            $assert = AssertableJson::fromAssertableJsonString($json);
+//
+//            $value($assert);
+//
+//            if (Arr::isAssoc($assert->toArray())) {
+//                $assert->interacted();
+//            }
         }
 
         return $this->response;
@@ -518,8 +519,6 @@ class TestableResponseBehavior extends Behavior
     public function assertJsonMissingValidationErrors()
     {
         PHPUnit::fail('Not yet implemented.');
-
-        return $this->response;
     }
 
     public function assertJsonPath(string $path, mixed $expect)
@@ -546,8 +545,6 @@ class TestableResponseBehavior extends Behavior
     public function assertJsonValidationErrors()
     {
         PHPUnit::fail('Not yet implemented.');
-
-        return $this->response;
     }
 
     /**
