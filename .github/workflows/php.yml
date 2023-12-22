@@ -52,6 +52,10 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
 
@@ -85,7 +89,7 @@ jobs:
       run: ./vendor/bin/phpstan analyse src
 
     - name: Run pint
-      run: ./vendor/bin/pint --test src/
+      run: ./vendor/bin/pint --test -vvv src/
 
     - name: Run test suite
       run: ./vendor/bin/pest --compact -vvv

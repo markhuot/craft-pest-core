@@ -20,13 +20,11 @@ it('retains cookies', function () {
 
     $this->get('responses/cookies')
         ->assertOk()
-        ->expect()
-        ->jsonContent->toBe(['cookieName' => 'cookieValue']);
+        ->assertJson(['cookieName' => 'cookieValue']);
 
     $this->get('responses/cookies')
         ->assertOk()
-        ->expect()
-        ->jsonContent->toBe(['cookieName' => 'cookieValue']);
+        ->assertJson(['cookieName' => 'cookieValue']);
 });
 
 it('doesn\'t have any cookies from previous tests', function () {

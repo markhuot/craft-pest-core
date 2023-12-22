@@ -53,7 +53,7 @@ class RenderCompiledClasses
         file_put_contents($compiledClassPath, $compiledClass);
     }
 
-    protected function cleanupOldMixins(string $except = null)
+    protected function cleanupOldMixins(?string $except = null)
     {
         $compiledClassesPath = __DIR__.'/../storage/';
 

@@ -23,7 +23,7 @@ trait ActingAs
      * 4. A callable that returns a User element, `->actingAs(fn () => $someUser)`
      * 5. `null` to log the user out for the given request
      */
-    public function actingAs(UserFactory|User|string|callable $userOrName = null): self
+    public function actingAs(UserFactory|User|string|callable|null $userOrName = null): self
     {
         if (is_null($userOrName)) {
             \Craft::$app->getUser()->logout(false);

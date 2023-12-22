@@ -56,7 +56,15 @@ it('asserts json path')
 
 it('asserts json missing')
     ->get('/responses/json')
-    ->assertJsonMissing('qux');
+    ->assertJsonMissing(['missing value']);
+
+it('asserts json missing path')
+    ->get('/responses/json')
+    ->assertJsonMissingPath('qux');
+
+it('asserts json missing exact')
+    ->get('/responses/json')
+    ->assertJsonMissingExact(['missing value']);
 
 it('asserts json count')
     ->get('/responses/json')
@@ -65,6 +73,14 @@ it('asserts json count')
 it('asserts json count with path')
     ->get('/responses/json')
     ->assertJsonCount(1, 'baz');
+
+it('asserts json fragment')
+    ->get('/responses/json')
+    ->assertJsonFragment(['baz' => ['qux']]);
+
+it('asserts json structure')
+    ->get('/responses/json')
+    ->assertJsonStructure(['foo', 'baz']);
 
 it('asserts 403 Forbidden status code')
     ->get('/responses/403')
