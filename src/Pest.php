@@ -32,8 +32,8 @@ class Pest implements BootstrapInterface
             Entry::class,
             Entry::EVENT_DEFINE_BEHAVIORS,
             function (DefineBehaviorsEvent $event) {
-                $event->behaviors[] = ExpectableBehavior::class;
-                $event->behaviors[] = TestableElementBehavior::class;
+                $event->behaviors['expectableBehavior'] = ExpectableBehavior::class;
+                $event->behaviors['testableElementBehavior'] = TestableElementBehavior::class;
             }
         );
 
@@ -41,7 +41,7 @@ class Pest implements BootstrapInterface
             ElementQuery::class,
             ElementQuery::EVENT_DEFINE_BEHAVIORS,
             function (DefineBehaviorsEvent $event) {
-                $event->behaviors[] = TestableElementQueryBehavior::class;
+                $event->behaviors['testableElementQueryBehavior'] = TestableElementQueryBehavior::class;
             }
         );
 
@@ -49,7 +49,7 @@ class Pest implements BootstrapInterface
             Field::class,
             Field::EVENT_DEFINE_BEHAVIORS,
             function (DefineBehaviorsEvent $event) {
-                $event->behaviors[] = FieldTypeHintBehavior::class;
+                $event->behaviors['fieldTypeHintBehavior'] = FieldTypeHintBehavior::class;
             }
         );
     }
