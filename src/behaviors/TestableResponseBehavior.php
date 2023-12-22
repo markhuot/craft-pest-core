@@ -181,7 +181,7 @@ class TestableResponseBehavior extends Behavior
      *
      * To submit the form use `->submit()` or `->click('.button-selector')`.
      */
-    public function form(string $selector = null): Form
+    public function form(?string $selector = null): Form
     {
         if ($selector === null) {
             if ($this->form) {
@@ -240,7 +240,7 @@ class TestableResponseBehavior extends Behavior
      * $response->assertCookie('cookieName', 'cookie value'); // checks that the values match
      * ```
      */
-    public function assertCookie(string $name, string $value = null)
+    public function assertCookie(string $name, ?string $value = null)
     {
         if ($value === null) {
             Assert::assertContains($name, array_keys($this->response->cookies->toArray()));
@@ -360,7 +360,7 @@ class TestableResponseBehavior extends Behavior
      * $response->assertDownload('file.jpg'); // checks that a download with the name `file.jpg` is returned
      * ```
      */
-    public function assertDownload(string $filename = null)
+    public function assertDownload(?string $filename = null)
     {
         $contentDisposition = explode(';', $this->response->headers->get('content-disposition'));
 
@@ -438,7 +438,7 @@ class TestableResponseBehavior extends Behavior
      * $response->assertHeader('x-foo', 'bar'); // checks for header with matching value
      * ```
      */
-    public function assertHeader(string $name, string $expected = null)
+    public function assertHeader(string $name, ?string $expected = null)
     {
         if ($expected === null) {
             Assert::assertContains($name, array_keys($this->response->headers->toArray()));
@@ -488,7 +488,7 @@ class TestableResponseBehavior extends Behavior
         return $this->response;
     }
 
-    public function assertJsonCount(int $count, string $key = null)
+    public function assertJsonCount(int $count, ?string $key = null)
     {
         $this->getJsonContent()->assertCount($count, $key);
 
@@ -535,7 +535,7 @@ class TestableResponseBehavior extends Behavior
         return $this->response;
     }
 
-    public function assertJsonStructure(array $structure = null, $responseData = null)
+    public function assertJsonStructure(?array $structure = null, $responseData = null)
     {
         $this->getJsonContent()->assertStructure($structure, $responseData);
 
@@ -564,7 +564,7 @@ class TestableResponseBehavior extends Behavior
      * $response->assertLocation('/foo', ['host', 'path']);
      * ```
      */
-    public function assertLocation(string $location, array $checkParts = null)
+    public function assertLocation(string $location, ?array $checkParts = null)
     {
         $header = $this->response->getHeaders()->get('Location');
         $headerParts = parse_url($header);
@@ -612,7 +612,7 @@ class TestableResponseBehavior extends Behavior
      * $response->assertFlash('Field is required', 'title');
      * ```
      */
-    public function assertFlash(string $message = null, string $key = null)
+    public function assertFlash(?string $message = null, ?string $key = null)
     {
         $flash = \Craft::$app->getSession()->getAllFlashes();
 

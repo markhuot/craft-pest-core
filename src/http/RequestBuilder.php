@@ -26,8 +26,8 @@ class RequestBuilder
     public function __construct(
         string $method,
         string $uri,
-        \craft\web\Application $app = null,
-        RequestHandler $handler = null,
+        ?\craft\web\Application $app = null,
+        ?RequestHandler $handler = null,
     ) {
         $this->method = $method;
         $this->app = $app ?? \Craft::$app;
