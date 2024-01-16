@@ -48,8 +48,8 @@ trait Snapshotable
     }
 
     /**
-     * @param  array  $extraAttributes Any additional fields that should be included in the snapshot
-     * @param  array  $attributes The default list of attributes that should be included in a snapshot
+     * @param  array  $extraAttributes  Any additional fields that should be included in the snapshot
+     * @param  array  $attributes  The default list of attributes that should be included in a snapshot
      */
     public function toSnapshot(array $extraAttributes = [], array $attributes = ['title', 'slug', 'isDraft', 'isRevision', 'isNewForSite', 'isUnpublishedDraft', 'enabled', 'archived', 'uri', 'trashed', 'ref', 'status', 'url'])
     {
