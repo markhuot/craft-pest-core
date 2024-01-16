@@ -8,9 +8,10 @@ parameters:
     ignoreErrors:
       - '#Constant CRAFT_BASE_PATH not found.#'
     scanFiles:
-      - %currentWorkingDirectory%/vendor/yiisoft/yii2/Yii.php
-      - %currentWorkingDirectory%/vendor/craftcms/cms/src/Craft.php
-      - %currentWorkingDirectory%/vendor/craftcms/cms/src/behaviors/CustomFieldBehavior.php.template
+      - vendor/yiisoft/yii2/Yii.php
+      - vendor/craftcms/cms/src/Craft.php
+      - vendor/craftcms/cms/src/behaviors/CustomFieldBehavior.php.template
     reportUnmatchedIgnoredErrors: false
     excludePaths:
-      - %currentWorkingDirectory%/src/craft/*
+      - src/craft/*
+      - src/illuminate/*

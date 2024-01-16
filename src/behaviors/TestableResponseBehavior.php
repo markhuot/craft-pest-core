@@ -2,10 +2,13 @@
 
 namespace markhuot\craftpest\behaviors;
 
+use Illuminate\Support\Arr;
 use markhuot\craftpest\dom\Form;
 use markhuot\craftpest\dom\NodeList;
 use markhuot\craftpest\http\RequestBuilder;
 use markhuot\craftpest\http\requests\WebRequest;
+use markhuot\craftpest\illuminate\Assert as PHPUnit;
+use markhuot\craftpest\illuminate\AssertableJsonString;
 use markhuot\craftpest\test\Benchmark;
 use markhuot\craftpest\web\TestableResponse;
 use PHPUnit\Framework\Assert;
@@ -130,7 +133,15 @@ class TestableResponseBehavior extends Behavior
             throw new \Exception('The response does not have a JSON content-type to get JSON data from');
         }
 
-        return json_decode($this->response->content, true);
+        $testJson = new AssertableJsonString($this->response->content);
+
+        $decodedResponse = $testJson->json();
+
+        if (is_null($decodedResponse) || $decodedResponse === false) {
+            PHPUnit::fail('Invalid JSON was returned from the route.');
+        }
+
+        return $testJson;
     }
 
     public function json()
@@ -399,9 +410,9 @@ class TestableResponseBehavior extends Behavior
      * $response->assertExactJson(['foo' => 'bar']);
      * ```
      */
-    public function assertExactJson(array $json)
+    public function assertExactJson(array $data)
     {
-        Assert::assertEqualsCanonicalizing($json, json_decode($this->response->content, true));
+        $this->getJsonContent()->assertExact($data);
 
         return $this->response;
     }
@@ -457,62 +468,83 @@ class TestableResponseBehavior extends Behavior
         return $this->response;
     }
 
-    public function assertJson(array $data, $strict = false)
+    public function assertJson(array|callable $value, $strict = false)
     {
-        Assert::assertEqualsCanonicalizing($data, $this->json());
+        $json = $this->getJsonContent();
+
+        if (is_array($value)) {
+            $json->assertSubset($value, $strict);
+        } else {
+            PHPUnit::fail('Not implemented');
+            //            $assert = AssertableJson::fromAssertableJsonString($json);
+            //
+            //            $value($assert);
+            //
+            //            if (Arr::isAssoc($assert->toArray())) {
+            //                $assert->interacted();
+            //            }
+        }
 
         return $this->response;
     }
 
-    public function assertJsonCount(int $count, ?string $path = null)
+    public function assertJsonCount(int $count, ?string $key = null)
     {
-        Assert::assertCount($count, data_get($this->json(), $path));
+        $this->getJsonContent()->assertCount($count, $key);
 
         return $this->response;
     }
 
-    public function assertJsonFragment()
+    public function assertJsonFragment(array $data)
     {
-        // TODO
-        return $this->response;
-    }
-
-    public function assertJsonMissing(string $path)
-    {
-        Assert::assertNull(data_get($this->json(), $path));
+        $this->getJsonContent()->assertFragment($data);
 
         return $this->response;
     }
 
-    public function assertJsonMissingExact()
+    public function assertJsonMissing(array $data, $exact = false)
     {
-        // TODO
+        $this->getJsonContent()->assertMissing($data, $exact);
+
+        return $this->response;
+    }
+
+    public function assertJsonMissingExact(array $data)
+    {
+        $this->getJsonContent()->assertMissingExact($data);
+
         return $this->response;
     }
 
     public function assertJsonMissingValidationErrors()
     {
-        // TODO
+        PHPUnit::fail('Not yet implemented.');
+    }
+
+    public function assertJsonPath(string $path, mixed $expect)
+    {
+        $this->getJsonContent()->assertPath($path, $expect);
+
         return $this->response;
     }
 
-    public function assertJsonPath(string $path, mixed $value)
+    public function assertJsonMissingPath(string $path)
     {
-        Assert::assertSame($value, data_get($this->json(), $path));
+        $this->getJsonContent()->assertMissingPath($path);
 
         return $this->response;
     }
 
-    public function assertJsonStructure()
+    public function assertJsonStructure(?array $structure = null, $responseData = null)
     {
-        // TODO
+        $this->getJsonContent()->assertStructure($structure, $responseData);
+
         return $this->response;
     }
 
     public function assertJsonValidationErrors()
     {
-        // TODO
-        return $this->response;
+        PHPUnit::fail('Not yet implemented.');
     }
 
     /**

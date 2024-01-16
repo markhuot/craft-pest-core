@@ -12,5 +12,5 @@ it('posts json to an action', function () {
         ->assertHeader('content-type', 'application/json')
         ->assertOk();
 
-    expect($response->json())->foo->toBe('bar');
+    expect($response->json()->json())->foo->toBe('bar');
 });
