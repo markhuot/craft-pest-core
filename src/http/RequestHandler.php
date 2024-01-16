@@ -14,7 +14,7 @@ class RequestHandler
 {
     private \craft\web\Application $app;
 
-    public function __construct(\craft\web\Application $app = null)
+    public function __construct(?\craft\web\Application $app = null)
     {
         $this->app = $app ?? \Craft::$app;
     }
