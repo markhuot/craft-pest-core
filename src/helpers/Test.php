@@ -7,24 +7,20 @@ use Mockery;
 use Pest\Concerns\Expectable;
 use Pest\PendingCalls\TestCall;
 
-if (! function_exists('mock')) {
-    function mock($className)
-    {
-        $mock = Mockery::mock($className);
-        \Craft::$container->set($className, $mock);
+function mock($className)
+{
+    $mock = Mockery::mock($className);
+    \Craft::$container->set($className, $mock);
 
-        return $mock;
-    }
+    return $mock;
 }
 
-if (! function_exists('spy')) {
-    function spy($className)
-    {
-        $spy = Mockery::spy($className);
-        \Craft::$container->set($className, $spy);
+function spy($className)
+{
+    $spy = Mockery::spy($className);
+    \Craft::$container->set($className, $spy);
 
-        return $spy;
-    }
+    return $spy;
 }
 
 /**
