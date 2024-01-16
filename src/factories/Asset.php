@@ -2,6 +2,7 @@
 
 namespace markhuot\craftpest\factories;
 
+use craft\helpers\App;
 use craft\models\VolumeFolder;
 use Illuminate\Support\Collection;
 use markhuot\craftpest\test\RefreshesDatabase;
@@ -92,7 +93,7 @@ class Asset extends Element
 
         if ($this->source) {
             $filename = basename($this->source);
-            file_put_contents($tempFile, file_get_contents($this->source));
+            file_put_contents($tempFile, file_get_contents(App::parseEnv($this->source)));
         } else {
             $filename = 'asset'.mt_rand(1000, 9999).'.jpg';
             file_put_contents($tempFile, file_get_contents(__DIR__.'/../../stubs/images/gray.jpg'));
