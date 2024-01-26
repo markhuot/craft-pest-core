@@ -44,6 +44,15 @@ use markhuot\craftpest\web\TestableResponse;
  */
 trait RequestBuilders
 {
+    protected bool $useChromium = false;
+
+    public function useChromium(): self
+    {
+        $this->useChromium = true;
+
+        return $this;
+    }
+
     /**
      * Makes a `GET` request to Craft.
      */

@@ -19,7 +19,8 @@
         "pestphp/pest": "^2.26",
         "vlucas/phpdotenv": "^2.4|^3.4|^5.4",
         "craftcms/cms": "^4.5",
-        "illuminate/support": "^9.52"
+        "illuminate/support": "^9.52",
+        "chrome-php/chrome": "^1.10"
     },
     "autoload": {
         "psr-4": {
