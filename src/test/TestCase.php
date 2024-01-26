@@ -16,10 +16,10 @@ class TestCase extends \PHPUnit\Framework\TestCase
         CookieState,
         DatabaseAssertions,
         Dd,
+        Mocks,
         RequestBuilders,
         SnapshotAssertions,
-        WithExceptionHandling,
-        Mocks;
+        WithExceptionHandling;
 
     public Collection $seedData;
 
