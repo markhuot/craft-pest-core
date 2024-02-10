@@ -10,6 +10,7 @@
         }
     ],
     "require": {
+        "composer/composer": "^2.7.0",
         "fakerphp/faker": "^1.16",
         "mockery/mockery": "^1.5",
         "symfony/css-selector": "^5.3|^6.0",
