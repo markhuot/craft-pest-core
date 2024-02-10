@@ -10,19 +10,20 @@ class RenderCompiledClasses
 {
     public function handle($forceRecreate = false)
     {
-        $contentService = \Craft::$app->getContent();
-        $originalContentTable = $contentService->contentTable;
-        $originalFieldColumnPrefix = $contentService->fieldColumnPrefix;
-        $originalFieldContext = $contentService->fieldContext;
-        $contentService->contentTable = Table::CONTENT;
-        $contentService->fieldColumnPrefix = 'field_';
-        $contentService->fieldContext = 'global';
+        // TODO: review what this is actually doing
+        // $contentService = \Craft::$app->getContent();
+        // $originalContentTable = $contentService->contentTable;
+        // $originalFieldColumnPrefix = $contentService->fieldColumnPrefix;
+        // $originalFieldContext = $contentService->fieldContext;
+        // $contentService->contentTable = Table::CONTENT;
+        // $contentService->fieldColumnPrefix = 'field_';
+        // $contentService->fieldContext = 'global';
 
         $this->render($forceRecreate);
 
-        $contentService->contentTable = $originalContentTable;
-        $contentService->fieldColumnPrefix = $originalFieldColumnPrefix;
-        $contentService->fieldContext = $originalFieldContext;
+        // $contentService->contentTable = $originalContentTable;
+        // $contentService->fieldColumnPrefix = $originalFieldColumnPrefix;
+        // $contentService->fieldContext = $originalFieldContext;
 
         return true;
     }
