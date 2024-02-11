@@ -89,28 +89,27 @@ abstract class Element extends Factory
     }
 
     /**
-     * @param  array  $attributes
-     * @param  \craft\base\Element  $element
+     * @param array $attributes
+     * @param \craft\base\Element $element
      */
     protected function setAttributes($attributes, $element)
     {
         // Set the element native fields first (ignoring any custom fields)
         foreach ($attributes as $key => $value) {
             $fieldLayout = $element->getFieldLayout();
-            if (! $fieldLayout || ! $fieldLayout->getFieldByHandle($key)) {
+            if (!$fieldLayout || !$fieldLayout->getFieldByHandle($key)) {
                 $element->{$key} = $value;
                 unset($attributes[$key]);
             }
         }
 
-        // No need to progress further if the element doesn't support content or has no field layout
-        if (! $element::hasContent() || ! $element->getFieldLayout()) {
+        // No need to progress further if the element has no field layout
+        if (!$element->getFieldLayout()) {
             return $element;
         }
 
         // render out any nested factories while setting the custom field values
         foreach ($attributes as $key => &$value) {
-
             // Unfortunately $element->fieldLayout->getFields() does not look in all the
             // tabs for fields (in 3.7, at least), so we need to manually get all the tabs,
             // then get the fields from each tab and then search over the cumulative list
@@ -126,15 +125,15 @@ abstract class Element extends Factory
             $field = $element->fieldLayout->getFieldByHandle($key);
 
             if (empty($field)) {
-                throw new \Exception('Could not find field with handle `'.$key.'` on `'.get_class($element).'`');
+                throw new \Exception('Could not find field with handle `' . $key . '` on `' . get_class($element) . '`');
             }
 
             if (is_subclass_of($field, BaseRelationField::class)) {
-                $value = $this->resolveFactories(array_wrap($value))->map(function ($element) {
+                $value = $this->resolveFactories(array_wrap($value))->map(function($element) {
                     if (is_numeric($element)) {
                         return $element;
                     }
-                    if (is_object($element) && ! empty($element->id)) {
+                    if (is_object($element) && !empty($element->id)) {
                         return $element->id;
                     }
 
@@ -144,8 +143,8 @@ abstract class Element extends Factory
 
             if (is_a($field, Matrix::class)) {
                 $value = $this->resolveFactories(array_wrap($value))
-                    ->mapWithKeys(function ($item, $index) {
-                        return ['new'.($index + 1) => $item];
+                    ->mapWithKeys(function($item, $index) {
+                        return ['new' . ($index + 1) => $item];
                     })->toArray();
             }
 
