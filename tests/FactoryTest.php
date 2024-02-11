@@ -2,67 +2,67 @@
 
 use craft\fields\Entries;
 
-it('can create singles', function () {
+it('can create singles', function() {
     $section = \markhuot\craftpest\factories\Section::factory()
         ->type('single')
         ->create();
 
-    expect(Craft::$app->sections->getSectionByHandle($section->handle)->type)->toBe('single');
+    expect(Craft::$app->entries->getSectionByHandle($section->handle)->type)->toBe('single');
 });
 
-it('can create channels', function () {
+it('can create channels', function() {
     $section = \markhuot\craftpest\factories\Section::factory()
         ->type('channel')
         ->create();
 
-    expect(Craft::$app->sections->getSectionByHandle($section->handle)->type)->toBe('channel');
+    expect(Craft::$app->entries->getSectionByHandle($section->handle)->type)->toBe('channel');
 });
 
-it('can create structures', function () {
+it('can create structures', function() {
     $section = \markhuot\craftpest\factories\Section::factory()
         ->type('structure')
         ->create();
 
-    expect(Craft::$app->sections->getSectionByHandle($section->handle)->type)->toBe('structure');
+    expect(Craft::$app->entries->getSectionByHandle($section->handle)->type)->toBe('structure');
 });
 
-it('can set hasUrls of the section', function () {
+it('can set hasUrls of the section', function() {
     $section = \markhuot\craftpest\factories\Section::factory()
         ->hasUrls(false)
         ->create();
 
     $siteId = \Craft::$app->sites->getCurrentSite()->id;
-    expect(Craft::$app->sections->getSectionByHandle($section->handle)->siteSettings[$siteId]->hasUrls)->toBe(false);
+    expect(Craft::$app->entries->getSectionByHandle($section->handle)->siteSettings[$siteId]->hasUrls)->toBe(false);
 });
 
-it('can set uriFormat of the section', function () {
+it('can set uriFormat of the section', function() {
     $section = \markhuot\craftpest\factories\Section::factory()
         ->uriFormat('{sluggy}')
         ->create();
 
     $siteId = \Craft::$app->sites->getCurrentSite()->id;
-    expect(Craft::$app->sections->getSectionByHandle($section->handle)->siteSettings[$siteId]->uriFormat)->toBe('{sluggy}');
+    expect(Craft::$app->entries->getSectionByHandle($section->handle)->siteSettings[$siteId]->uriFormat)->toBe('{sluggy}');
 });
 
-it('can set enabledByDefault of the section', function () {
+it('can set enabledByDefault of the section', function() {
     $section = \markhuot\craftpest\factories\Section::factory()
         ->enabledByDefault(false)
         ->create();
 
     $siteId = \Craft::$app->sites->getCurrentSite()->id;
-    expect(Craft::$app->sections->getSectionByHandle($section->handle)->siteSettings[$siteId]->enabledByDefault)->toBe(false);
+    expect(Craft::$app->entries->getSectionByHandle($section->handle)->siteSettings[$siteId]->enabledByDefault)->toBe(false);
 });
 
-it('can set template of the section', function () {
+it('can set template of the section', function() {
     $section = \markhuot\craftpest\factories\Section::factory()
         ->template('_foo/{handle}/bar')
         ->create();
 
     $siteId = \Craft::$app->sites->getCurrentSite()->id;
-    expect(Craft::$app->sections->getSectionByHandle($section->handle)->siteSettings[$siteId]->template)->toBe(implode('/', ['_foo', $section->handle, 'bar']));
+    expect(Craft::$app->entries->getSectionByHandle($section->handle)->siteSettings[$siteId]->template)->toBe(implode('/', ['_foo', $section->handle, 'bar']));
 });
 
-it('can create entries with section id, handle, and object', function () {
+it('can create entries with section id, handle, and object', function() {
     $section = \markhuot\craftpest\factories\Section::factory()->create();
 
     $setById = \markhuot\craftpest\factories\Entry::factory()->section($section->id)->create();
@@ -75,7 +75,7 @@ it('can create entries with section id, handle, and object', function () {
     expect($setByObject->errors)->toBeEmpty();
 });
 
-it('can fill an entries field', function () {
+it('can fill an entries field', function() {
     $entry = \markhuot\craftpest\factories\Entry::factory()
         ->section('posts')
         ->entriesField(
@@ -86,7 +86,7 @@ it('can fill an entries field', function () {
     expect($entry->entriesField->all())->toHaveCount(1);
 });
 
-it('can place fields in groups', function () {
+it('can place fields in groups', function() {
     $field = \markhuot\craftpest\factories\Field::factory()
         ->type(Entries::class)
         ->group('Common')
@@ -95,7 +95,7 @@ it('can place fields in groups', function () {
     expect($field->getGroup()->name)->toBe('Common');
 });
 
-it('can create fields', function () {
+it('can create fields', function() {
     $field = \markhuot\craftpest\factories\Field::factory()
         ->type(Entries::class)
         ->create();
@@ -142,8 +142,8 @@ it('can create fields', function () {
     }
 });
 
-dataset('entries field', function () {
-    yield function () {
+dataset('entries field', function() {
+    yield function() {
         $field = \markhuot\craftpest\factories\Field::factory()
             ->type(Entries::class)
             ->create();
@@ -159,7 +159,7 @@ dataset('entries field', function () {
     };
 });
 
-it('automatically resolves factories via method', function ($props) {
+it('automatically resolves factories via method', function($props) {
     [$factory, $section, $field] = $props;
 
     $entry = $factory->{$field->handle}(
@@ -170,7 +170,7 @@ it('automatically resolves factories via method', function ($props) {
     expect(\craft\elements\Entry::find()->id($entry->id)->one()->{$field->handle}->count())->toEqual(2);
 })->with('entries field');
 
-it('automatically resolves factories with ->count()', function ($props) {
+it('automatically resolves factories with ->count()', function($props) {
     [$factory, $section, $field] = $props;
 
     $entry = $factory->{$field->handle}(
@@ -180,7 +180,7 @@ it('automatically resolves factories with ->count()', function ($props) {
     expect(\craft\elements\Entry::find()->id($entry->id)->one()->{$field->handle}->count())->toEqual(5);
 })->with('entries field');
 
-it('automatically resolves factories via ->create() definition', function ($props) {
+it('automatically resolves factories via ->create() definition', function($props) {
     [$factory, $section, $field] = $props;
 
     $entry = $factory->create([
@@ -190,7 +190,7 @@ it('automatically resolves factories via ->create() definition', function ($prop
     expect(\craft\elements\Entry::find()->id($entry->id)->one()->{$field->handle}->count())->toEqual(5);
 })->with('entries field');
 
-it('takes an array of entries', function ($props) {
+it('takes an array of entries', function($props) {
     [$factory, $section, $field] = $props;
 
     $children = \markhuot\craftpest\factories\Entry::factory()->section($section->handle)->count(3)->create();
@@ -206,7 +206,7 @@ it('takes an array of entries', function ($props) {
     expect(\craft\elements\Entry::find()->id($entry->id)->one()->{$field->handle}->ids())->toEqualCanonicalizing($children->pluck('id')->toArray());
 })->with('entries field');
 
-it('allows you to use ->set()` on a factory', function () {
+it('allows you to use ->set()` on a factory', function() {
     $section = \markhuot\craftpest\factories\Section::factory()->create();
     $entry = \markhuot\craftpest\factories\Entry::factory()->section($section->handle)->set('title', 'foo')->create();
 

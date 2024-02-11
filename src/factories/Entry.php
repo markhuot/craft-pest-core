@@ -55,7 +55,6 @@ class Entry extends Element
      */
     public function type($handle)
     {
-
     }
 
     /**
@@ -92,7 +91,7 @@ class Entry extends Element
     public function setDateField($key, $value)
     {
         if (is_numeric($value)) {
-            $value = new \DateTime('@'.$value);
+            $value = new \DateTime('@' . $value);
         } elseif (is_string($value)) {
             $value = new \DateTime($value);
         }
@@ -112,7 +111,7 @@ class Entry extends Element
             $user = \Craft::$app->users->getUserByUsernameOrEmail($user);
         }
 
-        if (! is_a($user, \craft\elements\User::class)) {
+        if (!is_a($user, \craft\elements\User::class)) {
             throw new \Exception('You must pass a User object or a valid user ID or username to the `author()` method.');
         }
 
@@ -131,14 +130,14 @@ class Entry extends Element
         if (is_a($this->sectionIdentifier, \craft\models\Section::class)) {
             $section = $this->sectionIdentifier;
         } elseif (is_numeric($this->sectionIdentifier)) {
-            $section = \Craft::$app->sections->getSectionById($this->sectionIdentifier);
+            $section = \Craft::$app->entries->getSectionById($this->sectionIdentifier);
         } elseif (is_string($this->sectionIdentifier)) {
-            $section = \Craft::$app->sections->getSectionByHandle($this->sectionIdentifier);
+            $section = \Craft::$app->entries->getSectionByHandle($this->sectionIdentifier);
         } else {
             $reflector = new \ReflectionClass($this);
             $className = $reflector->getShortName();
             $sectionHandle = lcfirst($className);
-            $section = \Craft::$app->sections->getSectionByHandle($sectionHandle);
+            $section = \Craft::$app->entries->getSectionByHandle($sectionHandle);
         }
 
         if (empty($section)) {
@@ -158,8 +157,8 @@ class Entry extends Element
         $reflector = new \ReflectionClass($this);
         $className = $reflector->getShortName();
         $typeHandle = lcfirst($className);
-        $section = \Craft::$app->sections->getSectionById($sectionid);
-        $matches = array_filter($section->entryTypes, fn ($e) => $e->handle === $typeHandle);
+        $section = \Craft::$app->entries->getSectionById($sectionid);
+        $matches = array_filter($section->entryTypes, fn($e) => $e->handle === $typeHandle);
         if (count($matches) === 0) {
             $matches = $section->entryTypes;
         }

@@ -4,7 +4,6 @@ namespace markhuot\craftpest\factories;
 
 use craft\helpers\StringHelper;
 use craft\models\Section_SiteSettings;
-use Faker\Factory as Faker;
 use Illuminate\Support\Collection;
 
 /**
@@ -80,14 +79,14 @@ class Section extends Factory
 
     public function inferences(array $definition = [])
     {
-        if (! empty($definition['name']) && empty($definition['handle'])) {
+        if (!empty($definition['name']) && empty($definition['handle'])) {
             $definition['handle'] = StringHelper::toCamelCase($definition['name']);
         }
 
         $name = $definition['name'];
         $handle = $definition['handle'];
         $definition['siteSettings'] = collect(\Craft::$app->sites->getAllSites())
-            ->mapWithkeys(function ($site) use ($name, $handle) {
+            ->mapWithkeys(function($site) use ($name, $handle) {
                 $settings = new Section_SiteSettings();
                 $settings->siteId = $site->id;
                 $settings->hasUrls = $this->hasUrls;
@@ -107,11 +106,11 @@ class Section extends Factory
     /**
      * Persist the entry to local
      *
-     * @param  \craft\models\Section  $element
+     * @param \craft\models\Section $element
      */
     public function store($element)
     {
-        $result = \Craft::$app->sections->saveSection($element);
+        $result = \Craft::$app->entries->saveSection($element);
         $this->storeFields($element->entryTypes[0]->fieldLayout);
 
         return $result;
