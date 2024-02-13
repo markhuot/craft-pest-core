@@ -200,7 +200,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
     public function renderCompiledClasses()
     {
-        (new RenderCompiledClasses)->handle();
+        // (new RenderCompiledClasses)->handle();
     }
 
     protected function needsRequireStatements()

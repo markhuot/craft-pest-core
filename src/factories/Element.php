@@ -104,7 +104,7 @@ abstract class Element extends Factory
         }
 
         // No need to progress further if the element doesn't support content or has no field layout
-        if (! $element::hasContent() || ! $element->getFieldLayout()) {
+        if (! $element->getFieldLayout()) {
             return $element;
         }
 

@@ -150,7 +150,8 @@ class PestController extends Controller
 
     public function actionGenerateMixins()
     {
-        $result = (new RenderCompiledClasses)->handle($this->force);
+        // $result = (new RenderCompiledClasses)->handle($this->force);
+        $result = false;
 
         if ($result) {
             echo "Mixins successfully generated!\n";

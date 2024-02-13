@@ -131,14 +131,14 @@ class Entry extends Element
         if (is_a($this->sectionIdentifier, \craft\models\Section::class)) {
             $section = $this->sectionIdentifier;
         } elseif (is_numeric($this->sectionIdentifier)) {
-            $section = \Craft::$app->sections->getSectionById($this->sectionIdentifier);
+            $section = \Craft::$app->getEntries()->getSectionById($this->sectionIdentifier);
         } elseif (is_string($this->sectionIdentifier)) {
-            $section = \Craft::$app->sections->getSectionByHandle($this->sectionIdentifier);
+            $section = \Craft::$app->getEntries()->getSectionByHandle($this->sectionIdentifier);
         } else {
             $reflector = new \ReflectionClass($this);
             $className = $reflector->getShortName();
             $sectionHandle = lcfirst($className);
-            $section = \Craft::$app->sections->getSectionByHandle($sectionHandle);
+            $section = \Craft::$app->getEntries()->getSectionByHandle($sectionHandle);
         }
 
         if (empty($section)) {
@@ -158,7 +158,7 @@ class Entry extends Element
         $reflector = new \ReflectionClass($this);
         $className = $reflector->getShortName();
         $typeHandle = lcfirst($className);
-        $section = \Craft::$app->sections->getSectionById($sectionid);
+        $section = \Craft::$app->getEntries()->getSectionById($sectionid);
         $matches = array_filter($section->entryTypes, fn ($e) => $e->handle === $typeHandle);
         if (count($matches) === 0) {
             $matches = $section->entryTypes;

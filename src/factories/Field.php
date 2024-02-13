@@ -55,11 +55,11 @@ class Field extends Factory
     public function definition(int $index = 0)
     {
         $name = $this->faker->words(2, true);
-        $firstFieldGroupId = \Craft::$app->fields->getAllGroups()[0]->id;
+//        $firstFieldGroupId = \Craft::$app->fields->getAllGroups()[0]->id;
 
         return [
             'name' => $name,
-            'groupId' => $firstFieldGroupId,
+//            'groupId' => $firstFieldGroupId,
         ];
     }
 
