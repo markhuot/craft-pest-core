@@ -18,9 +18,9 @@ trait Snapshotable
         return $this;
     }
 
-    public function toSnapshotArray(array $extraAttributes = [], array $attributes = null)
+    public function toSnapshotArray(array $extraAttributes = [], ?array $attributes = null)
     {
-        $attributes = $attributes ?? match(get_class($this)) {
+        $attributes = $attributes ?? match (get_class($this)) {
             Entry::class => ['title', 'slug', 'isDraft', 'isRevision', 'isNewForSite', 'isUnpublishedDraft', 'enabled', 'archived', 'uri', 'trashed', 'ref', 'status', 'url'],
             MatrixBlock::class => ['enabled', 'type'],
             Asset::class => ['filename', 'kind', 'alt', 'size', 'width', 'height', 'focalPoint'],
@@ -61,8 +61,8 @@ trait Snapshotable
     }
 
     /**
-     * @param  array  $extraAttributes Any additional fields that should be included in the snapshot
-     * @param  array  $attributes The default list of attributes that should be included in a snapshot
+     * @param  array  $extraAttributes  Any additional fields that should be included in the snapshot
+     * @param  array  $attributes  The default list of attributes that should be included in a snapshot
      */
     public function toSnapshot(array $extraAttributes = [], array $attributes = ['title', 'slug', 'isDraft', 'isRevision', 'isNewForSite', 'isUnpublishedDraft', 'enabled', 'archived', 'uri', 'trashed', 'ref', 'status', 'url'])
     {
