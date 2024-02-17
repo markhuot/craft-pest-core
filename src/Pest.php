@@ -12,6 +12,7 @@ use markhuot\craftpest\behaviors\FieldTypeHintBehavior;
 use markhuot\craftpest\behaviors\TestableElementBehavior;
 use markhuot\craftpest\behaviors\TestableElementQueryBehavior;
 use markhuot\craftpest\console\PestController;
+use markhuot\craftpest\interfaces\SectionsServiceInterface;
 use yii\base\BootstrapInterface;
 use yii\base\Event;
 
@@ -52,5 +53,11 @@ class Pest implements BootstrapInterface
                 $event->behaviors['fieldTypeHintBehavior'] = FieldTypeHintBehavior::class;
             }
         );
+
+        Craft::$container->set(SectionsServiceInterface::class, function () {
+            return version_compare(Craft::$app->version, '5.0.0', '>=') ?
+                Craft::$app->getEntries() :
+                Craft::$app->getSections();
+        });
     }
 }

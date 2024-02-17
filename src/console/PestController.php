@@ -153,6 +153,7 @@ class PestController extends Controller
         // $result = (new RenderCompiledClasses)->handle($this->force);
         $result = false;
 
+        // @phpstan-ignore-next-line
         if ($result) {
             echo "Mixins successfully generated!\n";
         } else {

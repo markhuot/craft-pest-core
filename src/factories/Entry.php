@@ -4,7 +4,10 @@ namespace markhuot\craftpest\factories;
 
 use craft\models\EntryType;
 use markhuot\craftpest\factories\Section as FactoriesSection;
+use markhuot\craftpest\interfaces\SectionsServiceInterface;
 use markhuot\craftpest\storage\FactoryFields;
+
+use function markhuot\craftpest\helpers\base\service;
 
 /**
  * Entry Factory
@@ -131,14 +134,14 @@ class Entry extends Element
         if (is_a($this->sectionIdentifier, \craft\models\Section::class)) {
             $section = $this->sectionIdentifier;
         } elseif (is_numeric($this->sectionIdentifier)) {
-            $section = \Craft::$app->getEntries()->getSectionById($this->sectionIdentifier);
+            $section = service(SectionsServiceInterface::class)->getSectionById($this->sectionIdentifier);
         } elseif (is_string($this->sectionIdentifier)) {
-            $section = \Craft::$app->getEntries()->getSectionByHandle($this->sectionIdentifier);
+            $section = service(SectionsServiceInterface::class)->getSectionByHandle($this->sectionIdentifier);
         } else {
             $reflector = new \ReflectionClass($this);
             $className = $reflector->getShortName();
             $sectionHandle = lcfirst($className);
-            $section = \Craft::$app->getEntries()->getSectionByHandle($sectionHandle);
+            $section = service(SectionsServiceInterface::class)->getSectionByHandle($sectionHandle);
         }
 
         if (empty($section)) {
@@ -158,7 +161,7 @@ class Entry extends Element
         $reflector = new \ReflectionClass($this);
         $className = $reflector->getShortName();
         $typeHandle = lcfirst($className);
-        $section = \Craft::$app->getEntries()->getSectionById($sectionid);
+        $section = service(SectionsServiceInterface::class)->getSectionById($sectionid);
         $matches = array_filter($section->entryTypes, fn ($e) => $e->handle === $typeHandle);
         if (count($matches) === 0) {
             $matches = $section->entryTypes;

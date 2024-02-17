@@ -8,6 +8,9 @@ use craft\models\EntryType;
 use craft\models\Section_SiteSettings;
 use Faker\Factory as Faker;
 use Illuminate\Support\Collection;
+use markhuot\craftpest\interfaces\SectionsServiceInterface;
+
+use function markhuot\craftpest\helpers\base\service;
 
 /**
  * @method self name(string $name)
@@ -103,14 +106,16 @@ class Section extends Factory
                 return [$site->id => $settings];
             })->toArray();
 
-        if (empty($definition['entryTypes'])) {
-            $entryType = new EntryType([
-                'name' => $name = $this->faker->words(3, true),
-                'handle' => StringHelper::toHandle($name),
-            ]);
-            Craft::$app->getEntries()->saveEntryType($entryType);
-            throw_if($entryType->errors, 'Problem saving entry type: ' . implode(', ', $entryType->getFirstErrors()));
-            $definition['entryTypes'] = [$entryType];
+        if (version_compare(Craft::$app->version, '5.0.0', '>=')) {
+            if (empty($definition['entryTypes'])) {
+                $entryType = new EntryType([
+                    'name' => $name = $this->faker->words(3, true),
+                    'handle' => StringHelper::toHandle($name),
+                ]);
+                service(SectionsServiceInterface::class)->saveEntryType($entryType);
+                throw_if($entryType->errors, 'Problem saving entry type: ' . implode(', ', $entryType->getFirstErrors()));
+                $definition['entryTypes'] = [$entryType];
+            }
         }
 
         return $definition;
@@ -123,7 +128,7 @@ class Section extends Factory
      */
     public function store($element)
     {
-        $result = Craft::$app->getEntries()->saveSection($element);
+        $result = service(SectionsServiceInterface::class)->saveSection($element);
         throw_unless(empty($element->errors), 'Problem saving section: ' . implode(', ', $element->getFirstErrors()));
 
         $this->storeFields($element->entryTypes[0]->fieldLayout);
