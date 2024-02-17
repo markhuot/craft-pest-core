@@ -113,7 +113,7 @@ class Section extends Factory
                     'handle' => StringHelper::toHandle($name),
                 ]);
                 service(SectionsServiceInterface::class)->saveEntryType($entryType);
-                throw_if($entryType->errors, 'Problem saving entry type: ' . implode(', ', $entryType->getFirstErrors()));
+                throw_if($entryType->errors, 'Problem saving entry type: '.implode(', ', $entryType->getFirstErrors()));
                 $definition['entryTypes'] = [$entryType];
             }
         }
@@ -129,7 +129,7 @@ class Section extends Factory
     public function store($element)
     {
         $result = service(SectionsServiceInterface::class)->saveSection($element);
-        throw_unless(empty($element->errors), 'Problem saving section: ' . implode(', ', $element->getFirstErrors()));
+        throw_unless(empty($element->errors), 'Problem saving section: '.implode(', ', $element->getFirstErrors()));
 
         $this->storeFields($element->entryTypes[0]->fieldLayout);
 

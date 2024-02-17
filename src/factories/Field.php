@@ -56,11 +56,11 @@ class Field extends Factory
     public function definition(int $index = 0)
     {
         $name = $this->faker->words(2, true);
-        
+
         $definition = [
             'name' => $name,
         ];
-        
+
         if (version_compare(Craft::$app->version, '5.0.0', '<')) {
             $firstFieldGroupId = \Craft::$app->fields->getAllGroups()[0]->id; // @phpstan-ignore-line
             $definition['groupId'] = $firstFieldGroupId;

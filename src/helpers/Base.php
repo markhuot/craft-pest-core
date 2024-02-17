@@ -36,7 +36,8 @@ if (! function_exists('version_greater_than_or_equal_to')) {
 
 /**
  * @template T
- * @param class-string<T> $className
+ *
+ * @param  class-string<T>  $className
  * @return T
  */
 function service(string $className)
