@@ -66,7 +66,7 @@ jobs:
         path: |
           composer.lock
           vendor
-        key: ${{ runner.os }}-craft-vendor-${{ hashFiles('composer.json') }}
+        key: ${{ runner.os }}-craft-${{ matrix.version }}-vendor-${{ hashFiles('composer.json') }}
 
     - name: Install dependencies
       run: |
