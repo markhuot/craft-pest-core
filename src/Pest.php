@@ -56,8 +56,8 @@ class Pest implements BootstrapInterface
 
         Craft::$container->set(SectionsServiceInterface::class, function () {
             return version_compare(Craft::$app->version, '5.0.0', '>=') ?
-                Craft::$app->getEntries() :
-                Craft::$app->getSections();
+                Craft::$app->getEntries() : // @phpstan-ignore-line
+                Craft::$app->getSections(); // @phpstan-ignore-line
         });
     }
 }

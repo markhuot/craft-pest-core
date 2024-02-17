@@ -90,6 +90,8 @@ jobs:
 
     - name: Run pint
       run: ./vendor/bin/pint --test -vvv src/
+      if: success() || failure()
 
     - name: Run test suite
       run: ./vendor/bin/pest --compact -vvv
+      if: success() || failure()
