@@ -2,6 +2,7 @@
 
 namespace markhuot\craftpest\factories;
 
+use Composer\Semver\Semver;
 use Craft;
 use craft\helpers\StringHelper;
 use craft\models\EntryType;
@@ -11,6 +12,7 @@ use Illuminate\Support\Collection;
 use markhuot\craftpest\interfaces\SectionsServiceInterface;
 
 use function markhuot\craftpest\helpers\base\service;
+use function markhuot\craftpest\helpers\craft\isCraftFive;
 
 /**
  * @method self name(string $name)
@@ -106,7 +108,7 @@ class Section extends Factory
                 return [$site->id => $settings];
             })->toArray();
 
-        if (version_compare(Craft::$app->version, '5.0.0', '>=')) {
+        if (isCraftFive()) {
             if (empty($definition['entryTypes'])) {
                 $entryType = new EntryType([
                     'name' => $name = $this->faker->words(3, true),

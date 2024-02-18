@@ -2,6 +2,7 @@
 
 namespace markhuot\craftpest;
 
+use Composer\Semver\Semver;
 use Craft;
 use craft\base\Field;
 use craft\elements\db\ElementQuery;
@@ -55,7 +56,7 @@ class Pest implements BootstrapInterface
         );
 
         Craft::$container->set(SectionsServiceInterface::class, function () {
-            return version_compare(Craft::$app->version, '5.0.0', '>=') ?
+            return Semver::satisfies(Craft::$app->version, '~5.0.0') ?
                 Craft::$app->getEntries() : // @phpstan-ignore-line
                 Craft::$app->getSections(); // @phpstan-ignore-line
         });
