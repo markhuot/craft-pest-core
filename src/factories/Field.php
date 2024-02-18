@@ -5,6 +5,9 @@ namespace markhuot\craftpest\factories;
 use Craft;
 use craft\helpers\StringHelper;
 
+use function markhuot\craftpest\helpers\craft\isBeforeCraftFive;
+use function markhuot\craftpest\helpers\craft\isCraftFive;
+
 /**
  * @method self name(string $name)
  * @method self handle(string $name)
@@ -61,7 +64,7 @@ class Field extends Factory
             'name' => $name,
         ];
 
-        if (version_compare(Craft::$app->version, '5.0.0', '<')) {
+        if (isBeforeCraftFive()) {
             $firstFieldGroupId = \Craft::$app->fields->getAllGroups()[0]->id; // @phpstan-ignore-line
             $definition['groupId'] = $firstFieldGroupId;
         }

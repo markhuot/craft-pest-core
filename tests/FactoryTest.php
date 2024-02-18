@@ -1,13 +1,18 @@
 <?php
 
 use craft\fields\Entries;
+use markhuot\craftpest\interfaces\SectionsServiceInterface;
+
+use function markhuot\craftpest\helpers\base\service;
+use function markhuot\craftpest\helpers\craft\isBeforeCraftFive;
+use function markhuot\craftpest\helpers\craft\isCraftFive;
 
 it('can create singles', function () {
     $section = \markhuot\craftpest\factories\Section::factory()
         ->type('single')
         ->create();
 
-    expect(Craft::$app->sections->getSectionByHandle($section->handle)->type)->toBe('single');
+    expect(service(SectionsServiceInterface::class)->getSectionByHandle($section->handle)->type)->toBe('single');
 });
 
 it('can create channels', function () {
@@ -15,7 +20,7 @@ it('can create channels', function () {
         ->type('channel')
         ->create();
 
-    expect(Craft::$app->sections->getSectionByHandle($section->handle)->type)->toBe('channel');
+    expect(service(SectionsServiceInterface::class)->getSectionByHandle($section->handle)->type)->toBe('channel');
 });
 
 it('can create structures', function () {
@@ -23,7 +28,7 @@ it('can create structures', function () {
         ->type('structure')
         ->create();
 
-    expect(Craft::$app->sections->getSectionByHandle($section->handle)->type)->toBe('structure');
+    expect(service(SectionsServiceInterface::class)->getSectionByHandle($section->handle)->type)->toBe('structure');
 });
 
 it('can set hasUrls of the section', function () {
@@ -32,7 +37,7 @@ it('can set hasUrls of the section', function () {
         ->create();
 
     $siteId = \Craft::$app->sites->getCurrentSite()->id;
-    expect(Craft::$app->sections->getSectionByHandle($section->handle)->siteSettings[$siteId]->hasUrls)->toBe(false);
+    expect(service(SectionsServiceInterface::class)->getSectionByHandle($section->handle)->siteSettings[$siteId]->hasUrls)->toBe(false);
 });
 
 it('can set uriFormat of the section', function () {
@@ -41,7 +46,7 @@ it('can set uriFormat of the section', function () {
         ->create();
 
     $siteId = \Craft::$app->sites->getCurrentSite()->id;
-    expect(Craft::$app->sections->getSectionByHandle($section->handle)->siteSettings[$siteId]->uriFormat)->toBe('{sluggy}');
+    expect(service(SectionsServiceInterface::class)->getSectionByHandle($section->handle)->siteSettings[$siteId]->uriFormat)->toBe('{sluggy}');
 });
 
 it('can set enabledByDefault of the section', function () {
@@ -50,7 +55,7 @@ it('can set enabledByDefault of the section', function () {
         ->create();
 
     $siteId = \Craft::$app->sites->getCurrentSite()->id;
-    expect(Craft::$app->sections->getSectionByHandle($section->handle)->siteSettings[$siteId]->enabledByDefault)->toBe(false);
+    expect(service(SectionsServiceInterface::class)->getSectionByHandle($section->handle)->siteSettings[$siteId]->enabledByDefault)->toBe(false);
 });
 
 it('can set template of the section', function () {
@@ -59,7 +64,7 @@ it('can set template of the section', function () {
         ->create();
 
     $siteId = \Craft::$app->sites->getCurrentSite()->id;
-    expect(Craft::$app->sections->getSectionByHandle($section->handle)->siteSettings[$siteId]->template)->toBe(implode('/', ['_foo', $section->handle, 'bar']));
+    expect(service(SectionsServiceInterface::class)->getSectionByHandle($section->handle)->siteSettings[$siteId]->template)->toBe(implode('/', ['_foo', $section->handle, 'bar']));
 });
 
 it('can create entries with section id, handle, and object', function () {
@@ -93,7 +98,7 @@ it('can place fields in groups', function () {
         ->create();
 
     expect($field->getGroup()->name)->toBe('Common');
-});
+})->skip(fn () => isCraftFive());
 
 it('can create fields', function () {
     $field = \markhuot\craftpest\factories\Field::factory()

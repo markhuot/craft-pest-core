@@ -12,6 +12,10 @@ function isCraftFive(): bool {
     return Semver::satisfies(Craft::$app->version, '~5.0.0');
 }
 
+function isBeforeCraftFive(): bool {
+    return Semver::satisfies(Craft::$app->version, '<5.0.0');
+}
+
 /**
  * @codeCoverageIgnore
  */
