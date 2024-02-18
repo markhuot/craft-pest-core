@@ -20,6 +20,18 @@ it('can fill matrix fields', function () {
     expect($entry->matrixField->all())->toHaveCount(2);
 });
 
+it('can use old Block factories', function () {
+    $entry = EntryFactory::factory()
+        ->section('posts')
+        ->matrixField(
+            BlockFactory::factory()->type('blockTypeOne')->fieldOne('foo'),
+            BlockFactory::factory()->type('blockTypeOne')->fieldOne('bar'),
+        )
+        ->create();
+
+    expect($entry->matrixField->all())->toHaveCount(2);
+});
+
 it('can fill matrix fields with multiple blocks', function () {
     $entry = EntryFactory::factory()
         ->section('posts')

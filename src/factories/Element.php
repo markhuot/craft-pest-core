@@ -71,8 +71,8 @@ abstract class Element extends Factory
                 // will go in to the model okay, but when you try to pull them back out to save them
                 // you get an EntryQuery with no access to the raw array of unsaved entries.
                 // Because of that we call ->create() here on all nested factories.
-                $values[$index] = $field instanceof Matrix ? collection_wrap($value->make())->map(function (\craft\elements\Entry $entry) {
-                    return [
+                $values[$index] = $field instanceof Matrix ? collection_wrap($value->make())->map(function (\craft\elements\Entry|array $entry) {
+                    return is_array($entry) ? $entry : [
                         'type' => $entry->getType()->handle,
                         'enabled' => true,
                         'collapsed' => false,
