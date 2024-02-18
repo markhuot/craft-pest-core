@@ -160,22 +160,25 @@ class Entry extends Element
      */
     public function inferTypeId(?int $sectionid): int
     {
+        $entryTypes = collect();
+        if ($sectionid) {
+            $section = service(SectionsServiceInterface::class)->getSectionById($sectionid);
+            $entryTypes = collect($section->getEntryTypes());
+        }
+
         if (is_a($this->entryTypeIdentifier, \craft\models\EntryType::class)) {
             $entryType = $this->entryTypeIdentifier;
         } elseif (is_numeric($this->entryTypeIdentifier)) {
-            $entryType = service(SectionsServiceInterface::class)->getEntryTypeById($this->entryTypeIdentifier);
+            $entryType = $entryTypes->where('id', $this->entryTypeIdentifier)->first();
         } elseif (is_string($this->entryTypeIdentifier)) {
-            $entryType = service(SectionsServiceInterface::class)->getEntryTypeByHandle($this->entryTypeIdentifier);
+            $entryType = $entryTypes->where('handle', $this->entryTypeIdentifier)->first();
         } else {
             $reflector = new \ReflectionClass($this);
             $className = $reflector->getShortName();
             $typeHandle = lcfirst($className);
-            $entryType = service(SectionsServiceInterface::class)->getEntryTypeByHandle($typeHandle);
-        }
-
-        if (empty($entryType) && $sectionid) {
-            $entryTypes = service(SectionsServiceInterface::class)->getEntryTypesBySectionId($sectionid);
-            $entryType = reset($entryTypes);
+            $entryType = $entryTypes->where('handle', $typeHandle)->first() ??
+                         $entryTypes->where('handle', 'default') ??
+                         $entryTypes->first();
         }
 
         return $entryType?->id;
