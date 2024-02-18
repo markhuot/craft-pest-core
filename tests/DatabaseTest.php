@@ -1,5 +1,6 @@
 <?php
 
+use Craft;
 use markhuot\craftpest\factories\Entry;
 
 it('asserts database content', function () {
@@ -11,13 +12,16 @@ it('asserts database content on condition', function () {
     $section = \markhuot\craftpest\factories\Section::factory()->create();
     $entry = \markhuot\craftpest\factories\Entry::factory()->section($section)->create();
 
-    $this->assertDatabaseHas(\craft\db\Table::ELEMENTS_SITES, [
+    $table = version_compare(Craft::$app->version, '5.0.0', '>=') ? \craft\db\Table::ELEMENTS_SITES : \craft\db\Table::CONTENT;
+    $this->assertDatabaseHas($table, [
         'title' => $entry->title,
     ]);
 });
 
-it('asserts database content is missing')
-    ->assertDatabaseMissing(\craft\db\Table::ELEMENTS_SITES, ['title' => 'fooz baz']);
+it('asserts database content is missing', function () {
+    $table = version_compare(Craft::$app->version, '5.0.0', '>=') ? \craft\db\Table::ELEMENTS_SITES : \craft\db\Table::CONTENT;
+     $this->assertDatabaseMissing($table, ['title' => 'fooz baz']);
+});
 
 it('asserts trashed', function () {
     $entry = Entry::factory()
