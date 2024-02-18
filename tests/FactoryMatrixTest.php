@@ -1,5 +1,7 @@
 <?php
 
+use Composer\InstalledVersions;
+use Composer\Semver\VersionParser;
 use craft\fields\PlainText as PlainTextField;
 use markhuot\craftpest\factories\Block as BlockFactory;
 use markhuot\craftpest\factories\BlockType as BlockTypeFactory;
@@ -8,7 +10,7 @@ use markhuot\craftpest\factories\Field as FieldFactory;
 use markhuot\craftpest\factories\MatrixField as MatrixFieldFactory;
 use markhuot\craftpest\factories\Section as SectionFactory;
 
-it('can fill matrix fields', function () {
+it('can fill matrix fields with EntryTypes in Craft 5', function () {
     $entry = EntryFactory::factory()
         ->section('posts')
         ->matrixField(
@@ -18,9 +20,9 @@ it('can fill matrix fields', function () {
         ->create();
 
     expect($entry->matrixField->all())->toHaveCount(2);
-});
+})->skip(InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '>5.0.0'));
 
-it('can use old Block factories', function () {
+it('can fill matrix fields with Blocks in Craft 4', function () {
     $entry = EntryFactory::factory()
         ->section('posts')
         ->matrixField(
@@ -30,7 +32,7 @@ it('can use old Block factories', function () {
         ->create();
 
     expect($entry->matrixField->all())->toHaveCount(2);
-});
+})->skip(InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '<5.0.0'));
 
 it('can fill matrix fields with multiple blocks', function () {
     $entry = EntryFactory::factory()
