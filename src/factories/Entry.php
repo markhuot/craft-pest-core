@@ -177,7 +177,7 @@ class Entry extends Element
             $className = $reflector->getShortName();
             $typeHandle = lcfirst($className);
             $entryType = $entryTypes->where('handle', $typeHandle)->first() ??
-                         $entryTypes->where('handle', 'default') ??
+                         $entryTypes->where('handle', 'default')->first() ??
                          $entryTypes->first();
         }
 
