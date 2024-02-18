@@ -14,4 +14,10 @@ interface SectionsServiceInterface
     public function getSectionById(int $id): ?Section;
 
     public function getSectionByHandle(string $handle): ?Section;
+
+    public function getEntryTypeById(int $id): ?EntryType;
+
+    public function getEntryTypeByHandle(string $handle): ?EntryType;
+
+    public function getEntryTypesBySectionId(int $sectionId): array;
 }

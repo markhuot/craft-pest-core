@@ -2,11 +2,13 @@
 
 namespace markhuot\craftpest\factories;
 
+use craft\base\FieldInterface;
 use craft\fields\BaseRelationField;
 use craft\fields\Matrix;
 use Illuminate\Support\Collection;
 
 use function markhuot\craftpest\helpers\base\array_wrap;
+use function markhuot\craftpest\helpers\base\collection_wrap;
 
 abstract class Element extends Factory
 {
@@ -51,7 +53,7 @@ abstract class Element extends Factory
     /**
      * Recursively resolve nested factories
      */
-    public function resolveFactories(array $values)
+    public function resolveFactories(array $values, FieldInterface $field)
     {
         // for legacy reasons ->create can either return a model or a collection of models.
         // Because of this, when we resolve factories we could end up with nested arrays of
@@ -69,7 +71,14 @@ abstract class Element extends Factory
                 // will go in to the model okay, but when you try to pull them back out to save them
                 // you get an EntryQuery with no access to the raw array of unsaved entries.
                 // Because of that we call ->create() here on all nested factories.
-                $values[$index] = $value->create();
+                $values[$index] = $field instanceof Matrix ? collection_wrap($value->make())->map(function (\craft\elements\Entry $entry) {
+                    return [
+                        'type' => $entry->getType()->handle,
+                        'enabled' => true,
+                        'collapsed' => false,
+                        'fields' => $entry->getSerializedFieldValues(),
+                    ];
+                }) : $value->create();
                 $flattenIndexes[] = $index;
             }
         }
@@ -130,7 +139,7 @@ abstract class Element extends Factory
             }
 
             if (is_subclass_of($field, BaseRelationField::class)) {
-                $value = $this->resolveFactories(array_wrap($value))->map(function ($element) {
+                $value = $this->resolveFactories(array_wrap($value), $field)->map(function ($element) {
                     if (is_numeric($element)) {
                         return $element;
                     }
@@ -143,7 +152,7 @@ abstract class Element extends Factory
             }
 
             if (is_a($field, Matrix::class)) {
-                $value = $this->resolveFactories(array_wrap($value))
+                $value = $this->resolveFactories(array_wrap($value), $field)
                     ->mapWithKeys(function ($item, $index) {
                         return ['new'.($index + 1) => $item];
                     })->toArray();

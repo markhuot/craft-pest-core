@@ -28,11 +28,11 @@ use function markhuot\craftpest\helpers\base\service;
  */
 class Entry extends Element
 {
-    /** @var EntryType */
-    protected $type;
-
     /** @var string|\craft\models\Section|null */
-    protected $sectionIdentifier;
+    protected $sectionIdentifier = null;
+
+    /** @var EntryType|string|null */
+    protected $entryTypeIdentifier = null;
 
     protected $priorityAttributes = ['sectionId', 'typeId'];
 
@@ -56,9 +56,11 @@ class Entry extends Element
     /**
      * Set the entry type
      */
-    public function type($handle)
+    public function type($identifier)
     {
+        $this->entryTypeIdentifier = $identifier;
 
+        return $this;
     }
 
     /**
@@ -145,10 +147,10 @@ class Entry extends Element
         }
 
         if (empty($section)) {
-            $section = FactoriesSection::factory()->create();
+            $section = Section::factory()->create();
         }
 
-        return $section->id;
+        return $section?->id;
     }
 
     /**
@@ -156,18 +158,27 @@ class Entry extends Element
      *
      * @internal
      */
-    public function inferTypeId($sectionid): int
+    public function inferTypeId(?int $sectionid): int
     {
-        $reflector = new \ReflectionClass($this);
-        $className = $reflector->getShortName();
-        $typeHandle = lcfirst($className);
-        $section = service(SectionsServiceInterface::class)->getSectionById($sectionid);
-        $matches = array_filter($section->entryTypes, fn ($e) => $e->handle === $typeHandle);
-        if (count($matches) === 0) {
-            $matches = $section->entryTypes;
+        if (is_a($this->entryTypeIdentifier, \craft\models\EntryType::class)) {
+            $entryType = $this->entryTypeIdentifier;
+        } elseif (is_numeric($this->entryTypeIdentifier)) {
+            $entryType = service(SectionsServiceInterface::class)->getEntryTypeById($this->entryTypeIdentifier);
+        } elseif (is_string($this->entryTypeIdentifier)) {
+            $entryType = service(SectionsServiceInterface::class)->getEntryTypeByHandle($this->entryTypeIdentifier);
+        } else {
+            $reflector = new \ReflectionClass($this);
+            $className = $reflector->getShortName();
+            $typeHandle = lcfirst($className);
+            $entryType = service(SectionsServiceInterface::class)->getEntryTypeByHandle($typeHandle);
         }
 
-        return $matches[0]->id;
+        if (empty($entryType) && $sectionid) {
+            $entryTypes = service(SectionsServiceInterface::class)->getEntryTypesBySectionId($sectionid);
+            $entryType = reset($entryTypes);
+        }
+
+        return $entryType?->id;
     }
 
     /**
@@ -192,5 +203,14 @@ class Entry extends Element
             'sectionId' => $sectionId,
             'typeId' => $typeId,
         ]);
+    }
+
+    public function toArray()
+    {
+        return [
+            'type' => $this->entryTypeIdentifier,
+            'enabled' => true,
+            'fields' => $this->attributes,
+        ];
     }
 }
