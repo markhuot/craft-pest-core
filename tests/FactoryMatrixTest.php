@@ -20,7 +20,7 @@ it('can fill matrix fields with EntryTypes in Craft 5', function () {
         ->create();
 
     expect($entry->matrixField->all())->toHaveCount(2);
-})->skip(InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '>5.0.0'));
+})->skip(InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '<5.0.0'));
 
 it('can fill matrix fields with Blocks in Craft 4', function () {
     $entry = EntryFactory::factory()
@@ -32,7 +32,7 @@ it('can fill matrix fields with Blocks in Craft 4', function () {
         ->create();
 
     expect($entry->matrixField->all())->toHaveCount(2);
-})->skip(InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '<5.0.0'));
+})->skip(InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '>5.0.0'));
 
 it('can fill matrix fields with multiple blocks', function () {
     $entry = EntryFactory::factory()
