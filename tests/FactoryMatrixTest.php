@@ -38,7 +38,7 @@ it('can fill matrix fields with multiple blocks', function () {
     $entry = EntryFactory::factory()
         ->section('posts')
         ->matrixField(
-            EntryFactory::factory()->type('blockTypeOne')->count(5),
+            BlockFactory::factory()->type('blockTypeOne')->count(5),
         )
         ->create();
 
