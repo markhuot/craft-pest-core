@@ -1,6 +1,5 @@
 <?php
 
-use Craft;
 use markhuot\craftpest\factories\Entry;
 
 it('asserts database content', function () {
