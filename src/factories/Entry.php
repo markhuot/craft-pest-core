@@ -131,7 +131,7 @@ class Entry extends Element
      *
      * @internal
      */
-    public function inferSectionId()
+    public function inferSectionId(): ?int
     {
         if (is_a($this->sectionIdentifier, \craft\models\Section::class)) {
             $section = $this->sectionIdentifier;
@@ -158,7 +158,7 @@ class Entry extends Element
      *
      * @internal
      */
-    public function inferTypeId(?int $sectionid): int
+    public function inferTypeId(?int $sectionid): ?int
     {
         $entryTypes = collect();
         if ($sectionid) {
