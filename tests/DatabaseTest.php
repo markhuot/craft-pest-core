@@ -21,7 +21,7 @@ it('asserts database content on condition', function () {
 
 it('asserts database content is missing', function () {
     $table = isCraftFive() ? \craft\db\Table::ELEMENTS_SITES : \craft\db\Table::CONTENT;
-     $this->assertDatabaseMissing($table, ['title' => 'fooz baz']);
+    $this->assertDatabaseMissing($table, ['title' => 'fooz baz']);
 });
 
 it('asserts trashed', function () {

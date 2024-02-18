@@ -2,11 +2,9 @@
 
 namespace markhuot\craftpest\factories;
 
-use Craft;
 use craft\helpers\StringHelper;
 
 use function markhuot\craftpest\helpers\craft\isBeforeCraftFive;
-use function markhuot\craftpest\helpers\craft\isCraftFive;
 
 /**
  * @method self name(string $name)

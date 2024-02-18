@@ -2,7 +2,6 @@
 
 namespace markhuot\craftpest\factories;
 
-use Composer\Semver\Semver;
 use Craft;
 use craft\helpers\StringHelper;
 use craft\models\EntryType;

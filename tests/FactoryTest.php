@@ -4,7 +4,6 @@ use craft\fields\Entries;
 use markhuot\craftpest\interfaces\SectionsServiceInterface;
 
 use function markhuot\craftpest\helpers\base\service;
-use function markhuot\craftpest\helpers\craft\isBeforeCraftFive;
 use function markhuot\craftpest\helpers\craft\isCraftFive;
 
 it('can create singles', function () {

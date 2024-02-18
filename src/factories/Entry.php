@@ -3,7 +3,6 @@
 namespace markhuot\craftpest\factories;
 
 use craft\models\EntryType;
-use markhuot\craftpest\factories\Section as FactoriesSection;
 use markhuot\craftpest\interfaces\SectionsServiceInterface;
 use markhuot\craftpest\storage\FactoryFields;
 
