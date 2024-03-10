@@ -6,6 +6,7 @@ use craft\fields\PlainText as PlainTextField;
 use markhuot\craftpest\factories\Block as BlockFactory;
 use markhuot\craftpest\factories\BlockType as BlockTypeFactory;
 use markhuot\craftpest\factories\Entry as EntryFactory;
+use markhuot\craftpest\factories\EntryType;
 use markhuot\craftpest\factories\Field as FieldFactory;
 use markhuot\craftpest\factories\MatrixField as MatrixFieldFactory;
 use markhuot\craftpest\factories\Section as SectionFactory;
@@ -45,18 +46,19 @@ it('can fill matrix fields with multiple blocks', function () {
     expect($entry->matrixField->all())->toHaveCount(5);
 });
 
-it('can create matrix fields', function () {
+it('can create matrix fields in Craft 5', function () {
     $plainTextOne = FieldFactory::factory()
         ->type(PlainTextField::class);
 
     $plainTextTwo = FieldFactory::factory()
         ->type(PlainTextField::class);
 
-    $blockType = BlockTypeFactory::factory()
+    $blockType = EntryType::factory()
+        ->hasTitleField(false)
         ->fields($plainTextOne, $plainTextTwo);
 
     $matrix = MatrixFieldFactory::factory()
-        ->blockTypes($blockType)
+        ->entryTypes($blockType)
         ->create();
 
     $section = SectionFactory::factory()
@@ -84,7 +86,11 @@ it('can create matrix fields', function () {
     $firstBlock = $blocks[0];
     expect($firstBlock->{$plainTextOneHandle})->toBe('foo');
     expect($firstBlock->{$plainTextTwoHandle})->toBe('bar');
-})->skip();
+})->skip(InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '~4.0.0'));
+
+it('tests matrix blocks in craft 4', function () {
+
+})->todo();
 
 it('can fill matrix blocks with a shorthand', function () {
     $plainTextOne = FieldFactory::factory()->type(PlainTextField::class);
