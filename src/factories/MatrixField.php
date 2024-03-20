@@ -5,8 +5,6 @@ namespace markhuot\craftpest\factories;
 use Composer\InstalledVersions;
 use Composer\Semver\VersionParser;
 
-use function markhuot\craftpest\helpers\base\version_greater_than_or_equal_to;
-
 class MatrixField extends Field
 {
     public static function factory()
