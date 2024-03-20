@@ -72,7 +72,7 @@ it('can create matrix fields in Craft 5', function () {
     $entry = EntryFactory::factory()
         ->section($section->handle)
         ->{$matrix->handle}(
-            BlockFactory::factory()
+            EntryFactory::factory()
                 ->type($blockTypeHandle)
                 ->{$plainTextOneHandle}('foo')
                 ->{$plainTextTwoHandle}('bar')
@@ -86,10 +86,47 @@ it('can create matrix fields in Craft 5', function () {
     $firstBlock = $blocks[0];
     expect($firstBlock->{$plainTextOneHandle})->toBe('foo');
     expect($firstBlock->{$plainTextTwoHandle})->toBe('bar');
-})->skip(InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '~4.0.0'));
+})->skip(InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '<5.0.0'));
 
 it('tests matrix blocks in craft 4', function () {
+    $plainTextOne = FieldFactory::factory()
+        ->type(PlainTextField::class);
 
+    $plainTextTwo = FieldFactory::factory()
+        ->type(PlainTextField::class);
+
+    $blockType = BlockTypeFactory::factory()
+        ->fields($plainTextOne, $plainTextTwo);
+
+    $matrix = MatrixFieldFactory::factory()
+        ->entryTypes($blockType)
+        ->create();
+
+    $section = SectionFactory::factory()
+        ->fields($matrix)
+        ->create();
+
+    $blockTypeHandle = $blockType->getMadeModels()->first()->handle;
+    $plainTextOneHandle = $plainTextOne->getMadeModels()->first()->handle;
+    $plainTextTwoHandle = $plainTextTwo->getMadeModels()->first()->handle;
+
+    $entry = EntryFactory::factory()
+        ->section($section->handle)
+        ->{$matrix->handle}(
+            \markhuot\craftpest\factories\Block::factory()
+                ->type($blockTypeHandle)
+                ->{$plainTextOneHandle}('foo')
+                ->{$plainTextTwoHandle}('bar')
+                ->count(5)
+        )
+        ->create();
+
+    $blocks = $entry->{$matrix->handle}->all();
+    expect($blocks)->toHaveCount(5);
+
+    $firstBlock = $blocks[0];
+    expect($firstBlock->{$plainTextOneHandle})->toBe('foo');
+    expect($firstBlock->{$plainTextTwoHandle})->toBe('bar');
 })->todo();
 
 it('can fill matrix blocks with a shorthand', function () {
