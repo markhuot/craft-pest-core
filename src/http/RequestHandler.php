@@ -55,7 +55,7 @@ class RequestHandler
     {
         // Twig is _so_ annoying that it wraps actual exceptions. So we need to unpack any
         // twig exceptions and recursively interact with the actual/previous exception.
-        if ($exception instanceof RuntimeError) {
+        if ($exception instanceof RuntimeError && $exception->getPrevious()) {
             return $this->handleException($exception->getPrevious(), $request);
         }
 
