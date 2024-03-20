@@ -5,6 +5,15 @@ entryTypes:
 handle: posts
 maxAuthors: 1
 name: Posts
+previewTargets:
+  -
+    __assoc__:
+      -
+        - label
+        - 'Primary entry page'
+      -
+        - urlFormat
+        - '{url}'
 propagationMethod: all
 siteSettings:
   99c2747f-1049-46bc-93e0-424bad0544e5: # Pest
