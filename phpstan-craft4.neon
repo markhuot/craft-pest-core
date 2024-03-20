@@ -1,0 +1,3 @@
+parameters:
+    excludePaths:
+        - src/factories/EntryType.php
