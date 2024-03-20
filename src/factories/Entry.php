@@ -203,7 +203,7 @@ class Entry extends Element
             $typeId = $this->inferTypeId($sectionId);
         } else {
             $sectionId = null;
-            $typeId = \Craft::$app->getEntries()->getEntryTypeByHandle($this->entryTypeIdentifier)->id;
+            $typeId = service(SectionsServiceInterface::class)->getEntryTypeByHandle($this->entryTypeIdentifier)->id;
         }
 
         return array_merge($definition, [
