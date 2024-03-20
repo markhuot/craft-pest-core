@@ -1,5 +1,7 @@
 <?php
 
+use Composer\InstalledVersions;
+use Composer\Semver\VersionParser;
 use markhuot\craftpest\factories\Entry;
 use markhuot\craftpest\factories\Field;
 use markhuot\craftpest\factories\Section;
@@ -24,9 +26,9 @@ it('creates fields and rolls back', function () {
     expect(\craft\elements\Entry::find()->count())->toBe($entryCount);
 });
 
-it('errors when trying to create fields after content elements', function () {
+it('errors when trying to create fields after content elements in Craft 4', function () {
     $this->expectException(\markhuot\craftpest\exceptions\AutoCommittingFieldsException::class);
 
     Section::factory()->create();
     Field::factory()->type(\craft\fields\PlainText::class)->create();
-});
+})->skip(InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '>=5.0.0'));

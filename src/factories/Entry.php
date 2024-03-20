@@ -198,8 +198,13 @@ class Entry extends Element
      */
     public function inferences(array $definition = [])
     {
-        $sectionId = $this->inferSectionId();
-        $typeId = $this->inferTypeId($sectionId);
+        if (empty($this->entryTypeIdentifier)) {
+            $sectionId = $this->inferSectionId();
+            $typeId = $this->inferTypeId($sectionId);
+        } else {
+            $sectionId = null;
+            $typeId = \Craft::$app->getEntries()->getEntryTypeByHandle($this->entryTypeIdentifier)->id;
+        }
 
         return array_merge($definition, [
             'sectionId' => $sectionId,
