@@ -10,12 +10,12 @@ use function markhuot\craftpest\helpers\base\version_greater_than_or_equal_to;
 
 function isCraftFive(): bool
 {
-    return Semver::satisfies(Craft::$app->version, '~5.0.0');
+    return Semver::satisfies(Craft::$app->version, '~5.0');
 }
 
 function isBeforeCraftFive(): bool
 {
-    return Semver::satisfies(Craft::$app->version, '<5.0.0');
+    return Semver::satisfies(Craft::$app->version, '<5.0');
 }
 
 /**

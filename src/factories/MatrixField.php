@@ -9,11 +9,11 @@ class MatrixField extends Field
 {
     public static function factory()
     {
-        if (InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '~5.0.0')) {
+        if (InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '~5.0')) {
             return MatrixFieldEntries::factory();
         }
 
-        if (InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '~4.0.0')) {
+        if (InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '~4.0')) {
             return MatrixFieldBlocks::factory();
         }
 

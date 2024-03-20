@@ -56,7 +56,7 @@ class Pest implements BootstrapInterface
         );
 
         Craft::$container->set(SectionsServiceInterface::class, function () {
-            return Semver::satisfies(Craft::$app->version, '~5.0.0') ?
+            return Semver::satisfies(Craft::$app->version, '~5.0') ?
                 Craft::$app->getEntries() : // @phpstan-ignore-line
                 Craft::$app->getSections(); // @phpstan-ignore-line
         });

@@ -79,7 +79,7 @@ trait RefreshesDatabase
     public function beforeStore(FactoryStoreEvent $event)
     {
         $isFieldFactory = is_a($event->sender, Field::class) || is_subclass_of($event->sender, Field::class);
-        $isCraft4 = InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '~4.0.0');
+        $isCraft4 = InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '~4.0');
 
         // We don't need to worry about autocommiting fields in Craft 5 because there is no longer
         // a dynamic content table. The field data goes in a JSON field so the DB schema never
