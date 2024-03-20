@@ -8,6 +8,9 @@ use function markhuot\craftpest\helpers\test\dd;
 
 class MatrixFieldEntries extends Field
 {
+    /**
+     * @var EntryType[]
+     */
     protected $entryTypes = [];
 
     public function entryTypes(...$entryTypes)
@@ -44,13 +47,8 @@ class MatrixFieldEntries extends Field
         // Push the block types in to the field
         $element->setEntryTypes(
             collect($this->entryTypes)
-                ->map
-                ->create()
-                ->flatten()
-                // ->each(function ($entryType, $index) use ($element) {
-                //     $entryType->fieldId = $element->id;
-                //     $entryType->sortOrder = $index;
-                // })
+                ->map(fn (EntryType $entryType) => $entryType->create())
+                ->flatten(1)
                 ->toArray()
         );
 
@@ -64,7 +62,6 @@ class MatrixFieldEntries extends Field
         }
 
         // Add the fields in to the block types
-        //dd($element->getEntryTypes()[0]->fieldLayout);
         collect($this->entryTypes)
             ->zip($element->getEntryTypes())
             ->each(function ($props) {
@@ -75,19 +72,6 @@ class MatrixFieldEntries extends Field
                 $entryType->fieldLayoutId = $entryType->fieldLayout->id;
                 \Craft::$app->getEntries()->saveEntryType($entryType);
             });
-
-        // In Craft 3.7 the Matrix Field model stores a reference to the `_blockTypes` of the
-        // matrix. Inside that reference the block type stores a reference to its `fieldLayoutId`.
-        //
-        // The reference to the Matrix Field is cached in to \Craft::$app->fields->_fields when the
-        // field is created and it's cached without a valid `fieldLayoutId`.
-        //
-        // The following grabs the global \Craft::$app->fields->field reference to this matrix field
-        // and updates the block types by pulling them fresh from the database. This ensures everything
-        // is up to date and there are no null fieldLayoutId values.
-        /** @var Matrix $cachedMatrixField */
-        // $cachedMatrixField = \Craft::$app->fields->getFieldById($element->id);
-        // $cachedMatrixField->setEntryTypes(\Craft::$app->matrix->getEntryTypesByFieldId($element->id));
 
         return $result;
     }

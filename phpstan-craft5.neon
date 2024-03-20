@@ -1,3 +1,5 @@
 parameters:
     excludePaths:
+        - src/factories/AddsMatrixBlocks.php
         - src/factories/BlockType.php
+        - src/factories/MatrixFieldBlocks.php
