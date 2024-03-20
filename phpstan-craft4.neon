@@ -1,3 +1,4 @@
 parameters:
     excludePaths:
         - src/factories/EntryType.php
+        - src/factories/MatrixFieldEntries.php
