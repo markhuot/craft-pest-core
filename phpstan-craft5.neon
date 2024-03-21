@@ -1,5 +1,6 @@
 parameters:
     excludePaths:
+        - src/actions/RenderCraft4CompiledClasses.php
         - src/factories/AddsMatrixBlocks.php
         - src/factories/BlockType.php
         - src/factories/MatrixFieldBlocks.php

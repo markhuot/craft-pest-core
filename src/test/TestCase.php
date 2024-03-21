@@ -2,11 +2,12 @@
 
 namespace markhuot\craftpest\test;
 
+use Craft;
 use craft\helpers\App;
 use Illuminate\Support\Collection;
 use markhuot\craftpest\actions\CallSeeders;
-use markhuot\craftpest\actions\RenderCompiledClasses;
 use markhuot\craftpest\console\TestableResponse;
+use markhuot\craftpest\interfaces\RenderCompiledClassesInterface;
 use Symfony\Component\Process\Process;
 
 class TestCase extends \PHPUnit\Framework\TestCase
@@ -59,21 +60,21 @@ class TestCase extends \PHPUnit\Framework\TestCase
     public function createApplication()
     {
         if (! $this->needsRequireStatements()) {
-            return \Craft::$app;
+            return Craft::$app;
         }
 
         $this->requireCraft();
 
         $needsRefresh = false;
 
-        if (! \Craft::$app->getIsInstalled(true)) {
+        if (! Craft::$app->getIsInstalled(true)) {
             $this->craftInstall();
             $needsRefresh = true;
         }
 
         if (
-            \Craft::$app->getMigrator()->getNewMigrations() ||
-            \Craft::$app->getContentMigrator()->getNewMigrations()
+            Craft::$app->getMigrator()->getNewMigrations() ||
+            Craft::$app->getContentMigrator()->getNewMigrations()
         ) {
             $this->craftMigrateAll();
             $needsRefresh = true;
@@ -87,8 +88,8 @@ class TestCase extends \PHPUnit\Framework\TestCase
         // tests you'll reach in to the same cache as the dev side and pull that the project config is unchanged
         // even though it actually _is_ changed. This ensures that there isn't any cache sharing between dev
         // and test.
-        \Craft::$app->getCache()->flush();
-        if (\Craft::$app->getProjectConfig()->areChangesPending(null, true)) {
+        Craft::$app->getCache()->flush();
+        if (Craft::$app->getProjectConfig()->areChangesPending(null, true)) {
             $this->craftProjectConfigApply();
             $needsRefresh = true;
         }
@@ -99,7 +100,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
             exit($this->reRunPest());
         }
 
-        return \Craft::$app;
+        return Craft::$app;
     }
 
     protected function craftInstall()
@@ -111,7 +112,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
             '--interactive='.(App::env('CRAFT_INSTALL_INTERACTIVE') ?? '0'),
         ];
 
-        if (! file_exists(\Craft::getAlias('@config/project/project.yaml'))) {
+        if (! file_exists(Craft::getAlias('@config/project/project.yaml'))) {
             $args = array_merge($args, [
                 '--siteName='.(App::env('CRAFT_INSTALL_SITENAME') ?? '"Craft CMS"'),
                 '--siteUrl='.(App::env('CRAFT_INSTALL_SITEURL') ?? 'http://localhost:8080'),
@@ -200,7 +201,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
     public function renderCompiledClasses()
     {
-        // (new RenderCompiledClasses)->handle();
+         Craft::$container->get(RenderCompiledClassesInterface::class)->handle();
     }
 
     protected function needsRequireStatements()
@@ -248,7 +249,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
     public function renderTemplate(...$args)
     {
-        $content = \Craft::$app->getView()->renderTemplate(...$args);
+        $content = Craft::$app->getView()->renderTemplate(...$args);
 
         return new \markhuot\craftpest\web\TestableResponse(['content' => $content]);
     }

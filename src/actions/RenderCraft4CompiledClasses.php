@@ -2,13 +2,13 @@
 
 namespace markhuot\craftpest\actions;
 
-use craft\db\Table;
 use craft\helpers\FileHelper;
 use craft\helpers\StringHelper;
+use markhuot\craftpest\interfaces\RenderCompiledClassesInterface;
 
-class RenderCompiledClasses
+class RenderCraft4CompiledClasses implements RenderCompiledClassesInterface
 {
-    public function handle($forceRecreate = false)
+    public function handle(bool $forceRecreate = false)
     {
         $contentService = \Craft::$app->getContent();
         $originalContentTable = $contentService->contentTable;

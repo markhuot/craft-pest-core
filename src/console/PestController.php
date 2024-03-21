@@ -2,9 +2,11 @@
 
 namespace markhuot\craftpest\console;
 
+use Craft;
 use craft\console\Controller;
 use craft\helpers\FileHelper;
-use markhuot\craftpest\actions\RenderCompiledClasses;
+use markhuot\craftpest\actions\RenderCraft4CompiledClasses;
+use markhuot\craftpest\interfaces\RenderCompiledClassesInterface;
 use markhuot\craftpest\Pest;
 use Symfony\Component\Process\Process;
 use yii\console\ExitCode;
@@ -112,7 +114,7 @@ class PestController extends Controller
 
     public function actionCompileTemplates()
     {
-        $compiledTemplatesDir = \Craft::$app->path->getCompiledTemplatesPath();
+        $compiledTemplatesDir = Craft::$app->path->getCompiledTemplatesPath();
         FileHelper::removeDirectory($compiledTemplatesDir);
 
         $compileTemplates = function ($path, $base = '') {
@@ -128,32 +130,30 @@ class PestController extends Controller
                 if ($logicalName === 'index.twig' || $logicalName === 'index.html') {
                     $logicalName = '';
                 }
-                $oldTemplateMode = \Craft::$app->view->getTemplateMode();
-                \Craft::$app->view->setTemplateMode('site');
-                $twig = \Craft::$app->view->twig;
-                if (version_greater_than_or_equal_to(\Craft::$app->version, '4')) {
+                $oldTemplateMode = Craft::$app->view->getTemplateMode();
+                Craft::$app->view->setTemplateMode('site');
+                $twig = Craft::$app->view->twig;
+                if (version_greater_than_or_equal_to(Craft::$app->version, '4')) {
                     // @phpstan-ignore-next-line Ignored because one of these will fail based on the installed version of Craft
                     $twig->loadTemplate($twig->getTemplateClass($logicalName), $logicalName);
-                } elseif (version_greater_than_or_equal_to(\Craft::$app->version, '3')) {
+                } elseif (version_greater_than_or_equal_to(Craft::$app->version, '3')) {
                     // @phpstan-ignore-next-line Ignored because one of these will fail based on the installed version of Craft
                     $twig->loadTemplate($logicalName);
                 }
-                \Craft::$app->view->setTemplateMode($oldTemplateMode);
+                Craft::$app->view->setTemplateMode($oldTemplateMode);
             }
         };
 
         // hack
-        $compileTemplates(\Craft::getAlias('@templates'));
+        $compileTemplates(Craft::getAlias('@templates'));
 
         return 0;
     }
 
     public function actionGenerateMixins()
     {
-        // $result = (new RenderCompiledClasses)->handle($this->force);
-        $result = false;
+        $result = Craft::$container->get(RenderCompiledClassesInterface::class)->handle($this->force);
 
-        // @phpstan-ignore-next-line
         if ($result) {
             echo "Mixins successfully generated!\n";
         } else {
