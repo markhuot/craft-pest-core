@@ -2,6 +2,7 @@
 
 namespace markhuot\craftpest\actions;
 
+use craft\db\Table;
 use craft\helpers\FileHelper;
 use craft\helpers\StringHelper;
 use markhuot\craftpest\interfaces\RenderCompiledClassesInterface;
