@@ -2,9 +2,9 @@
 
 namespace markhuot\craftpest\factories;
 
+use Composer\InstalledVersions;
+use Composer\Semver\VersionParser;
 use craft\helpers\StringHelper;
-
-use function markhuot\craftpest\helpers\craft\isBeforeCraftFive;
 
 /**
  * @method self name(string $name)
@@ -62,7 +62,7 @@ class Field extends Factory
             'name' => $name,
         ];
 
-        if (isBeforeCraftFive()) {
+        if (InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '~4.0')) {
             $firstFieldGroupId = \Craft::$app->fields->getAllGroups()[0]->id; // @phpstan-ignore-line
             $definition['groupId'] = $firstFieldGroupId;
         }
