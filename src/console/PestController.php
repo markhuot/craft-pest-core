@@ -5,7 +5,6 @@ namespace markhuot\craftpest\console;
 use Craft;
 use craft\console\Controller;
 use craft\helpers\FileHelper;
-use markhuot\craftpest\actions\RenderCraft4CompiledClasses;
 use markhuot\craftpest\interfaces\RenderCompiledClassesInterface;
 use markhuot\craftpest\Pest;
 use Symfony\Component\Process\Process;

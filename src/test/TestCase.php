@@ -201,7 +201,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
     public function renderCompiledClasses()
     {
-         Craft::$container->get(RenderCompiledClassesInterface::class)->handle();
+        Craft::$container->get(RenderCompiledClassesInterface::class)->handle();
     }
 
     protected function needsRequireStatements()
