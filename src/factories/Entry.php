@@ -211,13 +211,4 @@ class Entry extends Element
             'typeId' => $typeId,
         ]);
     }
-
-    public function toArray()
-    {
-        return [
-            'type' => $this->entryTypeIdentifier,
-            'enabled' => true,
-            'fields' => $this->attributes,
-        ];
-    }
 }
