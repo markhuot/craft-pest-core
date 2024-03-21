@@ -2,16 +2,16 @@
 
 namespace markhuot\craftpest\factories;
 
+use Composer\InstalledVersions;
+use Composer\Semver\VersionParser;
 use Craft;
 use craft\helpers\StringHelper;
 use craft\models\EntryType;
 use craft\models\Section_SiteSettings;
-use Faker\Factory as Faker;
 use Illuminate\Support\Collection;
 use markhuot\craftpest\interfaces\SectionsServiceInterface;
 
 use function markhuot\craftpest\helpers\base\service;
-use function markhuot\craftpest\helpers\craft\isCraftFive;
 
 /**
  * @method self name(string $name)
@@ -107,10 +107,10 @@ class Section extends Factory
                 return [$site->id => $settings];
             })->toArray();
 
-        if (isCraftFive()) {
+        if (InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '~5.0')) {
             if (empty($definition['entryTypes'])) {
                 $entryType = new EntryType([
-                    'name' => $name = $this->faker->words(3, true),
+                    'name' => $name,
                     'handle' => StringHelper::toHandle($name),
                 ]);
                 service(SectionsServiceInterface::class)->saveEntryType($entryType);
