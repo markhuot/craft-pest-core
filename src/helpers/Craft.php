@@ -2,9 +2,21 @@
 
 namespace markhuot\craftpest\helpers\craft;
 
+use Composer\Semver\Semver;
+use Craft;
 use craft\helpers\FileHelper;
 
 use function markhuot\craftpest\helpers\base\version_greater_than_or_equal_to;
+
+function isCraftFive(): bool
+{
+    return Semver::satisfies(Craft::$app->version, '~5.0');
+}
+
+function isBeforeCraftFive(): bool
+{
+    return Semver::satisfies(Craft::$app->version, '<5.0');
+}
 
 /**
  * @codeCoverageIgnore

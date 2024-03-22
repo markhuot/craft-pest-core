@@ -20,9 +20,11 @@ class MonkeyPatches implements Bootable
         $asset = preg_replace('/(class Asset.+?\{)/s', '$1 use \\markhuot\\craftpest\\traits\\Snapshotable;', $asset);
         eval($asset);
 
-        $matrixBlock = file_get_contents($vendorDir.'/craftcms/cms/src/elements/MatrixBlock.php');
-        $matrixBlock = preg_replace('/^<\?php/', '', $matrixBlock);
-        $matrixBlock = preg_replace('/(class MatrixBlock.+?\{)/s', '$1 use \\markhuot\\craftpest\\traits\\Snapshotable;', $matrixBlock);
-        eval($matrixBlock);
+        if (file_exists($vendorDir.'/craftcms/cms/src/elements/MatrixBlock.php')) {
+            $matrixBlock = file_get_contents($vendorDir.'/craftcms/cms/src/elements/MatrixBlock.php');
+            $matrixBlock = preg_replace('/^<\?php/', '', $matrixBlock);
+            $matrixBlock = preg_replace('/(class MatrixBlock.+?\{)/s', '$1 use \\markhuot\\craftpest\\traits\\Snapshotable;', $matrixBlock);
+            eval($matrixBlock);
+        }
     }
 }

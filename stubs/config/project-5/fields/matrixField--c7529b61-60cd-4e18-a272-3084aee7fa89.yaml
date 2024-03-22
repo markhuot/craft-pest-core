@@ -1,0 +1,19 @@
+columnSuffix: null
+handle: matrixField
+instructions: null
+name: 'Matrix Field'
+searchable: false
+settings:
+  entryTypes:
+    - b5c238dd-588f-4f0a-b9e4-8a988f0e7468 # Block Type One
+  includeTableView: false
+  maxEntries: null
+  minEntries: null
+  pageSize: null
+  propagationKeyFormat: null
+  propagationMethod: all
+  showCardsInGrid: false
+  viewMode: blocks
+translationKeyFormat: null
+translationMethod: site
+type: craft\fields\Matrix

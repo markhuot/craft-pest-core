@@ -1,0 +1,32 @@
+columnSuffix: vqczhrcp
+handle: dropdownField
+instructions: null
+name: 'Dropdown Field'
+searchable: false
+settings:
+  options:
+    -
+      __assoc__:
+        -
+          - label
+          - One
+        -
+          - value
+          - one
+        -
+          - default
+          - ''
+    -
+      __assoc__:
+        -
+          - label
+          - Two
+        -
+          - value
+          - two
+        -
+          - default
+          - ''
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\Dropdown

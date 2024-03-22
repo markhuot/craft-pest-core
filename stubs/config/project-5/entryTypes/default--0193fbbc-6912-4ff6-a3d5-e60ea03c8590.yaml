@@ -1,0 +1,110 @@
+color: null
+fieldLayouts:
+  50cdf242-1476-44dc-ab8b-e3ad70ef3163:
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            autocapitalize: true
+            autocomplete: false
+            autocorrect: true
+            class: null
+            disabled: false
+            elementCondition: null
+            id: null
+            includeInCards: false
+            inputType: null
+            instructions: null
+            label: null
+            max: null
+            min: null
+            name: null
+            orientation: null
+            placeholder: null
+            providesThumbs: false
+            readonly: false
+            requirable: false
+            size: null
+            step: null
+            tip: null
+            title: null
+            type: craft\fieldlayoutelements\entries\EntryTitleField
+            uid: 880e50a3-79fb-4456-836b-89c970af40b9
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: c7529b61-60cd-4e18-a272-3084aee7fa89 # Matrix Field
+            handle: null
+            includeInCards: false
+            instructions: null
+            label: null
+            providesThumbs: false
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 90a7fa0d-77cd-4612-92f9-4fafd4c1a66d
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: c148dfb3-a122-49ed-8538-de26d0482663 # Entries Field
+            handle: null
+            includeInCards: false
+            instructions: null
+            label: null
+            providesThumbs: false
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: efbdd2ca-b829-4604-bd1e-f66fad9093e2
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: 7d1a7bf3-c346-48bc-bb77-f7d76fcacf2e # Text Field
+            handle: null
+            includeInCards: false
+            instructions: null
+            label: null
+            providesThumbs: false
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 189519d9-7809-47fc-bc54-d2441a85ae9d
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: 17685ada-d64c-459c-b9fc-678d43e4bee8 # Dropdown Field
+            handle: null
+            includeInCards: false
+            instructions: null
+            label: null
+            providesThumbs: false
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 1440d116-5fe9-45a3-8031-7f3c9b71ef9d
+            userCondition: null
+            warning: null
+            width: 100
+        name: Content
+        uid: a914e695-0910-4b04-841b-cbe6f689856b
+        userCondition: null
+handle: default
+hasTitleField: true
+icon: null
+name: Default
+showSlugField: true
+showStatusField: true
+slugTranslationKeyFormat: null
+slugTranslationMethod: site
+titleFormat: null
+titleTranslationKeyFormat: null
+titleTranslationMethod: site
