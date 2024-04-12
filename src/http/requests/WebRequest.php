@@ -161,7 +161,7 @@ abstract class WebRequest extends \craft\web\Request
     protected function uriContainsAdminSlug(string $uri): bool
     {
         $path = parse_url($uri, PHP_URL_PATH);
-        $slug = \Craft::$app->getConfig()->getGeneral()->cpTrigger ?? 'admin';
+        $slug = \Craft::$app->getConfig()->getGeneral()->cpTrigger;
 
         return str_starts_with(ltrim($path, '/'), $slug);
     }
