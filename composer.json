@@ -53,7 +53,7 @@
     "prefer-stable": true,
     "require-dev": {
         "craftcms/phpstan": "dev-main",
-        "craftcms/craft": "^2.0",
+        "craftcms/craft": "^4.0",
         "symfony/var-dumper": "^5.0|^6.0",
         "laravel/pint": "^1.13"
     }
