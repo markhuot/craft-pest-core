@@ -80,7 +80,7 @@ class PestController extends Controller
         if (! file_exists(CRAFT_BASE_PATH.'/phpunit.xml')) {
             copy(__DIR__.'/../../stubs/init/phpunit.xml', CRAFT_BASE_PATH.'/phpunit.xml');
         }
-        if (is_dir(CRAFT_BASE_PATH.'/modules')) {
+        if (! is_dir(CRAFT_BASE_PATH.'/modules')) {
             FileHelper::createDirectory(CRAFT_BASE_PATH.'/modules/pest/seeders');
             copy(__DIR__.'/../../stubs/seeders/DatabaseSeeder.php', CRAFT_BASE_PATH.'/modules/pest/seeders/DatabaseSeeder.php');
         }
