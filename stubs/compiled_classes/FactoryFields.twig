@@ -3,14 +3,12 @@
 namespace markhuot\craftpest\storage;
 
 /**
- {% set type = '' %}
+ {% set type = 'mixed' %}
  {% for field in fields %}
  {% if craft.app.version < 5 %}
 {% set type = field.valueType() %}
 {% elseif craft.app.version > 5 %}
 {% set type = field.phpType() %}
-{% else %}
-{% set type = 'mixed' %}
 {% endif %}
  * @method $this {{ field.handle }}({{ field.factoryTypeHint|default('mixed $value') }}): {{ type }} Sets the {{ field.name }} custom field
  {% endfor %}
