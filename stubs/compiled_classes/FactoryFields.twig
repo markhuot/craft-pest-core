@@ -3,6 +3,7 @@
 namespace markhuot\craftpest\storage;
 
 /**
+ {% set type = '' %}
  {% for field in fields %}
  {% if craft.app.version < 5 %}
 {% set type = field.valueType() %}
