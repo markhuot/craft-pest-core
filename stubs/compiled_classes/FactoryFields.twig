@@ -15,7 +15,14 @@ namespace markhuot\craftpest\storage;
  {% endfor %}
  *
  {% for field in fields %}
- {% if 'craft\\elements\\db\\MatrixBlockQuery' in type %}
+ {% if attribute(field, 'valueType') is defined %}
+{% set type = field.valueType() %}
+{% elseif attribute(field, 'phpType') is defined %}
+{% set type = field.phpType() %}
+{% else %}
+{% set type = 'mixed' %}
+{% endif %}
+ {% if 'craft\\elements\\db\\MatrixBlockQuery' == type %}
  {% for blockType in field.blockTypes %}
  {% if loop.first %}
  * @method $this addBlockTo{{ field.handle|ucfirst }}({{ blockType.fieldLayout.getCustomFieldElements()|map(f => f.getField().factoryTypeHint|default('mixed $value'))|join(', ') }})

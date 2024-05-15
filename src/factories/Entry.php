@@ -145,10 +145,6 @@ class Entry extends Element
             $section = service(SectionsServiceInterface::class)->getSectionByHandle($sectionHandle);
         }
 
-        if (empty($section)) {
-            $section = Section::factory()->create();
-        }
-
         return $section?->id;
     }
 
@@ -159,10 +155,11 @@ class Entry extends Element
      */
     public function inferTypeId(?int $sectionid): ?int
     {
-        $entryTypes = collect();
         if ($sectionid) {
             $section = service(SectionsServiceInterface::class)->getSectionById($sectionid);
             $entryTypes = collect($section->getEntryTypes());
+        } else {
+            $entryTypes = collect(service(SectionsServiceInterface::class)->getAllEntryTypes());
         }
 
         if (is_a($this->entryTypeIdentifier, \craft\models\EntryType::class)) {
@@ -198,12 +195,13 @@ class Entry extends Element
      */
     public function inferences(array $definition = [])
     {
-        if (empty($this->entryTypeIdentifier)) {
-            $sectionId = $this->inferSectionId();
-            $typeId = $this->inferTypeId($sectionId);
-        } else {
-            $sectionId = null;
-            $typeId = service(SectionsServiceInterface::class)->getEntryTypeByHandle($this->entryTypeIdentifier)->id;
+        $sectionId = $this->inferSectionId();
+        $typeId = $this->inferTypeId($sectionId);
+
+        // If you couldn't infer anything, then create a new section/type
+        if (empty($sectionId) && empty($typeId)) {
+            $sectionId = ($section = Section::factory()->create())->id;
+            $typeId = collect($section->getEntryTypes())->first()?->id;
         }
 
         return array_merge($definition, [
