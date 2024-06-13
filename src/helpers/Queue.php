@@ -5,9 +5,13 @@ namespace markhuot\craftpest\helpers\queue;
 use Craft;
 
 if (! function_exists('queue')) {
-    function queue($callback)
+    function queue($callback = null): mixed
     {
-        $result = $callback();
+        $result = null;
+
+        if ($callback) {
+            $result = $callback();
+        }
 
         Craft::$app->queue->run();
 
