@@ -1,0 +1,5 @@
+parameters:
+    excludePaths:
+        - src/actions/RenderCraft5CompiledClasses.php
+        - src/factories/EntryType.php
+        - src/factories/MatrixFieldEntries.php

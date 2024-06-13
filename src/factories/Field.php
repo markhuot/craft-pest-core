@@ -2,6 +2,8 @@
 
 namespace markhuot\craftpest\factories;
 
+use Composer\InstalledVersions;
+use Composer\Semver\VersionParser;
 use craft\helpers\StringHelper;
 
 /**
@@ -23,7 +25,7 @@ class Field extends Factory
     public function group(string $groupName)
     {
         $this->attributes['groupId'] = function () use ($groupName) {
-            foreach (\Craft::$app->fields->getAllGroups() as $group) {
+            foreach (\Craft::$app->fields->getAllGroups() as $group) { //@phpstan-ignore-line
                 if ($group->name === $groupName) {
                     return $group->id;
                 }
@@ -55,12 +57,17 @@ class Field extends Factory
     public function definition(int $index = 0)
     {
         $name = $this->faker->words(2, true);
-        $firstFieldGroupId = \Craft::$app->fields->getAllGroups()[0]->id;
 
-        return [
+        $definition = [
             'name' => $name,
-            'groupId' => $firstFieldGroupId,
         ];
+
+        if (InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '~4.0')) {
+            $firstFieldGroupId = \Craft::$app->fields->getAllGroups()[0]->id; // @phpstan-ignore-line
+            $definition['groupId'] = $firstFieldGroupId;
+        }
+
+        return $definition;
     }
 
     public function inferences(array $definition = [])
