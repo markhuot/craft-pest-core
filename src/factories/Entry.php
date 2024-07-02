@@ -55,7 +55,9 @@ class Entry extends Element
      */
     public function type($handle)
     {
+        $this->type = $handle;
 
+        return $this;
     }
 
     /**
