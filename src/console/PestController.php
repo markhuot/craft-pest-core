@@ -5,11 +5,13 @@ namespace markhuot\craftpest\console;
 use Craft;
 use craft\console\Controller;
 use craft\helpers\FileHelper;
+use markhuot\craftpest\actions\CopyInitialStubs;
 use markhuot\craftpest\interfaces\RenderCompiledClassesInterface;
 use markhuot\craftpest\Pest;
 use Symfony\Component\Process\Process;
 use yii\console\ExitCode;
 
+use function markhuot\craftpest\helpers\base\service;
 use function markhuot\craftpest\helpers\base\version_greater_than_or_equal_to;
 
 /**
@@ -71,20 +73,7 @@ class PestController extends Controller
 
     protected function runInit()
     {
-        if (! is_dir(CRAFT_BASE_PATH.'/tests')) {
-            mkdir(CRAFT_BASE_PATH.'/tests');
-        }
-        if (! file_exists(CRAFT_BASE_PATH.'/tests/Pest.php')) {
-            copy(__DIR__.'/../../stubs/init/ExampleTest.php', CRAFT_BASE_PATH.'/tests/ExampleTest.php');
-            copy(__DIR__.'/../../stubs/init/Pest.php', CRAFT_BASE_PATH.'/tests/Pest.php');
-        }
-        if (! file_exists(CRAFT_BASE_PATH.'/phpunit.xml')) {
-            copy(__DIR__.'/../../stubs/init/phpunit.xml', CRAFT_BASE_PATH.'/phpunit.xml');
-        }
-        if (! is_dir(CRAFT_BASE_PATH.'/modules')) {
-            FileHelper::createDirectory(CRAFT_BASE_PATH.'/modules/pest/seeders');
-            copy(__DIR__.'/../../stubs/seeders/DatabaseSeeder.php', CRAFT_BASE_PATH.'/modules/pest/seeders/DatabaseSeeder.php');
-        }
+        service(CopyInitialStubs::class)();
     }
 
     protected function runTests(): int
