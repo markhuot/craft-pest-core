@@ -177,7 +177,7 @@ class Entry extends Element
                          $entryTypes->first();
         }
 
-        return $entryType?->id;
+        return $entryType->id ?? null;
     }
 
     /**
