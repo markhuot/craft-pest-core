@@ -14,7 +14,7 @@ class User extends Element
 
     public function definition(int $index = 0)
     {
-        $email = $this->faker->email();
+        $email = $this->faker->safeEmail();
 
         return [
             'email' => $email,
