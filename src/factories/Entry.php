@@ -187,7 +187,7 @@ class Entry extends Element
      */
     public function newElement()
     {
-        return new \craft\elements\Entry();
+        return new \craft\elements\Entry;
     }
 
     /**

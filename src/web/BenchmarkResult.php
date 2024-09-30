@@ -29,8 +29,7 @@ class BenchmarkResult
     public function __construct(
         public int $startProfileAt,
         public int $endProfileAt,
-    ) {
-    }
+    ) {}
 
     // function summary()
     // {
