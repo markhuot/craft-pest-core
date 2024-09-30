@@ -168,7 +168,7 @@ class Entry extends Element
             $entryType = $entryTypes->where('id', $this->entryTypeIdentifier)->first();
         } elseif (is_string($this->entryTypeIdentifier)) {
             $entryType = $entryTypes->where('handle', $this->entryTypeIdentifier)->first();
-        } else {
+        } elseif ($sectionid) {
             $reflector = new \ReflectionClass($this);
             $className = $reflector->getShortName();
             $typeHandle = lcfirst($className);
