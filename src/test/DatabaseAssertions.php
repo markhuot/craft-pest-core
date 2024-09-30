@@ -22,7 +22,7 @@ trait DatabaseAssertions
      */
     public function assertDatabaseCount(string $tableName, int $expectedCount)
     {
-        $actualCount = (new Query())->from($tableName)->count();
+        $actualCount = (new Query)->from($tableName)->count();
 
         $this->assertEquals($expectedCount, $actualCount);
     }

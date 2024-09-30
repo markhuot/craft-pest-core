@@ -129,7 +129,7 @@ trait RefreshesDatabase
 
         $this->transaction->rollBack();
 
-        $event = new RollbackTransactionEvent();
+        $event = new RollbackTransactionEvent;
         $event->sender = $this;
         Event::trigger(RefreshesDatabase::class, 'EVENT_ROLLBACK_TRANSACTION', $event);
 
