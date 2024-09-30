@@ -132,8 +132,9 @@ abstract class WebRequest extends \craft\web\Request
         }
 
         $isCpRequest = $this->uriContainsAdminSlug($uri);
-        if ($isCpRequest) {
-            $uri = preg_replace('#^'.preg_quote(\Craft::$app->getConfig()->getGeneral()->cpTrigger).'/?#', '', $uri);
+        $cpTrigger = \Craft::$app->getConfig()->getGeneral()->cpTrigger;
+        if ($isCpRequest && $cpTrigger) {
+            $uri = preg_replace('#^'.preg_quote($cpTrigger).'/?#', '', $uri);
         }
 
         $this->setRaw([
@@ -161,7 +162,7 @@ abstract class WebRequest extends \craft\web\Request
     protected function uriContainsAdminSlug(string $uri): bool
     {
         $path = parse_url($uri, PHP_URL_PATH);
-        $slug = \Craft::$app->getConfig()->getGeneral()->cpTrigger;
+        $slug = \Craft::$app->getConfig()->getGeneral()->cpTrigger ?? '';
 
         return str_starts_with(ltrim($path, '/'), $slug);
     }
