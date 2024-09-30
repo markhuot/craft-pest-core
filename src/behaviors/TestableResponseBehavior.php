@@ -2,6 +2,7 @@
 
 namespace markhuot\craftpest\behaviors;
 
+use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use markhuot\craftpest\dom\Form;
 use markhuot\craftpest\dom\NodeList;
@@ -267,7 +268,13 @@ class TestableResponseBehavior extends Behavior
 
         // Then check the expiration of it
         $cookie = $this->response->cookies->get($name);
-        if ($cookie->expire === 0 || $cookie->expire >= time()) {
+
+        if ($cookie->expire === null) {
+            Assert::fail('Cookie `'.$name.'` does not have an expiration date.');
+        }
+
+        $expiration = Carbon::parse($cookie->expire);
+        if ($expiration->isAfter(Carbon::now())) {
             Assert::fail('Cookie `'.$name.'` does not have an expiration in the past.');
         }
 
@@ -288,8 +295,14 @@ class TestableResponseBehavior extends Behavior
 
         // Then check the expiration of it
         $cookie = $this->response->cookies->get($name);
-        if ($cookie->expire !== 0 && $cookie->expire < time()) {
-            Assert::fail('Cookie `'.$name.'` does not have an expiration in the future.');
+
+        if ($cookie->expire === null) {
+            Assert::fail('Cookie `'.$name.'` does not have an expiration date.');
+        }
+
+        $expiration = Carbon::parse($cookie->expire);
+        if ($expiration->isAfter(Carbon::now())) {
+            Assert::fail('Cookie `'.$name.'` does not have an expiration in the past.');
         }
 
         return $this->response;

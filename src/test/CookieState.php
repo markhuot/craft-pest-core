@@ -2,6 +2,7 @@
 
 namespace markhuot\craftpest\test;
 
+use Carbon\Carbon;
 use yii\web\Cookie;
 use yii\web\CookieCollection;
 
@@ -94,7 +95,9 @@ trait CookieState
         // We have to manually clear our expired cookies because this is normally handled
         // by the browser for us
         foreach ($this->cookies as $cookie) {
-            if ($cookie->expire !== 0 && $cookie->expire < time()) {
+            $expiration = Carbon::parse($cookie->expire);
+
+            if ($cookie->expire !== 0 && $expiration->isBefore(Carbon::now())) {
                 $this->cookies->remove($cookie, false);
             }
         }
