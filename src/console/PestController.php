@@ -100,7 +100,6 @@ class PestController extends Controller
         }
 
         $process = new Process(['./vendor/bin/pest', ...$pestOptions]);
-        $process->setTty(true);
         $process->setTimeout(null);
         $process->start();
 
