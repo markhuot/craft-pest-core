@@ -52,6 +52,7 @@ class PestController extends Controller
     public function actionTest()
     {
         $this->runInit();
+
         return $this->runTests();
     }
 
