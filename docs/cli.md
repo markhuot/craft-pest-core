@@ -1,7 +1,7 @@
 # CLI Commands
 
-## actionIndex()
-Run the Pest tests with `php craft pest`. This is a convienence function that internally calls the
+## actionTest()
+Run the Pest tests with `php craft pest/test`. This is a convenience function that internally calls the
 `pest/init` method and then `./vendor/bin/pest` executable.
 
 You may pass any pest options to this command by separating them with a `--`. For example, to filter
