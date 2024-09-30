@@ -50,9 +50,7 @@ class PestController extends Controller
     public function actionTest()
     {
         $this->runInit();
-        $this->runTests();
-
-        return ExitCode::OK;
+        return $this->runTests();
     }
 
     /**
@@ -89,7 +87,7 @@ class PestController extends Controller
         }
     }
 
-    protected function runTests()
+    protected function runTests(): int
     {
         $params = $this->request->getParams();
         $pestOptions = [];
@@ -110,6 +108,8 @@ class PestController extends Controller
                 echo $data;
             }
         }
+
+        return $process->getExitCode();
     }
 
     public function actionCompileTemplates()
