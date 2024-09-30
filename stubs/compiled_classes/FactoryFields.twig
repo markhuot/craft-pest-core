@@ -3,12 +3,25 @@
 namespace markhuot\craftpest\storage;
 
 /**
+ {% set type = 'mixed' %}
  {% for field in fields %}
- * @method $this {{ field.handle }}({{ field.factoryTypeHint|default('mixed $value') }}) Sets the {{ field.name }} custom field {{ field.valueType }}
+ {% if craft.app.version < 5 %}
+{% set type = field.valueType() %}
+{% elseif craft.app.version > 5 %}
+{% set type = field.phpType() %}
+{% endif %}
+ * @method $this {{ field.handle }}({{ field.factoryTypeHint|default('mixed $value') }}): {{ type }} Sets the {{ field.name }} custom field
  {% endfor %}
  *
  {% for field in fields %}
- {% if 'craft\\elements\\db\\MatrixBlockQuery' in field.valueType %}
+ {% if craft.app.version < 5 %}
+{% set type = field.valueType() %}
+{% elseif craft.app.version > 5 %}
+{% set type = field.phpType() %}
+{% else %}
+{% set type = 'mixed' %}
+{% endif %}
+ {% if 'craft\\elements\\db\\MatrixBlockQuery' == type %}
  {% for blockType in field.blockTypes %}
  {% if loop.first %}
  * @method $this addBlockTo{{ field.handle|ucfirst }}({{ blockType.fieldLayout.getCustomFieldElements()|map(f => f.getField().factoryTypeHint|default('mixed $value'))|join(', ') }})

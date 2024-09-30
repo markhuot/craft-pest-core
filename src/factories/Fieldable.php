@@ -55,7 +55,7 @@ trait Fieldable
             ->toArray();
 
         if (empty($fieldLayout->getTabs()[0])) {
-            $fieldLayoutTab = new FieldLayoutTab();
+            $fieldLayoutTab = new FieldLayoutTab;
             $fieldLayoutTab->name = 'Content';
             $fieldLayoutTab->sortOrder = 1;
             $fieldLayout->setTabs([$fieldLayoutTab]);

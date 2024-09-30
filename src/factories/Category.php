@@ -22,7 +22,7 @@ class Category extends Element
 
     public function newElement()
     {
-        return new \craft\elements\Category();
+        return new \craft\elements\Category;
     }
 
     public function definition(int $index = 0)

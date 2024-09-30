@@ -12,7 +12,7 @@ in three ways,
 
 If you do not pass a section, one will be created automatically.
 
-## type($handle)
+## type($identifier)
 Set the entry type
 
 ## postDate(DateTime|string|int $value)

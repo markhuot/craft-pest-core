@@ -3,6 +3,7 @@
 .idea
 cpresources
 /src/bin/index.php
+.phpunit.cache
 .phpunit.result.cache
 /config
 .env

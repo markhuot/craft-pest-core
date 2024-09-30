@@ -33,7 +33,7 @@ class BlockType extends Factory
 
     public function newElement()
     {
-        return new MatrixBlockType();
+        return new MatrixBlockType;
     }
 
     public function store($blockType)

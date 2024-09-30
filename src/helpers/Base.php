@@ -2,6 +2,7 @@
 
 namespace markhuot\craftpest\helpers\base;
 
+use Craft;
 use Illuminate\Support\Collection;
 
 if (! function_exists('collection_wrap')) {
@@ -31,4 +32,15 @@ if (! function_exists('version_greater_than_or_equal_to')) {
     {
         return version_compare($version1, $version2) >= 0;
     }
+}
+
+/**
+ * @template T
+ *
+ * @param  class-string<T>  $className
+ * @return T
+ */
+function service(string $className)
+{
+    return Craft::$container->get($className);
 }

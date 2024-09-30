@@ -1,5 +1,6 @@
 includes:
     - vendor/craftcms/phpstan/phpstan.neon
+    - phpstan.php
 
 parameters:
     paths:
@@ -15,3 +16,4 @@ parameters:
     excludePaths:
       - src/craft/*
       - src/illuminate/*
+      - src/actions/RenderCompiledClasses.php

@@ -2,9 +2,21 @@
 
 namespace markhuot\craftpest\helpers\craft;
 
+use Composer\Semver\Semver;
+use Craft;
 use craft\helpers\FileHelper;
 
 use function markhuot\craftpest\helpers\base\version_greater_than_or_equal_to;
+
+function isCraftFive(): bool
+{
+    return Semver::satisfies(Craft::$app->version, '~5.0');
+}
+
+function isBeforeCraftFive(): bool
+{
+    return Semver::satisfies(Craft::$app->version, '<5.0');
+}
 
 /**
  * @codeCoverageIgnore
@@ -68,7 +80,7 @@ if (! function_exists('volumeDefinition')) {
     function volumeDefinition(array $definition = [])
     {
         if (version_greater_than_or_equal_to(\Craft::$app->version, '4')) {
-            $fileSystem = new \craft\fs\Local();                                                                  // @phpstan-ignore-line
+            $fileSystem = new \craft\fs\Local;                                                                  // @phpstan-ignore-line
             $fileSystem->name = $definition['name'].' FS';                                                      // @phpstan-ignore-line
             $fileSystem->handle = $definition['handle'].'Fs';                                                   // @phpstan-ignore-line
             $fileSystem->path = \Craft::getAlias('@storage').'/volumes/'.$definition['handle'].'/';    // @phpstan-ignore-line

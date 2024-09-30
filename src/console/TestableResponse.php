@@ -10,8 +10,7 @@ class TestableResponse
         protected int $exitCode,
         protected string $stdout,
         protected string $stderr,
-    ) {
-    }
+    ) {}
 
     public function assertSuccesful()
     {

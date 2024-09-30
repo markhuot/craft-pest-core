@@ -2,35 +2,23 @@
 
 namespace markhuot\craftpest\actions;
 
-use craft\db\Table;
 use craft\helpers\FileHelper;
 use craft\helpers\StringHelper;
+use markhuot\craftpest\interfaces\RenderCompiledClassesInterface;
 
-class RenderCompiledClasses
+class RenderCraft5CompiledClasses implements RenderCompiledClassesInterface
 {
-    public function handle($forceRecreate = false)
+    public function handle(bool $forceRecreate = false)
     {
-        $contentService = \Craft::$app->getContent();
-        $originalContentTable = $contentService->contentTable;
-        $originalFieldColumnPrefix = $contentService->fieldColumnPrefix;
-        $originalFieldContext = $contentService->fieldContext;
-        $contentService->contentTable = Table::CONTENT;
-        $contentService->fieldColumnPrefix = 'field_';
-        $contentService->fieldContext = 'global';
-
         $this->render($forceRecreate);
-
-        $contentService->contentTable = $originalContentTable;
-        $contentService->fieldColumnPrefix = $originalFieldColumnPrefix;
-        $contentService->fieldContext = $originalFieldContext;
 
         return true;
     }
 
     protected function render(bool $forceRecreate)
     {
-        $storedFieldVersion = \Craft::$app->fields->getFieldVersion();
-        $compiledClassesPath = __DIR__.'/../storage/';
+        $storedFieldVersion = \Craft::$app->getFields()->getFieldVersion();
+        $compiledClassesPath = \Craft::$app->getPath()->getCompiledClassesPath();
         $fieldVersionExists = $storedFieldVersion !== null;
         if (! $fieldVersionExists) {
             $storedFieldVersion = StringHelper::randomString(12);
@@ -47,7 +35,7 @@ class RenderCompiledClasses
         $template = file_get_contents(__DIR__.'/../../stubs/compiled_classes/FactoryFields.twig');
 
         $compiledClass = \Craft::$app->view->renderString($template, [
-            'fields' => \Craft::$app->fields->getAllFields(false),
+            'fields' => \Craft::$app->fields->getAllFields(),
         ]);
 
         file_put_contents($compiledClassPath, $compiledClass);

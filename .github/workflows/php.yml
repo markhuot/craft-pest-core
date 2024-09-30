@@ -15,7 +15,15 @@ jobs:
 
     strategy:
       matrix:
-        version: [~4.5.0, ~4.6.0]
+        version: 
+          - constraint: ~4.5.0
+            config: 4
+          - constraint: ~4.6.0
+            config: 4
+          - constraint:  ~4.7.0
+            config: 4
+          - constraint: ~5.0.0
+            config: 5
 
     env:
       CRAFT_APP_ID: pest
@@ -37,7 +45,7 @@ jobs:
 
     services:
       mysql:
-        image: mysql
+        image: mysql:8
         env:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: pest
@@ -54,7 +62,7 @@ jobs:
 
     - uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.2'
+        php-version: '8.3'
 
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
@@ -66,18 +74,19 @@ jobs:
         path: |
           composer.lock
           vendor
-        key: ${{ runner.os }}-craft-vendor-${{ hashFiles('composer.json') }}
+        key: ${{ runner.os }}-craft-${{ matrix.version.constraint }}-vendor-${{ hashFiles('composer.json') }}
 
     - name: Install dependencies
       run: |
-        composer require "craftcms/cms:${{ matrix.version }}" --prefer-dist --no-progress
+        composer require "craftcms/cms:${{ matrix.version.constraint }}" --prefer-dist --no-progress
         ./bin/post-clone.sh
 
     - name: Copy config files
       run: |
         mkdir -p ./storage
-        cp -r ./stubs/config ./
-        cat config/app.php
+        cp -r ./stubs/config/app.php ./config/app.php
+        cp -r ./stubs/config/general.php ./config/general.php
+        cp -r ./stubs/config/project-${{ matrix.version.config }}/ ./config/project/
 
     - name: Wait for MySQL
       run: until mysqladmin ping -h 127.0.0.1 -u root -proot; do sleep 1; done
@@ -90,6 +99,8 @@ jobs:
 
     - name: Run pint
       run: ./vendor/bin/pint --test -vvv src/
+      if: always()
 
     - name: Run test suite
       run: ./vendor/bin/pest --compact -vvv
+      if: always()

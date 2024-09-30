@@ -2,10 +2,16 @@
 
 namespace markhuot\craftpest\factories;
 
+use Composer\InstalledVersions;
+use Composer\Semver\VersionParser;
+use Craft;
 use craft\helpers\StringHelper;
+use craft\models\EntryType;
 use craft\models\Section_SiteSettings;
-use Faker\Factory as Faker;
 use Illuminate\Support\Collection;
+use markhuot\craftpest\interfaces\SectionsServiceInterface;
+
+use function markhuot\craftpest\helpers\base\service;
 
 /**
  * @method self name(string $name)
@@ -60,7 +66,7 @@ class Section extends Factory
      */
     public function newElement()
     {
-        return new \craft\models\Section();
+        return new \craft\models\Section;
     }
 
     /**
@@ -74,7 +80,7 @@ class Section extends Factory
 
         return [
             'name' => $name,
-            'type' => 'channel',
+            'type' => \craft\models\Section::TYPE_CHANNEL,
         ];
     }
 
@@ -86,20 +92,32 @@ class Section extends Factory
 
         $name = $definition['name'];
         $handle = $definition['handle'];
-        $definition['siteSettings'] = collect(\Craft::$app->sites->getAllSites())
+        $definition['siteSettings'] = collect(Craft::$app->sites->getAllSites())
             ->mapWithkeys(function ($site) use ($name, $handle) {
-                $settings = new Section_SiteSettings();
+                $settings = new Section_SiteSettings;
                 $settings->siteId = $site->id;
                 $settings->hasUrls = $this->hasUrls;
                 $settings->uriFormat = $this->uriFormat;
                 $settings->enabledByDefault = $this->enabledByDefault;
-                $settings->template = \Craft::$app->view->renderObjectTemplate($this->template, [
+                $settings->template = Craft::$app->view->renderObjectTemplate($this->template, [
                     'name' => $name,
                     'handle' => $handle,
                 ]);
 
                 return [$site->id => $settings];
             })->toArray();
+
+        if (InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '~5.0')) {
+            if (empty($definition['entryTypes'])) {
+                $entryType = new EntryType([
+                    'name' => $name,
+                    'handle' => StringHelper::toHandle($name),
+                ]);
+                service(SectionsServiceInterface::class)->saveEntryType($entryType);
+                throw_if($entryType->errors, 'Problem saving entry type: '.implode(', ', $entryType->getFirstErrors()));
+                $definition['entryTypes'] = [$entryType];
+            }
+        }
 
         return $definition;
     }
@@ -111,7 +129,9 @@ class Section extends Factory
      */
     public function store($element)
     {
-        $result = \Craft::$app->sections->saveSection($element);
+        $result = service(SectionsServiceInterface::class)->saveSection($element);
+        throw_unless(empty($element->errors), 'Problem saving section: '.implode(', ', $element->getFirstErrors()));
+
         $this->storeFields($element->entryTypes[0]->fieldLayout);
 
         return $result;

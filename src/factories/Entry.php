@@ -3,8 +3,10 @@
 namespace markhuot\craftpest\factories;
 
 use craft\models\EntryType;
-use markhuot\craftpest\factories\Section as FactoriesSection;
+use markhuot\craftpest\interfaces\SectionsServiceInterface;
 use markhuot\craftpest\storage\FactoryFields;
+
+use function markhuot\craftpest\helpers\base\service;
 
 /**
  * Entry Factory
@@ -25,11 +27,11 @@ use markhuot\craftpest\storage\FactoryFields;
  */
 class Entry extends Element
 {
-    /** @var EntryType */
-    protected $type;
-
     /** @var string|\craft\models\Section|null */
-    protected $sectionIdentifier;
+    protected $sectionIdentifier = null;
+
+    /** @var EntryType|string|null */
+    protected $entryTypeIdentifier = null;
 
     protected $priorityAttributes = ['sectionId', 'typeId'];
 
@@ -53,9 +55,11 @@ class Entry extends Element
     /**
      * Set the entry type
      */
-    public function type($handle)
+    public function type($identifier)
     {
+        $this->entryTypeIdentifier = $identifier;
 
+        return $this;
     }
 
     /**
@@ -126,26 +130,22 @@ class Entry extends Element
      *
      * @internal
      */
-    public function inferSectionId()
+    public function inferSectionId(): ?int
     {
         if (is_a($this->sectionIdentifier, \craft\models\Section::class)) {
             $section = $this->sectionIdentifier;
         } elseif (is_numeric($this->sectionIdentifier)) {
-            $section = \Craft::$app->sections->getSectionById($this->sectionIdentifier);
+            $section = service(SectionsServiceInterface::class)->getSectionById($this->sectionIdentifier);
         } elseif (is_string($this->sectionIdentifier)) {
-            $section = \Craft::$app->sections->getSectionByHandle($this->sectionIdentifier);
+            $section = service(SectionsServiceInterface::class)->getSectionByHandle($this->sectionIdentifier);
         } else {
             $reflector = new \ReflectionClass($this);
             $className = $reflector->getShortName();
             $sectionHandle = lcfirst($className);
-            $section = \Craft::$app->sections->getSectionByHandle($sectionHandle);
+            $section = service(SectionsServiceInterface::class)->getSectionByHandle($sectionHandle);
         }
 
-        if (empty($section)) {
-            $section = FactoriesSection::factory()->create();
-        }
-
-        return $section->id;
+        return $section?->id;
     }
 
     /**
@@ -153,18 +153,31 @@ class Entry extends Element
      *
      * @internal
      */
-    public function inferTypeId($sectionid): int
+    public function inferTypeId(?int $sectionid): ?int
     {
-        $reflector = new \ReflectionClass($this);
-        $className = $reflector->getShortName();
-        $typeHandle = lcfirst($className);
-        $section = \Craft::$app->sections->getSectionById($sectionid);
-        $matches = array_filter($section->entryTypes, fn ($e) => $e->handle === $typeHandle);
-        if (count($matches) === 0) {
-            $matches = $section->entryTypes;
+        if ($sectionid) {
+            $section = service(SectionsServiceInterface::class)->getSectionById($sectionid);
+            $entryTypes = collect($section->getEntryTypes());
+        } else {
+            $entryTypes = collect(service(SectionsServiceInterface::class)->getAllEntryTypes());
         }
 
-        return $matches[0]->id;
+        if (is_a($this->entryTypeIdentifier, \craft\models\EntryType::class)) {
+            $entryType = $this->entryTypeIdentifier;
+        } elseif (is_numeric($this->entryTypeIdentifier)) {
+            $entryType = $entryTypes->where('id', $this->entryTypeIdentifier)->first();
+        } elseif (is_string($this->entryTypeIdentifier)) {
+            $entryType = $entryTypes->where('handle', $this->entryTypeIdentifier)->first();
+        } elseif ($sectionid) {
+            $reflector = new \ReflectionClass($this);
+            $className = $reflector->getShortName();
+            $typeHandle = lcfirst($className);
+            $entryType = $entryTypes->where('handle', $typeHandle)->first() ??
+                         $entryTypes->where('handle', 'default')->first() ??
+                         $entryTypes->first();
+        }
+
+        return $entryType->id ?? null;
     }
 
     /**
@@ -174,7 +187,7 @@ class Entry extends Element
      */
     public function newElement()
     {
-        return new \craft\elements\Entry();
+        return new \craft\elements\Entry;
     }
 
     /**
@@ -184,6 +197,12 @@ class Entry extends Element
     {
         $sectionId = $this->inferSectionId();
         $typeId = $this->inferTypeId($sectionId);
+
+        // If you couldn't infer anything, then create a new section/type
+        if (empty($sectionId) && empty($typeId)) {
+            $sectionId = ($section = Section::factory()->create())->id;
+            $typeId = collect($section->getEntryTypes())->first()?->id;
+        }
 
         return array_merge($definition, [
             'sectionId' => $sectionId,

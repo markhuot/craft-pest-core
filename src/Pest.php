@@ -2,16 +2,21 @@
 
 namespace markhuot\craftpest;
 
+use Composer\Semver\Semver;
 use Craft;
 use craft\base\Field;
 use craft\elements\db\ElementQuery;
 use craft\elements\Entry;
 use craft\events\DefineBehaviorsEvent;
+use markhuot\craftpest\actions\RenderCraft4CompiledClasses;
+use markhuot\craftpest\actions\RenderCraft5CompiledClasses;
 use markhuot\craftpest\behaviors\ExpectableBehavior;
 use markhuot\craftpest\behaviors\FieldTypeHintBehavior;
 use markhuot\craftpest\behaviors\TestableElementBehavior;
 use markhuot\craftpest\behaviors\TestableElementQueryBehavior;
 use markhuot\craftpest\console\PestController;
+use markhuot\craftpest\interfaces\RenderCompiledClassesInterface;
+use markhuot\craftpest\interfaces\SectionsServiceInterface;
 use yii\base\BootstrapInterface;
 use yii\base\Event;
 
@@ -52,5 +57,17 @@ class Pest implements BootstrapInterface
                 $event->behaviors['fieldTypeHintBehavior'] = FieldTypeHintBehavior::class;
             }
         );
+
+        Craft::$container->set(SectionsServiceInterface::class, function () {
+            return Semver::satisfies(Craft::$app->version, '~5.0')
+                ? Craft::$app->getEntries() // @phpstan-ignore-line
+                : Craft::$app->getSections(); // @phpstan-ignore-line
+        });
+
+        Craft::$container->set(RenderCompiledClassesInterface::class, function () {
+            return Semver::satisfies(Craft::$app->version, '~5.0')
+                ? Craft::$container->get(RenderCraft5CompiledClasses::class) // @phpstan-ignore-line
+                : Craft::$container->get(RenderCraft4CompiledClasses::class); // @phpstan-ignore-line
+        });
     }
 }

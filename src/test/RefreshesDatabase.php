@@ -2,6 +2,8 @@
 
 namespace markhuot\craftpest\test;
 
+use Composer\InstalledVersions;
+use Composer\Semver\VersionParser;
 use markhuot\craftpest\events\FactoryStoreEvent;
 use markhuot\craftpest\events\RollbackTransactionEvent;
 use markhuot\craftpest\exceptions\AutoCommittingFieldsException;
@@ -77,8 +79,12 @@ trait RefreshesDatabase
     public function beforeStore(FactoryStoreEvent $event)
     {
         $isFieldFactory = is_a($event->sender, Field::class) || is_subclass_of($event->sender, Field::class);
+        $isCraft4 = InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '~4.0');
 
-        if ($isFieldFactory && $this->hasStoredNonFieldContent) {
+        // We don't need to worry about autocommiting fields in Craft 5 because there is no longer
+        // a dynamic content table. The field data goes in a JSON field so the DB schema never
+        // changes!
+        if ($isCraft4 && $isFieldFactory && $this->hasStoredNonFieldContent) {
             throw new AutoCommittingFieldsException('You can not create fields after creating elements while refreshesDatabase is in use.');
         }
 
@@ -123,7 +129,7 @@ trait RefreshesDatabase
 
         $this->transaction->rollBack();
 
-        $event = new RollbackTransactionEvent();
+        $event = new RollbackTransactionEvent;
         $event->sender = $this;
         Event::trigger(RefreshesDatabase::class, 'EVENT_ROLLBACK_TRANSACTION', $event);
 
