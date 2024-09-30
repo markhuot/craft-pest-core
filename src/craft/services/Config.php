@@ -6,9 +6,6 @@ use craft\config\BaseConfig;
 
 class Config extends \markhuot\craftpest\overrides\Config
 {
-    /**
-     * @return array|BaseConfig
-     */
     public function getConfigFromFile(string $filename): array|BaseConfig
     {
         $original = parent::getConfigFromFile($filename);
