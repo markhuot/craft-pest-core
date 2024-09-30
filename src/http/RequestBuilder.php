@@ -42,7 +42,7 @@ class RequestBuilder
         return $this;
     }
 
-    public function addCookie(string $key, $value, $expire=0): self
+    public function addCookie(string $key, $value, $expire = 0): self
     {
         $this->request->cookies->add(new Cookie([
             'name' => $key,
