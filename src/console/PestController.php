@@ -21,6 +21,8 @@ class PestController extends Controller
 
     public ?string $namespace = null;
 
+    public $defaultAction = 'test';
+
     public function options($actionID): array
     {
         if (in_array($actionID, ['init', 'generate-mixins'], true)) {
@@ -39,13 +41,13 @@ class PestController extends Controller
     }
 
     /**
-     * Run the Pest tests with `php craft pest`. This is a convienence function that internally calls the
+     * Run the Pest tests with `php craft pest/test`. This is a convenience function that internally calls the
      * `pest/init` method and then `./vendor/bin/pest` executable.
      *
      * You may pass any pest options to this command by separating them with a `--`. For example, to filter
      * down to a specific test you may run `php craft pest -- --filter="renders the homepage"`.
      */
-    public function actionIndex()
+    public function actionTest()
     {
         $this->runInit();
         $this->runTests();
