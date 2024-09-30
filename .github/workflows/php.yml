@@ -29,7 +29,7 @@ jobs:
           - constraint: ~5.2.0
             config: 5.2
           - constraint: ~5.3.0
-            config: 5.2
+            config: 5.3
           - constraint: ~5.4.0
             config: 5.2
 
