@@ -78,7 +78,7 @@ class Asset extends Element
 
     public function newElement()
     {
-        return new \craft\elements\Asset();
+        return new \craft\elements\Asset;
     }
 
     public function definition(int $index = 0)

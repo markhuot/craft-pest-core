@@ -2,6 +2,4 @@
 
 namespace markhuot\craftpest\pest;
 
-class PhpReporter extends Reporter
-{
-}
+class PhpReporter extends Reporter {}

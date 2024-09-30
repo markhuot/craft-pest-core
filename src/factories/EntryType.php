@@ -35,7 +35,7 @@ class EntryType extends Factory
 
     public function newElement()
     {
-        return new EntryTypeModel();
+        return new EntryTypeModel;
     }
 
     public function store($entryType)

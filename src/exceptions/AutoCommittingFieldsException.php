@@ -2,6 +2,4 @@
 
 namespace markhuot\craftpest\exceptions;
 
-class AutoCommittingFieldsException extends \Exception
-{
-}
+class AutoCommittingFieldsException extends \Exception {}

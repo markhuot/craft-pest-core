@@ -59,7 +59,7 @@ function parseClass(string $className)
 function parseComment(string $comment)
 {
     preg_match_all('/@see\s+(.+)$/m', $comment, $sees);
-    foreach (($sees[1] ?? []) as $index => $otherClass) {
+    foreach ($sees[1] as $index => $otherClass) {
         $comment = str_replace($sees[0][$index], 'SEE['.$otherClass.']', $comment);
     }
 
@@ -71,7 +71,7 @@ function parseComment(string $comment)
     $comment = preg_replace('/(^\s+|\s+$)/', '', $comment);
 
     preg_match_all('/^SEE\[(.+)\]$/m', $comment, $sees);
-    foreach (($sees[1] ?? []) as $index => $otherClass) {
+    foreach ($sees[1] as $index => $otherClass) {
         $comment = str_replace($sees[0][$index], "\n\n".implode("\n\n", parseClass($otherClass))."\n\n", $comment);
     }
 

@@ -80,7 +80,7 @@ if (! function_exists('volumeDefinition')) {
     function volumeDefinition(array $definition = [])
     {
         if (version_greater_than_or_equal_to(\Craft::$app->version, '4')) {
-            $fileSystem = new \craft\fs\Local();                                                                  // @phpstan-ignore-line
+            $fileSystem = new \craft\fs\Local;                                                                  // @phpstan-ignore-line
             $fileSystem->name = $definition['name'].' FS';                                                      // @phpstan-ignore-line
             $fileSystem->handle = $definition['handle'].'Fs';                                                   // @phpstan-ignore-line
             $fileSystem->path = \Craft::getAlias('@storage').'/volumes/'.$definition['handle'].'/';    // @phpstan-ignore-line

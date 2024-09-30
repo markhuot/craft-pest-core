@@ -2,6 +2,4 @@
 
 namespace markhuot\craftpest\http\requests;
 
-class PostRequest extends WebRequest
-{
-}
+class PostRequest extends WebRequest {}

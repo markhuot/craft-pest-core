@@ -2,6 +2,4 @@
 
 namespace markhuot\craftpest\overrides;
 
-class Config extends \craft\services\Config
-{
-}
+class Config extends \craft\services\Config {}

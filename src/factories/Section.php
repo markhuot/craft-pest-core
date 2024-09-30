@@ -66,7 +66,7 @@ class Section extends Factory
      */
     public function newElement()
     {
-        return new \craft\models\Section();
+        return new \craft\models\Section;
     }
 
     /**
@@ -94,7 +94,7 @@ class Section extends Factory
         $handle = $definition['handle'];
         $definition['siteSettings'] = collect(Craft::$app->sites->getAllSites())
             ->mapWithkeys(function ($site) use ($name, $handle) {
-                $settings = new Section_SiteSettings();
+                $settings = new Section_SiteSettings;
                 $settings->siteId = $site->id;
                 $settings->hasUrls = $this->hasUrls;
                 $settings->uriFormat = $this->uriFormat;
