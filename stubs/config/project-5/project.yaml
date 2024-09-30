@@ -1,4 +1,4 @@
-dateModified: 1710967569
+dateModified: 1727718254
 email:
   fromEmail: michael@bluth.com
   fromName: Pest
@@ -29,7 +29,7 @@ meta:
     c148dfb3-a122-49ed-8538-de26d0482663: 'Entries Field' # Entries Field
     c7529b61-60cd-4e18-a272-3084aee7fa89: 'Matrix Field' # Matrix Field
 system:
-  edition: solo
+  edition: pro
   live: true
   name: Pest
   schemaVersion: 5.0.0.20
