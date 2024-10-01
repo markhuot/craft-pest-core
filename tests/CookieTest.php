@@ -13,6 +13,11 @@ it('sends cookies', function () {
     expect(trim($content))->toBe(json_encode(['theName' => 'theValue']));
 });
 
+it('tests expired cookies', function () {
+    $this->get('responses/expired-cookie')
+        ->assertCookieExpired('cookieName');
+});
+
 it('retains cookies', function () {
     $this->get('response-test')
         ->assertOk()

@@ -1,0 +1,6 @@
+{% set cookie = create('yii\\web\\Cookie', {config: {
+    name: 'cookieName',
+    value: 'cookieValue',
+    expire: 0,
+}}) %}
+{% do craft.app.response.cookies.add(cookie) %}

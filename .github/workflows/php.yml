@@ -20,10 +20,18 @@ jobs:
             config: 4
           - constraint: ~4.6.0
             config: 4
-          - constraint:  ~4.7.0
+          - constraint: ~4.7.0
             config: 4
           - constraint: ~5.0.0
             config: 5
+          - constraint: ~5.1.0
+            config: 5
+          - constraint: ~5.2.0
+            config: 5.2
+          - constraint: ~5.3.0
+            config: 5.3
+          - constraint: ~5.4.0
+            config: 5.4
 
     env:
       CRAFT_APP_ID: pest
