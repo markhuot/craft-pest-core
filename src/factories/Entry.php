@@ -24,6 +24,7 @@ use function markhuot\craftpest\helpers\base\service;
  * @phpstan-ignore-next-line ignored because the file is generated
  *
  * @mixin FactoryFields
+ * @extends Factory<\craft\elements\Entry>
  */
 class Entry extends Element
 {
@@ -102,6 +103,13 @@ class Entry extends Element
         }
 
         $this->attributes[$key] = $value;
+    }
+
+    public function isProvisionalDraft($provisionalDraft=true): self
+    {
+        $this->attributes['isProvisionalDraft'] = $provisionalDraft;
+
+        return $this;
     }
 
     /**

@@ -166,7 +166,7 @@ abstract class Factory
      * Create a new factory by calling `::factory()` on the type of element to be
      * created, such as `Entry::factory()` or `Asset::factory()`.
      */
-    public static function factory()
+    public static function factory(): static
     {
         return new static;
     }

@@ -11,6 +11,9 @@ use function markhuot\craftpest\helpers\craft\createVolume;
 use function markhuot\craftpest\helpers\craft\volumeDefinition;
 use function markhuot\craftpest\helpers\craft\volumeDeleteRootDirectory;
 
+/**
+ * @extends Factory<\craft\models\Volume>
+ */
 class Volume extends Factory
 {
     /**
