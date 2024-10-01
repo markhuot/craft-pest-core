@@ -3,7 +3,7 @@
     "slug": "foo-bar",
     "isDraft": false,
     "isRevision": false,
-    "isNewForSite": true,
+    "isNewForSite": false,
     "isUnpublishedDraft": false,
     "enabled": true,
     "archived": false,

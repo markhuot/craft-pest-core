@@ -39,35 +39,6 @@ it('renders views with variables')
     ->renderTemplate('variable', ['foo' => 'bar'])
     ->assertMatchesSnapshot();
 
-it('includes postDate in snapshots')
-    ->expect(fn () => Entry::factory()
-        ->section('posts')
-        ->postDate('2022-01-01 00:00:00')
-        ->title('foo bar')
-        ->create())
-    ->toSnapshot(['postDate'])->toMatchSnapshot();
-
-it('includes postDate in snapshot assertions', function () {
-    $entry = Entry::factory()
-        ->section('posts')
-        ->postDate('2022-01-01 00:00:00')
-        ->title('foo bar')
-        ->create();
-
-    $entry->assertMatchesSnapshot(['postDate']);
-});
-
-it('matches entry snapshots', function () {
-    $entry = Entry::factory()
-        ->section('posts')
-        ->title('foo bar')
-        ->textField('foo')
-        ->dropdownField('one')
-        ->create();
-
-    expect($entry)->toMatchSnapshot();
-});
-
 it('matches nested entry snapshots', function () {
     $child = Entry::factory()
         ->section('posts')
@@ -90,4 +61,44 @@ it('matches collected snapshots', function () {
 
     $snapshots = collect($entries->map->toSnapshotArray())->sortBy('title')->values()->all();
     expect(json_encode($snapshots))->toMatchSnapshot();
+});
+
+// Before 5.3.3 Craft reported isNewForSite as `true` after a save but thanks to
+// https://github.com/craftcms/cms/issues/15517 it switched to `false. So, to avoid splitting our
+// tests we don't actually check snapshots on newly created elements. We re-fetch them from
+// the database to be sure we're not running in to differences with isNewForSite between
+// Craft versions
+it('includes postDate in snapshots', function () {
+    $entry = Entry::factory()
+        ->section('posts')
+        ->postDate('2022-01-01 00:00:00')
+        ->title('foo bar')
+        ->create();
+
+    expect(\craft\elements\Entry::find()->id($entry->id)->one())
+        ->toSnapshot(['postDate'])
+        ->toMatchSnapshot();
+});
+
+it('includes postDate in snapshot assertions', function () {
+    $entry = Entry::factory()
+        ->section('posts')
+        ->postDate('2022-01-01 00:00:00')
+        ->title('foo bar')
+        ->create();
+
+    expect(\craft\elements\Entry::find()->id($entry->id)->one())
+        ->assertMatchesSnapshot(['postDate']);
+});
+
+it('matches entry snapshots', function () {
+    $entry = Entry::factory()
+        ->section('posts')
+        ->title('foo bar')
+        ->textField('foo')
+        ->dropdownField('one')
+        ->create();
+
+    expect(\craft\elements\Entry::find()->id($entry->id)->one())
+        ->toMatchSnapshot();
 });
