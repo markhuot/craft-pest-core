@@ -25,7 +25,7 @@ use function markhuot\craftpest\helpers\craft\volumeDeleteFileAtPath;
  * > **Note**
  * > Any assets created during a test will be cleaned up and deleted after the test.
  *
- * @extends Factory<\craft\elements\Asset>
+ * @extends Element<\craft\elements\Asset>
  */
 class Asset extends Element
 {

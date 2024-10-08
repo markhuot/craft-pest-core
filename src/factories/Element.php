@@ -10,6 +10,9 @@ use Illuminate\Support\Collection;
 use function markhuot\craftpest\helpers\base\array_wrap;
 use function markhuot\craftpest\helpers\base\collection_wrap;
 
+/**
+ * @template T
+ */
 abstract class Element extends Factory
 {
     use AddsMatrixBlocks;

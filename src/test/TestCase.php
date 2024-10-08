@@ -6,7 +6,6 @@ use Craft;
 use craft\helpers\App;
 use Illuminate\Support\Collection;
 use markhuot\craftpest\actions\CallSeeders;
-use markhuot\craftpest\console\TestableResponse;
 use markhuot\craftpest\interfaces\RenderCompiledClassesInterface;
 use Symfony\Component\Process\Process;
 
@@ -18,6 +17,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
         CookieState,
         DatabaseAssertions,
         Dd,
+        ExecuteConsoleCommands,
         Mocks,
         RequestBuilders,
         SnapshotAssertions,
@@ -231,21 +231,6 @@ class TestCase extends \PHPUnit\Framework\TestCase
         $this->seedData = (new CallSeeders)->handle(...$seeders);
 
         return $this;
-    }
-
-    public function console(array|string $command)
-    {
-        if (! is_array($command)) {
-            $command = [$command];
-        }
-
-        $craft = getenv('CRAFT_EXE_PATH') ?: './craft';
-        $process = new Process([$craft, ...$command]);
-        $exitCode = $process->run();
-        $stdout = $process->getOutput();
-        $stderr = $process->getErrorOutput();
-
-        return new TestableResponse($exitCode, $stdout, $stderr);
     }
 
     public function renderTemplate(...$args)

@@ -4,12 +4,17 @@ namespace markhuot\craftpest\factories;
 
 use craft\fields\Matrix;
 
-class MatrixFieldEntries extends Field
+class MatrixFieldEntries extends MatrixField
 {
     /**
      * @var EntryType[]
      */
     protected $entryTypes = [];
+
+    public static function factory(): static
+    {
+        return new static;
+    }
 
     public function entryTypes(...$entryTypes)
     {

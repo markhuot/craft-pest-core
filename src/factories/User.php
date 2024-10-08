@@ -4,7 +4,8 @@ namespace markhuot\craftpest\factories;
 
 /**
  * @method self admin(bool $isAdmin)
- * @extends Factory<\craft\elements\User>
+ *
+ * @extends Element<\craft\elements\User>
  */
 class User extends Element
 {

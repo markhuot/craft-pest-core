@@ -194,4 +194,13 @@ class PestController extends Controller
 
         return 0;
     }
+
+    // Internal method for testing purposes, not public
+    public function actionInternal()
+    {
+        $this->stdout('stdout');
+        $this->stderr('stderr');
+
+        return ExitCode::OK;
+    }
 }
