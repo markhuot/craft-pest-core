@@ -17,7 +17,7 @@ use Symfony\Component\DomCrawler\Crawler;
 use yii\base\Behavior;
 
 /**
- * # Response Assertions
+ * # HTTP Response Assertions
  *
  * A testable response is returned whenever you perform a HTTP request
  * with Pest. It is an extension of Craft's native Response with a
