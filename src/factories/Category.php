@@ -5,7 +5,7 @@ namespace markhuot\craftpest\factories;
 /**
  * @method self title(string $title)
  *
- * @extends Factory<\craft\elements\Category>
+ * @extends Element<\craft\elements\Category>
  */
 class Category extends Element
 {

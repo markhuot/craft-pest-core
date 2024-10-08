@@ -2,6 +2,8 @@
 
 namespace markhuot\craftpest\io;
 
+use function markhuot\craftpest\helpers\test\test;
+
 class Buffer extends \php_user_filter
 {
     protected string $streamName = 'stdout';
