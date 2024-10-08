@@ -7,9 +7,14 @@ use craft\models\MatrixBlockType;
 
 use function markhuot\craftpest\helpers\base\version_greater_than_or_equal_to;
 
-class MatrixFieldBlocks extends Field
+class MatrixFieldBlocks extends MatrixField
 {
     protected $blockTypes = [];
+
+    public static function factory(): static
+    {
+        return new static;
+    }
 
     public function blockTypes(...$blockTypes)
     {

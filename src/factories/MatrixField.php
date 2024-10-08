@@ -19,6 +19,6 @@ class MatrixField extends Field
             return MatrixFieldBlocks::factory();
         }
 
-        throw new \RuntimeException('bad version');
+        throw new \RuntimeException('Craft Pest is not compatible with this version of Craft CMS.');
     }
 }
