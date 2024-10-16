@@ -8,6 +8,7 @@ use markhuot\craftpest\actions\CallSeeders;
 use markhuot\craftpest\actions\InstallCraft;
 use markhuot\craftpest\interfaces\RenderCompiledClassesInterface;
 use Symfony\Component\Process\Process;
+
 use function markhuot\craftpest\helpers\base\service;
 
 class TestCase extends \PHPUnit\Framework\TestCase
