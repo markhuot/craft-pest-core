@@ -3,11 +3,12 @@
 namespace markhuot\craftpest\test;
 
 use Craft;
-use craft\helpers\App;
 use Illuminate\Support\Collection;
 use markhuot\craftpest\actions\CallSeeders;
+use markhuot\craftpest\actions\InstallCraft;
 use markhuot\craftpest\interfaces\RenderCompiledClassesInterface;
 use Symfony\Component\Process\Process;
+use function markhuot\craftpest\helpers\base\service;
 
 class TestCase extends \PHPUnit\Framework\TestCase
 {
@@ -106,38 +107,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function craftInstall()
     {
-        $args = [
-            '--username='.(App::env('CRAFT_INSTALL_USERNAME') ?? 'user@example.com'),
-            '--email='.(App::env('CRAFT_INSTALL_EMAIL') ?? 'user@example.com'),
-            '--password='.(App::env('CRAFT_INSTALL_PASSWORD') ?? 'secret'),
-            '--interactive='.(App::env('CRAFT_INSTALL_INTERACTIVE') ?? '0'),
-        ];
-
-        if (! file_exists(Craft::getAlias('@config/project/project.yaml'))) {
-            $args = array_merge($args, [
-                '--siteName='.(App::env('CRAFT_INSTALL_SITENAME') ?? '"Craft CMS"'),
-                '--siteUrl='.(App::env('CRAFT_INSTALL_SITEURL') ?? 'http://localhost:8080'),
-                '--language='.(App::env('CRAFT_INSTALL_LANGUAGE') ?? 'en-US'),
-            ]);
-        }
-
-        $craftExePath = getenv('CRAFT_EXE_PATH') ?: './craft';
-        $process = new Process([$craftExePath, 'install', ...$args]);
-        $process->setTty(Process::isTtySupported());
-        $process->setTimeout(null);
-        $process->start();
-
-        foreach ($process as $type => $data) {
-            if ($type === $process::OUT) {
-                echo $data;
-            } else {
-                echo $data;
-            }
-        }
-
-        if (! $process->isSuccessful()) {
-            throw new \Exception('Failed installing Craft');
-        }
+        service(InstallCraft::class)();
     }
 
     protected function craftMigrateAll()
