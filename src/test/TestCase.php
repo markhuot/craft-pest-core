@@ -40,6 +40,20 @@ class TestCase extends \PHPUnit\Framework\TestCase
         $this->callTraits('tearDown');
     }
 
+    /**
+     * Run the queue after every test case if it's setup as a sync queue
+     */
+    protected function assertPostConditions(): void
+    {
+        $queue = Craft::$app->queue;
+
+        if ($queue instanceof \yii\queue\sync\Queue) {
+            $queue->run();
+        }
+
+        parent::assertPostConditions();
+    }
+
     protected function callTraits($prefix)
     {
         $traits = [];
