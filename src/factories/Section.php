@@ -114,7 +114,9 @@ class Section extends Factory
                     'name' => $name,
                     'handle' => StringHelper::toHandle($name),
                 ]);
-                $entryType->getFieldLayout()->prependElements([new EntryTitleField()]);
+                if (InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '>=5.5.0')) {
+                    $entryType->getFieldLayout()->prependElements([new EntryTitleField]);
+                }
                 service(SectionsServiceInterface::class)->saveEntryType($entryType);
                 throw_if($entryType->errors, 'Problem saving entry type: '.implode(', ', $entryType->getFirstErrors()));
                 $definition['entryTypes'] = [$entryType];
