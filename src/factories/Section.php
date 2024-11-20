@@ -5,6 +5,7 @@ namespace markhuot\craftpest\factories;
 use Composer\InstalledVersions;
 use Composer\Semver\VersionParser;
 use Craft;
+use craft\fieldlayoutelements\entries\EntryTitleField;
 use craft\helpers\StringHelper;
 use craft\models\EntryType;
 use craft\models\Section_SiteSettings;
@@ -113,6 +114,7 @@ class Section extends Factory
                     'name' => $name,
                     'handle' => StringHelper::toHandle($name),
                 ]);
+                $entryType->getFieldLayout()->prependElements([new EntryTitleField()]);
                 service(SectionsServiceInterface::class)->saveEntryType($entryType);
                 throw_if($entryType->errors, 'Problem saving entry type: '.implode(', ', $entryType->getFirstErrors()));
                 $definition['entryTypes'] = [$entryType];
