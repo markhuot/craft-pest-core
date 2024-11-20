@@ -1,0 +1,36 @@
+dateModified: 1732122954
+email:
+  fromEmail: michael@bluth.com
+  fromName: Pest
+  transportType: craft\mail\transportadapters\Sendmail
+fs:
+  local:
+    hasUrls: true
+    name: Local
+    settings:
+      path: /workspaces/craft-pest-core/web/volumes/local
+    type: craft\fs\Local
+    url: 'http://localhost:8080/volumes/local/'
+meta:
+  __names__:
+    3b2c4b24-e463-46ca-be26-7285804ecbb1: Local # Local
+    7d1a7bf3-c346-48bc-bb77-f7d76fcacf2e: 'Text Field' # Text Field
+    99c2747f-1049-46bc-93e0-424bad0544e5: Pest # Pest
+    184fa66e-14cd-4045-853d-9a69ecf44e4e: 'Public Schema' # Public Schema
+    0193fbbc-6912-4ff6-a3d5-e60ea03c8590: Default # Default
+    10199d0e-57f0-4724-aefb-1ef4ed73b408: 'Field Two' # Field Two
+    17685ada-d64c-459c-b9fc-678d43e4bee8: 'Dropdown Field' # Dropdown Field
+    ae919370-04f6-4e2d-8d42-f255cc1b6a75: Posts # Posts
+    b5c238dd-588f-4f0a-b9e4-8a988f0e7468: 'Block Type One' # Block Type One
+    b11e9b16-d6b0-4771-86bb-3fe962b4596d: Pest # Pest
+    bda4d299-4f91-43c1-91d1-48abd1dd5fb4: Pest # Pest
+    bdde35b2-daab-45e7-aef7-43fd8b221aa2: Pest # Pest
+    c05f8773-60a8-4f5e-9925-3cc36a064793: 'Field One' # Field One
+    c148dfb3-a122-49ed-8538-de26d0482663: 'Entries Field' # Entries Field
+    c7529b61-60cd-4e18-a272-3084aee7fa89: 'Matrix Field' # Matrix Field
+system:
+  edition: pro
+  live: true
+  name: Pest
+  schemaVersion: 5.5.0.0
+  timeZone: America/Los_Angeles

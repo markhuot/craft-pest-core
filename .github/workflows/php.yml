@@ -33,7 +33,7 @@ jobs:
           - constraint: ~5.4.0
             config: 5.4
           - constraint: ~5.5.0
-            config: 5.4
+            config: 5.5
 
     env:
       CRAFT_APP_ID: pest
