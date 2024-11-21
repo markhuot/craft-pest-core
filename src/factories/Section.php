@@ -115,6 +115,7 @@ class Section extends Factory
                     'handle' => StringHelper::toHandle($name),
                 ]);
                 if (InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '>=5.5.0')) {
+                    // @phpstan-ignore-next-line
                     $entryType->getFieldLayout()->prependElements([new EntryTitleField]);
                 }
                 service(SectionsServiceInterface::class)->saveEntryType($entryType);
