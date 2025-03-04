@@ -16,4 +16,10 @@
             <directory suffix=".php">./templates</directory>
         </include>
     </coverage>
+    <php>
+        <!-- Override the database so you can run your tests in an isolated -->
+        <!-- environment without affecting your local development. -->
+        <!-- <env name="CRAFT_DB_DATABASE" value="craftpest_test" /> -->
+        <env name="CRAFT_QUEUE_DRIVER" value="sync" />
+    </php>
 </phpunit>

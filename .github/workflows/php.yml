@@ -101,8 +101,15 @@ jobs:
     - name: Wait for MySQL
       run: until mysqladmin ping -h 127.0.0.1 -u root -proot; do sleep 1; done
 
-    - name: Install Craft
-      run: php craft install --interactive=0 --username=admin --email=michael@bluth.com --password=secret --siteName=Pest --siteUrl=http://localhost:8080 --language=en-US
+    # Normally you would install Craft _before_ you run your tests, but since we're testing Craft Pest
+    # itself and we want to be sure that the implicit install works as expected, we'll skip this step
+    # and let ./vendor/bin/pest do the install for us
+    #- name: Install Craft
+    #  run: php craft install --interactive=0 --username=admin --email=michael@bluth.com --password=secret --siteName=Pest --siteUrl=http://localhost:8080 --language=en-US
+
+    - name: Run a single test to trigger a Craft install
+      run: ./vendor/bin/pest tests/BootstrapTest.php --compact -vvv
+      if: always()
 
     - name: Run PHPStan
       run: ./vendor/bin/phpstan analyse src
