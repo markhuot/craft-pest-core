@@ -4,10 +4,14 @@ namespace markhuot\craftpest\test;
 
 use Craft;
 use craft\helpers\App;
+use craft\migrations\Install;
+use craft\models\Site;
 use Illuminate\Support\Collection;
 use markhuot\craftpest\actions\CallSeeders;
 use markhuot\craftpest\interfaces\RenderCompiledClassesInterface;
 use Symfony\Component\Process\Process;
+
+use function markhuot\craftpest\helpers\test\dd;
 
 class TestCase extends \PHPUnit\Framework\TestCase
 {
@@ -80,11 +84,8 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
         $this->requireCraft();
 
-        $needsRefresh = false;
-
         if (! Craft::$app->getIsInstalled(true)) {
             $this->craftInstall();
-            $needsRefresh = true;
         }
 
         if (
@@ -92,7 +93,6 @@ class TestCase extends \PHPUnit\Framework\TestCase
             Craft::$app->getContentMigrator()->getNewMigrations()
         ) {
             $this->craftMigrateAll();
-            $needsRefresh = true;
         }
 
         // We have to flush the data cache to make sure we're getting an accurate look at whether or not there
@@ -106,13 +106,6 @@ class TestCase extends \PHPUnit\Framework\TestCase
         Craft::$app->getCache()->flush();
         if (Craft::$app->getProjectConfig()->areChangesPending(null, true)) {
             $this->craftProjectConfigApply();
-            $needsRefresh = true;
-        }
-
-        // After installation, the Craft::$app may be out of sync because the installation happened in a sub
-        // process. We need to force the $app to reload its state.
-        if ($needsRefresh) {
-            exit($this->reRunPest());
         }
 
         return Craft::$app;
@@ -121,97 +114,47 @@ class TestCase extends \PHPUnit\Framework\TestCase
     protected function craftInstall()
     {
         $args = [
-            '--username='.(App::env('CRAFT_INSTALL_USERNAME') ?? 'user@example.com'),
-            '--email='.(App::env('CRAFT_INSTALL_EMAIL') ?? 'user@example.com'),
-            '--password='.(App::env('CRAFT_INSTALL_PASSWORD') ?? 'secret'),
-            '--interactive='.(App::env('CRAFT_INSTALL_INTERACTIVE') ?? '0'),
+            'username' => (App::env('CRAFT_INSTALL_USERNAME') ?? 'user@example.com'),
+            'email' => (App::env('CRAFT_INSTALL_EMAIL') ?? 'user@example.com'),
+            'password' => (App::env('CRAFT_INSTALL_PASSWORD') ?? 'secret'),
         ];
 
-        if (! file_exists(Craft::getAlias('@config/project/project.yaml'))) {
-            $args = array_merge($args, [
-                '--siteName='.(App::env('CRAFT_INSTALL_SITENAME') ?? '"Craft CMS"'),
-                '--siteUrl='.(App::env('CRAFT_INSTALL_SITEURL') ?? 'http://localhost:8080'),
-                '--language='.(App::env('CRAFT_INSTALL_LANGUAGE') ?? 'en-US'),
-            ]);
-        }
+        $args = array_merge($args, [
+            'siteName' => (App::env('CRAFT_INSTALL_SITENAME') ?? '"Craft CMS"'),
+            'siteUrl' => (App::env('CRAFT_INSTALL_SITEURL') ?? 'http://localhost:8080'),
+            'language' => (App::env('CRAFT_INSTALL_LANGUAGE') ?? 'en-US'),
+        ]);
 
-        $craftExePath = getenv('CRAFT_EXE_PATH') ?: './craft';
-        $process = new Process([$craftExePath, 'install', ...$args]);
-        $process->setTty(Process::isTtySupported());
-        $process->setTimeout(null);
-        $process->start();
+        $siteConfig = [
+            'name' => $args['siteName'],
+            'handle' => 'default',
+            'hasUrls' => true,
+            'baseUrl' => $args['siteUrl'],
+            'language' => $args['language'],
+            'primary' => true,
+        ];
 
-        foreach ($process as $type => $data) {
-            if ($type === $process::OUT) {
-                echo $data;
-            } else {
-                echo $data;
-            }
-        }
+        $site = new Site($siteConfig);
 
-        if (! $process->isSuccessful()) {
-            throw new \Exception('Failed installing Craft');
-        }
+        $migration = new Install([
+            'db' => \Craft::$app->getDb(),
+            'username' => $args['username'],
+            'password' => $args['password'],
+            'email' => $args['email'],
+            'site' => $site,
+        ]);
+
+        $migration->up();
     }
 
     protected function craftMigrateAll()
     {
-        $craftExePath = getenv('CRAFT_EXE_PATH') ?: './craft';
-        $process = new Process([$craftExePath, 'migrate/all', '--interactive=0']);
-        $process->setTty(Process::isTtySupported());
-        $process->setTimeout(null);
-        $process->start();
-
-        foreach ($process as $type => $data) {
-            if ($type === $process::OUT) {
-                echo $data;
-            } else {
-                echo $data;
-            }
-        }
-
-        if (! $process->isSuccessful()) {
-            throw new \Exception('Failed migrating Craft');
-        }
+        Craft::$app->getContentMigrator()->up();
     }
 
     protected function craftProjectConfigApply()
     {
-        $craftExePath = getenv('CRAFT_EXE_PATH') ?: './craft';
-        $process = new Process([$craftExePath, 'project-config/apply', '--interactive=0']);
-        $process->setTty(Process::isTtySupported());
-        $process->setTimeout(null);
-        $process->start();
-
-        foreach ($process as $type => $data) {
-            if ($type === $process::OUT) {
-                echo $data;
-            } else {
-                echo $data;
-            }
-        }
-
-        if (! $process->isSuccessful()) {
-            throw new \Exception('Project config apply failed');
-        }
-    }
-
-    protected function reRunPest()
-    {
-        $process = new Process($_SERVER['argv']);
-        $process->setTty(Process::isTtySupported());
-        $process->setTimeout(null);
-        $process->start();
-
-        foreach ($process as $type => $data) {
-            if ($type === $process::OUT) {
-                echo $data;
-            } else {
-                echo $data;
-            }
-        }
-
-        return $process->getExitCode();
+        Craft::$app->getProjectConfig()->applyExternalChanges();
     }
 
     public function renderCompiledClasses()
