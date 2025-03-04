@@ -141,7 +141,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
             'site' => $site,
         ]);
 
-        $migration->up();
+        $migration->up(true);
     }
 
     protected function craftMigrateAll()
