@@ -9,9 +9,6 @@ use craft\models\Site;
 use Illuminate\Support\Collection;
 use markhuot\craftpest\actions\CallSeeders;
 use markhuot\craftpest\interfaces\RenderCompiledClassesInterface;
-use Symfony\Component\Process\Process;
-
-use function markhuot\craftpest\helpers\test\dd;
 
 class TestCase extends \PHPUnit\Framework\TestCase
 {
