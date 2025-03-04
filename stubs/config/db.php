@@ -13,5 +13,5 @@ return [
     'schema' => App::env('CRAFT_DB_SCHEMA'),
     'tablePrefix' => App::env('CRAFT_DB_TABLE_PREFIX'),
     'charset' => 'utf8',
-    //'collation' => 'utf8_unicode_ci',
+    // 'collation' => 'utf8_unicode_ci',
 ];
