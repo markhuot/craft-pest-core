@@ -15,6 +15,7 @@ use markhuot\craftpest\behaviors\FieldTypeHintBehavior;
 use markhuot\craftpest\behaviors\TestableElementBehavior;
 use markhuot\craftpest\behaviors\TestableElementQueryBehavior;
 use markhuot\craftpest\console\PestController;
+use markhuot\craftpest\database\PdoProxy;
 use markhuot\craftpest\interfaces\RenderCompiledClassesInterface;
 use markhuot\craftpest\interfaces\SectionsServiceInterface;
 use yii\base\BootstrapInterface;
@@ -27,6 +28,10 @@ class Pest implements BootstrapInterface
 {
     public function bootstrap($app)
     {
+        if (getenv('CRAFT_DB_OVERRIDE')) {
+            Craft::$app->getDb()->pdo = new PdoProxy(Craft::$app->getDb()->pdo);
+        }
+        
         Craft::setAlias('@markhuot/craftpest', __DIR__);
 
         if (Craft::$app->request->isConsoleRequest) {
