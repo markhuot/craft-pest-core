@@ -5,6 +5,10 @@ namespace markhuot\craftpest\webdriver;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Pest\TestSuite;
 use PHPUnit\Framework\Assert;
+use React\EventLoop\Loop;
+
+use function markhuot\craftpest\helpers\test\dd;
+use function markhuot\craftpest\helpers\test\dump;
 
 class Browser
 {
@@ -14,13 +18,36 @@ class Browser
     protected static array $counter = [];
 
     public function __construct(
-        protected RemoteWebDriver $driver,
+        protected ?RemoteWebDriver $driver,
     ) {
     }
 
     public function visit(string $url): self
     {
-        $this->driver->get($url);
+        // $loop = Loop::get();
+        // $loop->addTimer(1, function () use ($url) {
+        //     $this->driver->get($url);
+        //     Loop::stop();
+        // });
+        // $loop->run();
+
+        // $fiber = new \Fiber(function () use ($url) {
+        //     $this->driver->get($url);
+        // });
+        // $fiber->start();
+
+        $driver = \Facebook\WebDriver\Remote\RemoteWebDriver::create('http://localhost:4444', \Facebook\WebDriver\Remote\DesiredCapabilities::safari());
+        $pid = pcntl_fork();
+        if ($pid == -1) {
+            die('could not fork');
+        } else if ($pid) {
+            // we are the parent
+            // pcntl_wait($status); //Protect against Zombie children
+        } else {
+            $driver->get($url);
+            // $response = (new \GuzzleHttp\Client())->get($url);
+            // dump('< '.$response->getBody()->getContents().PHP_EOL);
+        }
 
         return $this;
     }
