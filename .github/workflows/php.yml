@@ -75,6 +75,10 @@ jobs:
         php-version: '8.3'
 
     - uses: browser-actions/setup-chrome@v1
+      id: setup-chrome
+      with:
+        install-dependencies: true
+        install-chromedriver: true
 
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
@@ -116,3 +120,6 @@ jobs:
     - name: Run test suite
       run: ./vendor/bin/pest --compact -vvv
       if: always()
+      env:
+        CHROMEDRIVER_PATH: ${{ steps.setup-chrome.outputs.chromedriver-path }}
+

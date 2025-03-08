@@ -43,8 +43,8 @@ trait WebDriver
         }
 
         [$driverPath, $driverPort] = match ($browser) {
-            'chrome' => ['/usr/local/bin/chromedriver', 4444],
-            'safari' => ['/usr/bin/safaridriver', 4445],
+            'chrome' => [(getenv('CHROMEDRIVER_PATH') ?: '/usr/local/bin/chromedriver'), (getenv('CHROMEDRIVER_PORT') ?: 4444)],
+            'safari' => [(getenv('SAFARIDRIVER_PATH') ?: '/usr/bin/safaridriver'), (getenv('SAFARIDRIVER_PORT') ?: 4445)],
             default => throw new \Exception('Unknown browser driver: '.$browser),
         };
         $process = new Process([$driverPath, '--port='.$driverPort]);
