@@ -3,7 +3,7 @@ name: Run Tests
 on:
   pull_request:
   push:
-    branches: 
+    branches:
       - main
 
 permissions:
@@ -15,7 +15,7 @@ jobs:
 
     strategy:
       matrix:
-        version: 
+        version:
           - constraint: ~4.5.0
             config: 4
           - constraint: ~4.6.0
@@ -112,6 +112,10 @@ jobs:
 
     - name: Run PHPStan
       run: ./vendor/bin/phpstan analyse src
+
+    - name: Run Rector
+      run: ./vendor/bin/rector process --dry-run
+      if: always()
 
     - name: Run pint
       run: ./vendor/bin/pint --test -vvv src/
