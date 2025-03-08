@@ -28,10 +28,10 @@ class Pest implements BootstrapInterface
 {
     public function bootstrap($app)
     {
-        if (getenv('CRAFT_DB_OVERRIDE')) {
+        if (getenv('CRAFTPEST_PROXY_DB')) {
             Craft::$app->getDb()->pdo = new PdoProxy(Craft::$app->getDb()->pdo);
         }
-        
+
         Craft::setAlias('@markhuot/craftpest', __DIR__);
 
         if (Craft::$app->request->isConsoleRequest) {

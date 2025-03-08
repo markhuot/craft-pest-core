@@ -23,11 +23,11 @@ class PdoProxy
         if ($method === 'prepare') {
             $identifier = md5(uniqid());
 
-            Craft::createGuzzleClient()->post('http://127.0.0.1:5551', [
+            Craft::createGuzzleClient()->post('http://127.0.0.1:5551', ['json' => [
                 'identifier' => $identifier,
                 'method' => 'prepare',
                 'args' => serialize($args)
-            ]);
+            ]]);
 
             $result = new PdoStatementProxy($identifier, $result);
         }

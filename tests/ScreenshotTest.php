@@ -1,11 +1,18 @@
 <?php
 
-// it('takes screenshots')
-//     ->visit('http://127.0.0.1:8080/')
-//     ->screenshot();
+use markhuot\craftpest\factories\Entry;
 
-it('takes screenshots')
-    ->browse(function ($browser) {
-        $browser->visit('http://127.0.0.1:8080')
-            ->screenshot();
-    });
+it('takes screenshots in Safari')
+    ->withSafari()
+    ->visit('/entry-count')
+    ->screenshot();
+
+it('takes screenshots in Chrome')
+    ->withChrome()
+    ->visit('/entry-count')
+    ->screenshot();
+
+it('communicates with the browser', function () {
+    $this->withChrome()
+        ->visit('/entry-count');
+});

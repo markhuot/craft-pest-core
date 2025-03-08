@@ -2,6 +2,8 @@
 
 namespace markhuot\craftpest\database;
 
+use Craft;
+
 /**
  * @mixin \PDOStatement
  */
@@ -16,25 +18,23 @@ class PdoStatementProxy
 
     public function __call($method, $args)
     {
-        // $file = fopen('/tmp/craftpest.sock', 'w+');
-        // fwrite($file, json_encode([
-        //     'identifier' => $this->identifier,
-        //     'method' => $method,
-        //     'args' => serialize($args)
-        // ])."\n\n");
-        // fclose($file);
-        return $this->pdoStatement->$method(...$args);
+        $result = Craft::createGuzzleClient()->post('http://127.0.0.1:5551', ['json' => [
+            'identifier' => $this->identifier,
+            'method' => $method,
+            'args' => serialize($args),
+        ]]);
+        $results = json_decode($result->getBody()->getContents(), true);
+        return unserialize($results['result']);
     }
 
     public function __get($name)
     {
-        // $file = fopen('/tmp/craftpest.sock', 'w+');
-        // fwrite($file, json_encode([
-        //     'identifier' => $this->identifier,
-        //     'method' => '__get',
-        //     'name' => $name,
-        // ])."\n\n");
-        // fclose($file);
-        return $this->pdoStatement->$name;
+        $result = Craft::createGuzzleClient()->post('http://127.0.0.1:5551', ['json' => [
+            'identifier' => $this->identifier,
+            'method' => '__get',
+            'args' => $name,
+        ]]);
+        $results = json_decode($result->getBody()->getContents(), true);
+        return unserialize($results['result']);
     }
 }
