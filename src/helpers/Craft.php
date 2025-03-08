@@ -22,7 +22,7 @@ function isBeforeCraftFive(): bool
  * @codeCoverageIgnore
  */
 if (! function_exists('volumeDeleteFileAtPath')) {
-    function volumeDeleteFileAtPath($volume, string $path)
+    function volumeDeleteFileAtPath($volume, string $path): void
     {
         if (version_greater_than_or_equal_to(\Craft::$app->version, '4')) {
             /** @var \craft\models\Volume $volume */
@@ -40,11 +40,11 @@ if (! function_exists('volumeDeleteFileAtPath')) {
  * @codeCoverageIgnore
  */
 if (! function_exists('volumeDeleteRootDirectory')) {
-    function volumeDeleteRootDirectory($volume)
+    function volumeDeleteRootDirectory($volume): void
     {
         if (version_greater_than_or_equal_to(\Craft::$app->version, '4')) {
             /** @var \craft\models\Volume $volume */
-            if (is_a($volume->fs, \craft\fs\Local::class)) {                              // @phpstan-ignore-line
+            if ($volume->fs instanceof \craft\fs\Local) {                              // @phpstan-ignore-line
                 FileHelper::removeDirectory($volume->fs->getRootPath());                        // @phpstan-ignore-line
             }
         } elseif (version_greater_than_or_equal_to(\Craft::$app->version, '3')) {
@@ -60,16 +60,18 @@ if (! function_exists('volumeDeleteRootDirectory')) {
  * @codeCoverageIgnore
  */
 if (! function_exists('createVolume')) {
-    function createVolume()
+    function createVolume(): \craft\models\Volume|\craft\volumes\Local|null
     {
         if (version_greater_than_or_equal_to(\Craft::$app->version, '4')) {
             // @phpstan-ignore-next-line Ignored because one of these will fail based on the installed version of Craft
             return new \craft\models\Volume;
-        } elseif (version_greater_than_or_equal_to(\Craft::$app->version, '3')) {
+        }
+        if (version_greater_than_or_equal_to(\Craft::$app->version, '3')) {
             /** @var \craft\base\VolumeInterface $volume */
             // @phpstan-ignore-next-line Ignored because one of these will fail based on the installed version of Craft
             return new \craft\volumes\Local;
         }
+        return null;
     }
 }
 
@@ -77,7 +79,7 @@ if (! function_exists('createVolume')) {
  * @codeCoverageIgnore
  */
 if (! function_exists('volumeDefinition')) {
-    function volumeDefinition(array $definition = [])
+    function volumeDefinition(array $definition = []): array
     {
         if (version_greater_than_or_equal_to(\Craft::$app->version, '4')) {
             $fileSystem = new \craft\fs\Local;                                                                  // @phpstan-ignore-line

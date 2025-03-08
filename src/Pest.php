@@ -26,7 +26,7 @@ use yii\base\Event;
  */
 class Pest implements BootstrapInterface
 {
-    public function bootstrap($app)
+    public function bootstrap($app): void
     {
         if (getenv('CRAFTPEST_PROXY_DB')) {
             Craft::$app->getDb()->pdo = new PdoProxy(Craft::$app->getDb()->pdo);
@@ -41,7 +41,7 @@ class Pest implements BootstrapInterface
         Event::on(
             Entry::class,
             Entry::EVENT_DEFINE_BEHAVIORS,
-            function (DefineBehaviorsEvent $event) {
+            function (DefineBehaviorsEvent $event): void {
                 $event->behaviors['expectableBehavior'] = ExpectableBehavior::class;
                 $event->behaviors['testableElementBehavior'] = TestableElementBehavior::class;
             }
@@ -50,7 +50,7 @@ class Pest implements BootstrapInterface
         Event::on(
             ElementQuery::class,
             ElementQuery::EVENT_DEFINE_BEHAVIORS,
-            function (DefineBehaviorsEvent $event) {
+            function (DefineBehaviorsEvent $event): void {
                 $event->behaviors['testableElementQueryBehavior'] = TestableElementQueryBehavior::class;
             }
         );
@@ -58,7 +58,7 @@ class Pest implements BootstrapInterface
         Event::on(
             Field::class,
             Field::EVENT_DEFINE_BEHAVIORS,
-            function (DefineBehaviorsEvent $event) {
+            function (DefineBehaviorsEvent $event): void {
                 $event->behaviors['fieldTypeHintBehavior'] = FieldTypeHintBehavior::class;
             }
         );

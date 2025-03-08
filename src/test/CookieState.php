@@ -43,7 +43,7 @@ trait CookieState
      *
      * @internal
      */
-    public function setUpCookieState()
+    public function setUpCookieState(): void
     {
         $this->clearCookieCollection();
     }
@@ -56,7 +56,7 @@ trait CookieState
      *
      * @internal
      */
-    public function tearDownCookieState()
+    public function tearDownCookieState(): void
     {
         $this->clearCookieCollection();
     }
@@ -83,7 +83,7 @@ trait CookieState
      */
     public function storeCookieCollection(?CookieCollection $cookies)
     {
-        if (empty($cookies)) {
+        if (!$cookies instanceof \yii\web\CookieCollection) {
             return $this;
         }
 

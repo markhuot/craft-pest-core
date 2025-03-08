@@ -17,12 +17,12 @@ class Coverage implements AddsOutput, HandlesArguments
     /**
      * @var string
      */
-    private const COVERAGE_OPTION = 'twig-coverage';
+    private const string COVERAGE_OPTION = 'twig-coverage';
 
     /**
      * @var string
      */
-    private const MIN_OPTION = 'min';
+    private const string MIN_OPTION = 'min';
 
     /**
      * Whether should show the coverage or not.
@@ -38,14 +38,8 @@ class Coverage implements AddsOutput, HandlesArguments
      */
     public $coverageMin = 80.0;
 
-    /**
-     * @var OutputInterface
-     */
-    private $output;
-
-    public function __construct(OutputInterface $output)
+    public function __construct(private readonly \Symfony\Component\Console\Output\OutputInterface $output)
     {
-        $this->output = $output;
     }
 
     /**
@@ -108,13 +102,11 @@ class Coverage implements AddsOutput, HandlesArguments
             return $result;
         }
 
-        if ($result === 0) {
-            if (! \Pest\Support\Coverage::isAvailable()) {
-                $this->output->writeln(
-                    "\n  <fg=white;bg=red;options=bold> ERROR </> No code coverage driver is available.</>",
-                );
-                exit(1);
-            }
+        if ($result === 0 && ! \Pest\Support\Coverage::isAvailable()) {
+            $this->output->writeln(
+                "\n  <fg=white;bg=red;options=bold> ERROR </> No code coverage driver is available.</>",
+            );
+            exit(1);
         }
 
         $reportPath = getcwd().'/storage/coverage.php';
@@ -167,12 +159,12 @@ class Coverage implements AddsOutput, HandlesArguments
 
                     $left = wordwrap(implode(' ', array_filter([
                         $name,
-                        $lines ? '<fg=yellow>'.$lines.'</>' : null,
+                        $lines !== '' && $lines !== '0' ? '<fg=yellow>'.$lines.'</>' : null,
                     ])), 60).' ';
                     $leftLines = preg_split('/[\r\n]+/', $left);
                     $lastLineOfLeft = $leftLines[count($leftLines) - 1];
 
-                    $right = ($percent ? ' ' : '').$percent;
+                    $right = ($percent !== '' && $percent !== '0' ? ' ' : '').$percent;
                     $hang = 0;
                     if (preg_match('/%$/', strip_tags($right))) {
                         $hang = -2;

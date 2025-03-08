@@ -20,21 +20,19 @@ trait Snapshotable
 
     public function toSnapshotArray(array $extraAttributes = [], ?array $attributes = null)
     {
-        $attributes = $attributes ?? match (get_class($this)) {
+        $attributes ??= match ($this::class) {
             Entry::class => ['title', 'slug', 'isDraft', 'isRevision', 'isNewForSite', 'isUnpublishedDraft', 'enabled', 'archived', 'uri', 'trashed', 'ref', 'status', 'url'],
             MatrixBlock::class => ['enabled', 'type'],
             Asset::class => ['filename', 'kind', 'alt', 'size', 'width', 'height', 'focalPoint'],
         };
 
         $customFields = collect($this->getFieldLayout()->getCustomFields())
-            ->mapWithKeys(function ($field) {
-                return [$field->handle => $field];
-            })
+            ->mapWithKeys(fn($field) => [$field->handle => $field])
 
             // remove any ElementQueries from the element so we don't try to snapshot
             // a serialized query. It will never match because it may have a dynamic `->where()`
             // or an `->ownerId` that changes with each generated element.
-            ->filter(fn ($field, $handle) => ! ($this->{$handle} instanceof ElementQuery));
+            ->filter(fn ($field, $handle): bool => ! ($this->{$handle} instanceof ElementQuery));
 
         return collect($attributes)
             ->merge($extraAttributes)

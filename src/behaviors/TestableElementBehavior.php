@@ -48,10 +48,10 @@ class TestableElementBehavior extends Behavior
      */
     public function assertInvalid(array $keys = [])
     {
-        if (count($keys)) {
+        if ($keys !== []) {
             $errors = collect($keys)
                 ->mapWithKeys(fn ($key) => [$key => $this->owner->getErrors($key)])
-                ->filter(fn ($errors) => count($errors) === 0);
+                ->filter(fn ($errors): bool => count($errors) === 0);
             if ($errors->count()) {
                 Assert::fail('The following keys were expected to be invalid but were not: '.implode(', ', $errors->keys()->all()));
             } else {

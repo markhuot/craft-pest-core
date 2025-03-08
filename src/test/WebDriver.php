@@ -23,13 +23,13 @@ trait WebDriver
 
     public function setUpWebDriver() {}
 
-    public function tearDownWebDriver() {
+    public function tearDownWebDriver(): void {
         foreach ($this->browsers as $browser) {
             $browser->quit();
         }
     }
 
-    public function bootWebDriver(string $browser)
+    public function bootWebDriver(string $browser): void
     {
         $this->startBrowserDriverProcess($browser);
         $this->startWebServerProcess();
@@ -55,9 +55,7 @@ trait WebDriver
             // a second and _hope_ it has booted...
             sleep(1);
         } else {
-            $process->waitUntil(function ($type, $buffer) {
-                return str_contains($buffer, 'ChromeDriver was started successfully');
-            });
+            $process->waitUntil(fn($type, $buffer): bool => str_contains((string) $buffer, 'ChromeDriver was started successfully'));
         }
 
         static::$browserDriverBooted[$browser] = true;

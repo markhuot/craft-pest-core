@@ -20,7 +20,7 @@ trait DatabaseAssertions
      * $this->assertDatabaseCount('{{%entries}}', 6);
      * ```
      */
-    public function assertDatabaseCount(string $tableName, int $expectedCount)
+    public function assertDatabaseCount(string $tableName, int $expectedCount): void
     {
         $actualCount = (new Query)->from($tableName)->count();
 
@@ -35,7 +35,7 @@ trait DatabaseAssertions
      * $this->assertDatabaseHas('{{%content}}', ['title' => 'My Great Title']);
      * ```
      */
-    public function assertDatabaseHas(string $tableName, array $condition)
+    public function assertDatabaseHas(string $tableName, array $condition): void
     {
         $actualCount = (new Query)->from($tableName)->where($condition)->count();
 
@@ -50,7 +50,7 @@ trait DatabaseAssertions
      * $this->assertDatabaseMissing('{{%content}}', ['title' => 'My Great Title']);
      * ```
      */
-    public function assertDatabaseMissing(string $tableName, array $condition)
+    public function assertDatabaseMissing(string $tableName, array $condition): void
     {
         $actualCount = (new Query)->from($tableName)->where($condition)->count();
 
@@ -64,7 +64,7 @@ trait DatabaseAssertions
      * $this->assertTrashed($entry);
      * ```
      */
-    public function assertTrashed(Element $element)
+    public function assertTrashed(Element $element): void
     {
         $row = (new Query)->from(Table::ELEMENTS)->where(['id' => $element->id])->one();
 
@@ -78,7 +78,7 @@ trait DatabaseAssertions
      * $this->assertNotTrashed($entry);
      * ```
      */
-    public function assertNotTrashed(Element $element)
+    public function assertNotTrashed(Element $element): void
     {
         $row = (new Query)->from(Table::ELEMENTS)->where(['id' => $element->id])->one();
 

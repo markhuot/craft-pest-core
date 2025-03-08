@@ -37,7 +37,7 @@ class NodeList implements \Countable
      * $response->querySelector('ul')->querySelector('li');
      * ```
      */
-    public function querySelector(string $selector)
+    public function querySelector(string $selector): self
     {
         return new self($this->crawler->filter($selector));
     }
@@ -50,7 +50,7 @@ class NodeList implements \Countable
      * $response->querySelector('li')->expect()->count->toBe(10);
      * ```
      */
-    public function expect()
+    public function expect(): \Pest\Expectation
     {
         return new Expectation($this);
     }
@@ -67,7 +67,7 @@ class NodeList implements \Countable
      */
     public function __get($property)
     {
-        $getter = 'get'.ucfirst($property);
+        $getter = 'get'.ucfirst((string) $property);
 
         if (method_exists($this, $getter)) {
             return $this->{$getter}();
@@ -99,14 +99,15 @@ class NodeList implements \Countable
         $count = $this->crawler->count();
         $results = $this->each($callback);
 
-        return $count <= 1 ? (isset($results[0]) ? $results[0] : null) : $results;
+        return $count <= 1 ? ($results[0] ?? null) : $results;
     }
 
     /**
      * Loop over each matched node and apply the callback to the node. Returns
      * an array of results for each matched node.
+     * @return mixed[]
      */
-    public function each(callable $callback)
+    public function each(callable $callback): array
     {
         $result = [];
 
@@ -163,7 +164,7 @@ class NodeList implements \Countable
      * $response->querySelector('a')->click();
      * ```
      */
-    public function click()
+    public function click(): \markhuot\craftpest\web\TestableResponse
     {
         $node = $this->crawler->first();
         $nodeName = $node->nodeName();
@@ -185,13 +186,13 @@ class NodeList implements \Countable
      * $response->querySelector('form')->assertAttribute('method', 'post');
      * ```
      */
-    public function assertAttribute(string $key, string $value)
+    public function assertAttribute(string $key, string $value): static
     {
         if ($this->crawler->count() === 0) {
             Assert::fail('No matching elements to assert against attribute `'.$key.'`');
         }
 
-        $this->each(function ($node) use ($key, $value) {
+        $this->each(function ($node) use ($key, $value): void {
             $keys = [];
             foreach ($node->getNode(0)->attributes as $attr) {
                 $keys[] = $attr->name;
@@ -213,7 +214,7 @@ class NodeList implements \Countable
      * $nodeList->assertText('Hello World');
      * ```
      */
-    public function assertText($expected)
+    public function assertText($expected): static
     {
         Assert::assertSame($expected, $this->getText());
 
@@ -227,7 +228,7 @@ class NodeList implements \Countable
      * $nodeList->assertContainsString('Hello');
      * ```
      */
-    public function assertContainsString($expected)
+    public function assertContainsString(string $expected): static
     {
         Assert::assertStringContainsString($expected, $this->getText());
 
@@ -241,14 +242,17 @@ class NodeList implements \Countable
      * $nodeList->assertCount(2);
      * ```
      */
-    public function assertCount($expected)
+    public function assertCount(int $expected): static
     {
         Assert::assertCount($expected, $this);
 
         return $this;
     }
 
-    public function toArray()
+    /**
+     * @return mixed[]
+     */
+    public function toArray(): array
     {
         $result = [];
 

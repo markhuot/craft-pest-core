@@ -30,7 +30,7 @@ class Browser
             default => throw new \Exception('Unknown browser driver: '.$browser),
         };
 
-        if ($sessionId) {
+        if ($sessionId !== null && $sessionId !== '' && $sessionId !== '0') {
             $this->driver = RemoteWebDriver::createBySessionID($sessionId, 'http://localhost:'.$driverPort, null, null, true, $capabilities);
         }
         else {

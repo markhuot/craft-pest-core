@@ -33,7 +33,7 @@ class PestController extends Controller
             ];
         }
 
-        if (in_array($actionID, ['seed'], true)) {
+        if ($actionID === 'seed') {
             return [
                 'namespace',
             ];
@@ -49,7 +49,7 @@ class PestController extends Controller
      * You may pass any pest options to this command by separating them with a `--`. For example, to filter
      * down to a specific test you may run `php craft pest -- --filter="renders the homepage"`.
      */
-    public function actionTest()
+    public function actionTest(): int
     {
         $this->runInit();
 
@@ -65,7 +65,7 @@ class PestController extends Controller
      * setup to the default `Pest.php`, for example, you can delete your `Pest.php` and re-run `php craft pest/init`
      * to have the file recreated.
      */
-    public function actionInit()
+    public function actionInit(): int
     {
         $this->runInit();
 
@@ -91,23 +91,19 @@ class PestController extends Controller
         $process->setTimeout(null);
         $process->start();
 
-        foreach ($process as $type => $data) {
-            if ($type === $process::OUT) {
-                echo $data;
-            } else {
-                echo $data;
-            }
+        foreach ($process as $data) {
+            echo $data;
         }
 
         return $process->getExitCode();
     }
 
-    public function actionCompileTemplates()
+    public function actionCompileTemplates(): int
     {
         $compiledTemplatesDir = Craft::$app->path->getCompiledTemplatesPath();
         FileHelper::removeDirectory($compiledTemplatesDir);
 
-        $compileTemplates = function ($path, $base = '') {
+        $compileTemplates = function ($path, $base = ''): void {
             if (! is_string($path)) {
                 return;
             }
@@ -116,7 +112,7 @@ class PestController extends Controller
             $iterator = new \RecursiveIteratorIterator($directory);
             $regex = new \RegexIterator($iterator, '/^.+\.(html|twig)$/i', \RecursiveRegexIterator::GET_MATCH);
             foreach ($regex as $match) {
-                $logicalName = ltrim(substr($match[0], strlen($path)), '/');
+                $logicalName = ltrim(substr((string) $match[0], strlen($path)), '/');
                 if ($logicalName === 'index.twig' || $logicalName === 'index.html') {
                     $logicalName = '';
                 }
@@ -140,7 +136,7 @@ class PestController extends Controller
         return 0;
     }
 
-    public function actionGenerateMixins()
+    public function actionGenerateMixins(): int
     {
         $result = Craft::$container->get(RenderCompiledClassesInterface::class)->handle($this->force);
 
@@ -185,7 +181,7 @@ class PestController extends Controller
         $namespace = '\\'.trim($namespace, '\\').'\\';
 
         $defaultSeeder = $seeder ?? (getenv('PEST_DEFAULT_SEEDER') ?: 'DatabaseSeeder');
-        if (substr($defaultSeeder, 0, 1) === '\\') {
+        if (str_starts_with((string) $defaultSeeder, '\\')) {
             $namespace = '';
         }
 
@@ -196,7 +192,7 @@ class PestController extends Controller
     }
 
     // Internal method for testing purposes, not public
-    public function actionInternal()
+    public function actionInternal(): int
     {
         $this->stdout('stdout');
         $this->stderr('stderr');

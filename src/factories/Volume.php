@@ -22,17 +22,15 @@ class Volume extends Factory
      * I can't type this because Craft 3 returns a craft\base\VolumeInterface but
      * Craft 4 returns a \craft\models\Volume
      */
-    public function newElement()
+    public function newElement(): \craft\models\Volume|\craft\volumes\Local|null
     {
         return createVolume();
     }
 
     /**
      * The faker definition
-     *
-     * @return array
      */
-    public function definition(int $index = 0)
+    public function definition(int $index = 0): array
     {
         $name = $this->faker->words(2, true);
         $handle = StringHelper::toCamelCase($name);
@@ -62,7 +60,7 @@ class Volume extends Factory
     {
         $volumes = parent::create($definition);
 
-        Event::on(RefreshesDatabase::class, 'EVENT_ROLLBACK_TRANSACTION', function () use ($volumes) {
+        Event::on(RefreshesDatabase::class, 'EVENT_ROLLBACK_TRANSACTION', function () use ($volumes): void {
             foreach (collection_wrap($volumes) as $volume) {
                 volumeDeleteRootDirectory($volume);
             }

@@ -74,7 +74,7 @@ abstract class Factory
     protected $attributes = [];
 
     /** @var array|null */
-    protected $definition = null;
+    protected $definition;
 
     /** @var int */
     protected $count = 1;
@@ -134,20 +134,13 @@ abstract class Factory
         foreach ($traits as $trait) {
             $handlesMethodName = 'handlesMagic'.$trait->getShortName().'Call';
             $callsMethodName = 'callMagic'.$trait->getShortName().'Call';
-            if ($trait->hasMethod($handlesMethodName)) {
-                if ($this->$handlesMethodName($method, $args)) {
-                    $this->$callsMethodName($method, $args);
-
-                    return $this;
-                }
+            if ($trait->hasMethod($handlesMethodName) && $this->$handlesMethodName($method, $args)) {
+                $this->$callsMethodName($method, $args);
+                return $this;
             }
         }
 
-        if (count($args) > 1) {
-            $this->attributes[$method] = array_merge($this->attributes[$method] ?? [], $args);
-        } else {
-            $this->attributes[$method] = $args[0] ?? null;
-        }
+        $this->attributes[$method] = count($args) > 1 ? array_merge($this->attributes[$method] ?? [], $args) : $args[0] ?? null;
 
         return $this;
     }
@@ -554,13 +547,10 @@ abstract class Factory
         $attributes = $this->getAttributes($definition);
 
         [$priorityAttributes, $attributes] = collect($attributes)
-            ->partition(function ($_, $key) {
-                return in_array($key, $this->priorityAttributes, true);
-            });
+            ->partition(fn($_, $key): bool => in_array($key, $this->priorityAttributes, true));
 
         $element = $this->setPriorityAttributes($priorityAttributes->toArray(), $element);
-        $element = $this->setAttributes($attributes->toArray(), $element);
 
-        return $element;
+        return $this->setAttributes($attributes->toArray(), $element);
     }
 }

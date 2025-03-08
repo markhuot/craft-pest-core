@@ -24,7 +24,7 @@ class TestableResponse extends \craft\web\Response
         ];
     }
 
-    public function send()
+    public function send(): void
     {
         // This page intentionally left blank so we can inspect the response body without it
         // being prematurely written to the screen

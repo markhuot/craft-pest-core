@@ -49,10 +49,10 @@ class BenchmarkResult
         $logs = array_slice(\Craft::getLogger()->getProfiling(), $this->startProfileAt, $this->endProfileAt - $this->startProfileAt);
 
         return collect($logs)
-            ->filter(fn ($log) => in_array($log['category'], \Craft::getLogger()->dbEventNames));
+            ->filter(fn ($log): bool => in_array($log['category'], \Craft::getLogger()->dbEventNames));
     }
 
-    public function assertQueryCount(int $expected)
+    public function assertQueryCount(int $expected): void
     {
         $queries = $this->getQueries();
         $actual = $queries->count();
@@ -67,9 +67,7 @@ class BenchmarkResult
 
     public function getDuplicateQueries()
     {
-        return $this->getQueryTiming()->filter(function ($query) {
-            return preg_match('/^SHOW/', $query['info']) === false;
-        })->duplicates('info');
+        return $this->getQueryTiming()->filter(fn(array $query): bool => preg_match('/^SHOW/', (string) $query['info']) === false)->duplicates('info');
     }
 
     public function getPanels()
@@ -82,7 +80,7 @@ class BenchmarkResult
 
         $tags = array_keys($this->manifestCache);
 
-        if (empty($tags)) {
+        if ($tags === []) {
             throw new \Exception('No debug data have been collected yet, try browsing the website first.');
         }
 
@@ -100,7 +98,7 @@ class BenchmarkResult
      * $benchmark->assertNoDuplicateQueries();
      * ```
      */
-    public function assertNoDuplicateQueries()
+    public function assertNoDuplicateQueries(): static
     {
         $duplicates = $this->getDuplicateQueries();
 
@@ -132,7 +130,7 @@ class BenchmarkResult
      * });
      * ```
      */
-    public function assertLoadTimeLessThan(float $expectedLoadTime)
+    public function assertLoadTimeLessThan(float $expectedLoadTime): static
     {
         $actualLoadTime = $this->getPanels()['profiling']->data['time'];
 
@@ -155,7 +153,7 @@ class BenchmarkResult
      * });
      * ```
      */
-    public function assertMemoryLoadLessThan(float $expectedMemoryLoad)
+    public function assertMemoryLoadLessThan(float $expectedMemoryLoad): static
     {
         $actualMemoryLoadBytes = $this->getPanels()['profiling']->data['memory'];
         $actualMemoryLoadMb = $actualMemoryLoadBytes / 1024 / 1024;
@@ -178,11 +176,9 @@ class BenchmarkResult
      * });
      * ```
      */
-    public function assertAllQueriesFasterThan(float $expectedQueryTime)
+    public function assertAllQueriesFasterThan(float $expectedQueryTime): void
     {
-        $failing = $this->getQueryTiming()->filter(function ($query) use ($expectedQueryTime) {
-            return (float) $query['duration'] > $expectedQueryTime;
-        });
+        $failing = $this->getQueryTiming()->filter(fn(array $query): bool => (float) $query['duration'] > $expectedQueryTime);
 
         if ($failing->count()) {
             Assert::fail($failing->count().' queries were slower than '.$expectedQueryTime);

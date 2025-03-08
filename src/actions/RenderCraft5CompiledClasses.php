@@ -8,14 +8,14 @@ use markhuot\craftpest\interfaces\RenderCompiledClassesInterface;
 
 class RenderCraft5CompiledClasses implements RenderCompiledClassesInterface
 {
-    public function handle(bool $forceRecreate = false)
+    public function handle(bool $forceRecreate = false): bool
     {
         $this->render($forceRecreate);
 
         return true;
     }
 
-    protected function render(bool $forceRecreate)
+    protected function render(bool $forceRecreate): ?bool
     {
         $storedFieldVersion = \Craft::$app->getFields()->getFieldVersion();
         $compiledClassesPath = \Craft::$app->getPath()->getCompiledClassesPath();
@@ -39,6 +39,7 @@ class RenderCraft5CompiledClasses implements RenderCompiledClassesInterface
         ]);
 
         file_put_contents($compiledClassPath, $compiledClass);
+        return null;
     }
 
     protected function cleanupOldMixins(?string $except = null)

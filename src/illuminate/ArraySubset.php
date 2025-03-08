@@ -13,24 +13,12 @@ use Traversable;
 final class ArraySubset extends Constraint
 {
     /**
-     * @var iterable
-     */
-    private $subset;
-
-    /**
-     * @var bool
-     */
-    private $strict;
-
-    /**
      * Create a new array subset constraint instance.
      *
      * @return void
      */
-    public function __construct(iterable $subset, bool $strict = false)
+    public function __construct(private iterable|array $subset, private readonly bool $strict = false)
     {
-        $this->strict = $strict;
-        $this->subset = $subset;
     }
 
     /**
@@ -57,11 +45,7 @@ final class ArraySubset extends Constraint
 
         $patched = array_replace_recursive($other, $this->subset);
 
-        if ($this->strict) {
-            $result = $other === $patched;
-        } else {
-            $result = $other == $patched;
-        }
+        $result = $this->strict ? $other === $patched : $other === $patched;
 
         if ($returnResult) {
             return $result;
@@ -122,12 +106,6 @@ final class ArraySubset extends Constraint
         if ($other instanceof ArrayObject) {
             return $other->getArrayCopy();
         }
-
-        if ($other instanceof Traversable) {
-            return iterator_to_array($other);
-        }
-
-        // Keep BC even if we know that array would not be the expected one
-        return (array) $other;
+        return iterator_to_array($other);
     }
 }

@@ -46,7 +46,7 @@ class Asset extends Element
      *
      * @see \markhuot\craftpest\test\LocalVolumes
      */
-    public function volume(string $handle)
+    public function volume(string $handle): static
     {
         $this->volumeHandle = $handle;
 
@@ -56,7 +56,7 @@ class Asset extends Element
     /**
      * Set the folder the asset should be created within.
      */
-    public function folder(VolumeFolder $folder)
+    public function folder(VolumeFolder $folder): static
     {
         $this->folder = $folder;
 
@@ -71,19 +71,19 @@ class Asset extends Element
      * Asset::factory()->volume($volume)->source('/path/to/file.jpg')->create();
      * ```
      */
-    public function source(string $source)
+    public function source(string $source): static
     {
         $this->source = $source;
 
         return $this;
     }
 
-    public function newElement()
+    public function newElement(): \craft\elements\Asset
     {
         return new \craft\elements\Asset;
     }
 
-    public function definition(int $index = 0)
+    public function definition(int $index = 0): array
     {
         $volume = \Craft::$app->volumes->getVolumeByHandle($this->volumeHandle);
 
@@ -115,7 +115,7 @@ class Asset extends Element
     {
         $assets = parent::create($definition);
 
-        Event::on(RefreshesDatabase::class, 'EVENT_ROLLBACK_TRANSACTION', function () use ($assets) {
+        Event::on(RefreshesDatabase::class, 'EVENT_ROLLBACK_TRANSACTION', function () use ($assets): void {
             foreach (collection_wrap($assets) as $asset) {
                 volumeDeleteFileAtPath($asset->volume, $asset->path);
             }

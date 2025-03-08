@@ -15,14 +15,14 @@ class Field extends Factory
 {
     protected $type;
 
-    public function type(string $type)
+    public function type(string $type): static
     {
         $this->type = $type;
 
         return $this;
     }
 
-    public function group(string $groupName)
+    public function group(string $groupName): static
     {
         $this->attributes['groupId'] = function () use ($groupName) {
             foreach (\Craft::$app->fields->getAllGroups() as $group) { //@phpstan-ignore-line
@@ -51,10 +51,8 @@ class Field extends Factory
 
     /**
      * The faker definition
-     *
-     * @return array
      */
-    public function definition(int $index = 0)
+    public function definition(int $index = 0): array
     {
         $name = $this->faker->words(2, true);
 
@@ -70,7 +68,7 @@ class Field extends Factory
         return $definition;
     }
 
-    public function inferences(array $definition = [])
+    public function inferences(array $definition = []): array
     {
         if (empty($definition['handle']) && ! empty($definition['name'])) {
             $definition['handle'] = StringHelper::toCamelCase($definition['name']);

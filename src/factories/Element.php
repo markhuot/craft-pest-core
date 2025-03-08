@@ -74,14 +74,12 @@ abstract class Element extends Factory
                 // will go in to the model okay, but when you try to pull them back out to save them
                 // you get an EntryQuery with no access to the raw array of unsaved entries.
                 // Because of that we call ->create() here on all nested factories.
-                $values[$index] = $field instanceof Matrix ? collection_wrap($value->make())->map(function (\craft\elements\Entry|array $entry) {
-                    return is_array($entry) ? $entry : [
-                        'type' => $entry->getType()->handle,
-                        'enabled' => true,
-                        'collapsed' => false,
-                        'fields' => $entry->getSerializedFieldValues(),
-                    ];
-                }) : $value->create();
+                $values[$index] = $field instanceof Matrix ? collection_wrap($value->make())->map(fn(\craft\elements\Entry|array $entry): array => is_array($entry) ? $entry : [
+                    'type' => $entry->getType()->handle,
+                    'enabled' => true,
+                    'collapsed' => false,
+                    'fields' => $entry->getSerializedFieldValues(),
+                ]) : $value->create();
                 $flattenIndexes[] = $index;
             }
         }
@@ -138,7 +136,7 @@ abstract class Element extends Factory
             $field = $element->fieldLayout->getFieldByHandle($key);
 
             if (empty($field)) {
-                throw new \Exception('Could not find field with handle `'.$key.'` on `'.get_class($element).'`');
+                throw new \Exception('Could not find field with handle `'.$key.'` on `'.$element::class.'`');
             }
 
             if (is_subclass_of($field, BaseRelationField::class)) {
@@ -154,11 +152,9 @@ abstract class Element extends Factory
                 })->toArray();
             }
 
-            if (is_a($field, Matrix::class)) {
+            if ($field instanceof \craft\fields\Matrix) {
                 $value = $this->resolveFactories(array_wrap($value), $field)
-                    ->mapWithKeys(function ($item, $index) {
-                        return ['new'.($index + 1) => $item];
-                    })->toArray();
+                    ->mapWithKeys(fn($item, $index) => ['new'.($index + 1) => $item])->toArray();
             }
 
             // Set any custom fields

@@ -12,7 +12,7 @@ use function markhuot\craftpest\helpers\test\dump;
 class PdoProxy
 {
     public function __construct(
-        private \PDO $pdo
+        private readonly \PDO $pdo
     ) {
     }
 

@@ -56,7 +56,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
         parent::assertPostConditions();
     }
 
-    protected function callTraits($prefix)
+    protected function callTraits(string $prefix)
     {
         $traits = [];
 
@@ -145,12 +145,8 @@ class TestCase extends \PHPUnit\Framework\TestCase
         $process->setTimeout(null);
         $process->start();
 
-        foreach ($process as $type => $data) {
-            if ($type === $process::OUT) {
-                echo $data;
-            } else {
-                echo $data;
-            }
+        foreach ($process as $data) {
+            echo $data;
         }
 
         if (! $process->isSuccessful()) {
@@ -166,12 +162,8 @@ class TestCase extends \PHPUnit\Framework\TestCase
         $process->setTimeout(null);
         $process->start();
 
-        foreach ($process as $type => $data) {
-            if ($type === $process::OUT) {
-                echo $data;
-            } else {
-                echo $data;
-            }
+        foreach ($process as $data) {
+            echo $data;
         }
 
         if (! $process->isSuccessful()) {
@@ -187,12 +179,8 @@ class TestCase extends \PHPUnit\Framework\TestCase
         $process->setTimeout(null);
         $process->start();
 
-        foreach ($process as $type => $data) {
-            if ($type === $process::OUT) {
-                echo $data;
-            } else {
-                echo $data;
-            }
+        foreach ($process as $data) {
+            echo $data;
         }
 
         if (! $process->isSuccessful()) {
@@ -200,30 +188,26 @@ class TestCase extends \PHPUnit\Framework\TestCase
         }
     }
 
-    protected function reRunPest()
+    protected function reRunPest(): ?int
     {
         $process = new Process($_SERVER['argv']);
         $process->setTty(Process::isTtySupported());
         $process->setTimeout(null);
         $process->start();
 
-        foreach ($process as $type => $data) {
-            if ($type === $process::OUT) {
-                echo $data;
-            } else {
-                echo $data;
-            }
+        foreach ($process as $data) {
+            echo $data;
         }
 
         return $process->getExitCode();
     }
 
-    public function renderCompiledClasses()
+    public function renderCompiledClasses(): void
     {
         Craft::$container->get(RenderCompiledClassesInterface::class)->handle();
     }
 
-    protected function needsRequireStatements()
+    protected function needsRequireStatements(): bool
     {
         return ! defined('CRAFT_BASE_PATH');
     }
@@ -251,7 +235,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
         return $this;
     }
 
-    public function renderTemplate(...$args)
+    public function renderTemplate(...$args): \markhuot\craftpest\web\TestableResponse
     {
         $content = Craft::$app->getView()->renderTemplate(...$args);
 

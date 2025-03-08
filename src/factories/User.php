@@ -9,12 +9,12 @@ namespace markhuot\craftpest\factories;
  */
 class User extends Element
 {
-    public function newElement()
+    public function newElement(): \craft\elements\User
     {
         return new \craft\elements\User;
     }
 
-    public function definition(int $index = 0)
+    public function definition(int $index = 0): array
     {
         $email = $this->faker->safeEmail();
 

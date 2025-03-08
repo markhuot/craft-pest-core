@@ -4,30 +4,30 @@ namespace markhuot\craftpest\factories;
 
 class Block extends Element
 {
-    protected ?string $type;
+    protected ?string $type = null;
 
     protected bool $enabled = true;
 
-    public function type($type)
+    public function type(?string $type): static
     {
         $this->type = $type;
 
         return $this;
     }
 
-    public function enabled(bool $enabled = true)
+    public function enabled(bool $enabled = true): static
     {
         $this->enabled = $enabled;
 
         return $this;
     }
 
-    public function definition(int $index = 0)
+    public function definition(int $index = 0): array
     {
         return [];
     }
 
-    public function newElement()
+    public function newElement(): array
     {
         return [];
     }
@@ -44,7 +44,7 @@ class Block extends Element
         return $element;
     }
 
-    public function store($element)
+    public function store($element): bool
     {
         // no-op, blocks can't be stored directly, they are returned
         // as arrays for their parent element/field to store.

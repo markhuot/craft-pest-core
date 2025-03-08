@@ -21,7 +21,7 @@ if (! function_exists('entry')) {
 }
 
 if (! function_exists('user')) {
-    function user()
+    function user(): \markhuot\craftpest\factories\Factory
     {
         return User::factory();
     }

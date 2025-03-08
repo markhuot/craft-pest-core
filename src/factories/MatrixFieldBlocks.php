@@ -16,7 +16,7 @@ class MatrixFieldBlocks extends MatrixField
         return new static;
     }
 
-    public function blockTypes(...$blockTypes)
+    public function blockTypes(...$blockTypes): static
     {
         if (is_array($blockTypes[0])) {
             $this->blockTypes = array_merge($this->blockTypes, $blockTypes[0]);
@@ -27,7 +27,7 @@ class MatrixFieldBlocks extends MatrixField
         return $this;
     }
 
-    public function addBlockType($blockType)
+    public function addBlockType($blockType): static
     {
         $this->blockTypes[] = $blockType;
 
@@ -37,7 +37,7 @@ class MatrixFieldBlocks extends MatrixField
     /**
      * Get the element to be generated
      */
-    public function newElement()
+    public function newElement(): \craft\fields\Matrix
     {
         return new \craft\fields\Matrix;
     }
@@ -53,7 +53,7 @@ class MatrixFieldBlocks extends MatrixField
                 ->map
                 ->make()
                 ->flatten()
-                ->each(function ($blockType, $index) use ($element) {
+                ->each(function ($blockType, $index) use ($element): void {
                     $blockType->fieldId = $element->id;
                     $blockType->sortOrder = $index;
                 })
@@ -72,7 +72,7 @@ class MatrixFieldBlocks extends MatrixField
         // Add the fields in to the block types
         collect($this->blockTypes)
             ->zip($element->getBlockTypes())
-            ->each(function ($props) {
+            ->each(function ($props): void {
                 /** @var MatrixBlockType $blockType */
                 [$factory, $blockType] = $props;
                 $factory->storeFields($blockType->fieldLayout, $blockType);

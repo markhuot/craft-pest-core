@@ -110,7 +110,7 @@ class BrowserProxy
         $returnValue = null;
 
         $loop = Loop::get();
-        $timer = $loop->addPeriodicTimer(1, function () use ($testRunner, &$returnValue) {
+        $timer = $loop->addPeriodicTimer(1, function () use ($testRunner, &$returnValue): void {
             if (! $testRunner->isRunning()) {
                 if ($testRunner->getExitCode() !== 0) {
                     throw new \RuntimeException($testRunner->getOutput());

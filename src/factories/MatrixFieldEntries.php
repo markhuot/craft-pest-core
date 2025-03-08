@@ -16,7 +16,7 @@ class MatrixFieldEntries extends MatrixField
         return new static;
     }
 
-    public function entryTypes(...$entryTypes)
+    public function entryTypes(...$entryTypes): static
     {
         if (is_array($entryTypes[0])) {
             $this->entryTypes = array_merge($this->entryTypes, $entryTypes[0]);
@@ -27,7 +27,7 @@ class MatrixFieldEntries extends MatrixField
         return $this;
     }
 
-    public function addEntryType($entryType)
+    public function addEntryType($entryType): static
     {
         $this->entryTypes[] = $entryType;
 
@@ -37,7 +37,7 @@ class MatrixFieldEntries extends MatrixField
     /**
      * Get the element to be generated
      */
-    public function newElement()
+    public function newElement(): \craft\fields\Matrix
     {
         return new \craft\fields\Matrix;
     }
@@ -67,7 +67,7 @@ class MatrixFieldEntries extends MatrixField
         // Add the fields in to the block types
         collect($this->entryTypes)
             ->zip($element->getEntryTypes())
-            ->each(function ($props) {
+            ->each(function ($props): void {
                 /** @var \craft\models\EntryType $entryType */
                 [$factory, $entryType] = $props;
                 $factory->storeFields($entryType->fieldLayout, $entryType);

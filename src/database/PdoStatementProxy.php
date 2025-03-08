@@ -12,7 +12,7 @@ class PdoStatementProxy
 
     public function __construct(
         public string $identifier,
-        private \PDOStatement $pdoStatement,
+        private readonly \PDOStatement $pdoStatement,
     ) {
     }
 
@@ -23,7 +23,7 @@ class PdoStatementProxy
             'method' => $method,
             'args' => serialize($args),
         ]]);
-        $results = json_decode($result->getBody()->getContents(), true);
+        $results = json_decode((string) $result->getBody()->getContents(), true);
         return unserialize($results['result']);
     }
 
@@ -34,7 +34,7 @@ class PdoStatementProxy
             'method' => '__get',
             'args' => $name,
         ]]);
-        $results = json_decode($result->getBody()->getContents(), true);
+        $results = json_decode((string) $result->getBody()->getContents(), true);
         return unserialize($results['result']);
     }
 }

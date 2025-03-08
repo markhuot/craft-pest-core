@@ -9,7 +9,7 @@ use markhuot\craftpest\interfaces\RenderCompiledClassesInterface;
 
 class RenderCraft4CompiledClasses implements RenderCompiledClassesInterface
 {
-    public function handle(bool $forceRecreate = false)
+    public function handle(bool $forceRecreate = false): bool
     {
         $contentService = \Craft::$app->getContent();
         $originalContentTable = $contentService->contentTable;
@@ -28,7 +28,7 @@ class RenderCraft4CompiledClasses implements RenderCompiledClassesInterface
         return true;
     }
 
-    protected function render(bool $forceRecreate)
+    protected function render(bool $forceRecreate): ?bool
     {
         $storedFieldVersion = \Craft::$app->fields->getFieldVersion();
         $compiledClassesPath = __DIR__.'/../storage/';
@@ -52,6 +52,7 @@ class RenderCraft4CompiledClasses implements RenderCompiledClassesInterface
         ]);
 
         file_put_contents($compiledClassPath, $compiledClass);
+        return null;
     }
 
     protected function cleanupOldMixins(?string $except = null)

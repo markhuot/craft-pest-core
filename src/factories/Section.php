@@ -32,28 +32,28 @@ class Section extends Factory
 
     protected $template = '_{handle}/entry';
 
-    public function hasUrls(bool $hasUrls)
+    public function hasUrls(bool $hasUrls): static
     {
         $this->hasUrls = $hasUrls;
 
         return $this;
     }
 
-    public function uriFormat(string $uriFormat)
+    public function uriFormat(string $uriFormat): static
     {
         $this->uriFormat = $uriFormat;
 
         return $this;
     }
 
-    public function enabledByDefault(bool $enabledByDefault)
+    public function enabledByDefault(bool $enabledByDefault): static
     {
         $this->enabledByDefault = $enabledByDefault;
 
         return $this;
     }
 
-    public function template(string $template)
+    public function template(string $template): static
     {
         $this->template = $template;
 
@@ -62,20 +62,16 @@ class Section extends Factory
 
     /**
      * Get the element to be generated
-     *
-     * @return \craft\models\Section
      */
-    public function newElement()
+    public function newElement(): \craft\models\Section
     {
         return new \craft\models\Section;
     }
 
     /**
      * The faker definition
-     *
-     * @return array
      */
-    public function definition(int $index = 0)
+    public function definition(int $index = 0): array
     {
         $name = $this->faker->words(2, true);
 
@@ -85,7 +81,7 @@ class Section extends Factory
         ];
     }
 
-    public function inferences(array $definition = [])
+    public function inferences(array $definition = []): array
     {
         if (! empty($definition['name']) && empty($definition['handle'])) {
             $definition['handle'] = StringHelper::toCamelCase($definition['name']);
@@ -108,20 +104,18 @@ class Section extends Factory
                 return [$site->id => $settings];
             })->toArray();
 
-        if (InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '~5.0')) {
-            if (empty($definition['entryTypes'])) {
-                $entryType = new EntryType([
-                    'name' => $name,
-                    'handle' => StringHelper::toHandle($name),
-                ]);
-                if (InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '>=5.5.0')) {
-                    // @phpstan-ignore-next-line
-                    $entryType->getFieldLayout()->prependElements([new EntryTitleField]);
-                }
-                service(SectionsServiceInterface::class)->saveEntryType($entryType);
-                throw_if($entryType->errors, 'Problem saving entry type: '.implode(', ', $entryType->getFirstErrors()));
-                $definition['entryTypes'] = [$entryType];
+        if (InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '~5.0') && empty($definition['entryTypes'])) {
+            $entryType = new EntryType([
+                'name' => $name,
+                'handle' => StringHelper::toHandle($name),
+            ]);
+            if (InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '>=5.5.0')) {
+                // @phpstan-ignore-next-line
+                $entryType->getFieldLayout()->prependElements([new EntryTitleField]);
             }
+            service(SectionsServiceInterface::class)->saveEntryType($entryType);
+            throw_if($entryType->errors, 'Problem saving entry type: '.implode(', ', $entryType->getFirstErrors()));
+            $definition['entryTypes'] = [$entryType];
         }
 
         return $definition;

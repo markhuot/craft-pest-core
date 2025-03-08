@@ -7,10 +7,10 @@ define('YII_ENABLE_ERROR_HANDLER', false);
 
 // Load dotenv? 5.x vs 3.x vs 2.x
 if (file_exists(CRAFT_BASE_PATH.'/.env')) {
-    if (method_exists('\Dotenv\Dotenv', 'createUnsafeImmutable')) {
+    if (method_exists(\Dotenv\Dotenv::class, 'createUnsafeImmutable')) {
         /** @phpstan-ignore-next-line */
         \Dotenv\Dotenv::createUnsafeImmutable(CRAFT_BASE_PATH)->safeLoad();
-    } elseif (method_exists('\Dotenv\Dotenv', 'create')) {
+    } elseif (method_exists(\Dotenv\Dotenv::class, 'create')) {
         /** @phpstan-ignore-next-line */
         \Dotenv\Dotenv::create(CRAFT_BASE_PATH)->load();
     } else {
@@ -69,14 +69,14 @@ $_SERVER['SCRIPT_FILENAME'] = 'index.php';
 // Note: I'm only okay with this because we're doing it in Test. I would _never_ do this
 // in a production environment with code that serves content to users.
 if (! function_exists('replace_class')) {
-    function replace_class(string $originalClass)
+    function replace_class(string $originalClass): void
     {
         $fsPath = str_replace('\\', DIRECTORY_SEPARATOR, $originalClass).'.php';
 
         // Move the original class to a new namespace so we can inherit from it
         $originalClassContents = file_get_contents(CRAFT_VENDOR_PATH.'/craftcms/cms/src/'.$fsPath);
         $originalClassContents = preg_replace('/^<\?php/', '', $originalClassContents);
-        $originalClassContents = preg_replace('/^namespace.*$/m', 'namespace markhuot\\craftpest\\overrides;', $originalClassContents);
+        $originalClassContents = preg_replace('/^namespace.*$/m', 'namespace markhuot\\craftpest\\overrides;', (string) $originalClassContents);
         eval($originalClassContents);
 
         // Require the new class, replacing the original class

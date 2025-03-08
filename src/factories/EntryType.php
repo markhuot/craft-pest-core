@@ -15,7 +15,7 @@ class EntryType extends Factory
 {
     use Fieldable;
 
-    public function definition(int $index = 0)
+    public function definition(int $index = 0): array
     {
         $name = $this->faker->words(2, true);
 
@@ -24,7 +24,7 @@ class EntryType extends Factory
         ];
     }
 
-    public function inferences(array $definition = [])
+    public function inferences(array $definition = []): array
     {
         if (empty($definition['handle']) && ! empty($definition['name'])) {
             $definition['handle'] = StringHelper::toCamelCase($definition['name']);
@@ -33,7 +33,7 @@ class EntryType extends Factory
         return $definition;
     }
 
-    public function newElement()
+    public function newElement(): \craft\models\EntryType
     {
         return new EntryTypeModel;
     }

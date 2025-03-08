@@ -16,7 +16,7 @@ class TwigReporter extends Reporter
         parent::__construct($file);
 
         $firstClass = array_keys($this->file->classes())[0] ?? '';
-        if (! (strpos($firstClass, '__TwigTemplate_') === 0)) {
+        if (!str_starts_with($firstClass, '__TwigTemplate_')) {
             return;
         }
 
@@ -27,14 +27,14 @@ class TwigReporter extends Reporter
         $this->template = new $firstClass(new Environment(new ArrayLoader([])));
     }
 
-    public function canReportOn()
+    public function canReportOn(): bool|string
     {
         if (empty($this->template)) {
             return false;
         }
 
         $templateName = $this->template->getTemplateName();
-        if (strpos($templateName, '__string_template__') === 0) {
+        if (str_starts_with($templateName, '__string_template__')) {
             return self::IGNORE;
         }
 

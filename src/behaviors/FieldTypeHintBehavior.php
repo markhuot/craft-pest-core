@@ -18,11 +18,11 @@ use yii\base\Behavior;
  */
 class FieldTypeHintBehavior extends Behavior
 {
-    public function getFactoryTypeHint()
+    public function getFactoryTypeHint(): string
     {
         $handle = $this->owner->handle;
 
-        switch (get_class($this->owner)) {
+        switch ($this->owner::class) {
             case Lightswitch::class:
                 return 'boolean $'.$handle;
 
