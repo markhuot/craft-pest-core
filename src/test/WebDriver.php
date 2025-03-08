@@ -3,38 +3,73 @@
 namespace markhuot\craftpest\test;
 
 use Craft;
+use markhuot\craftpest\webdriver\Browser;
 use markhuot\craftpest\webdriver\BrowserProxy;
+use Psr\Http\Message\ServerRequestInterface;
+use React\Http\HttpServer;
+use React\Http\Message\Response;
+use React\Socket\SocketServer;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
 
 trait WebDriver
 {
-    protected bool $booted = false;
-    protected string $browser = 'safari';
-    protected string $driverPath = '/usr/bin/safaridriver';
-    protected string $driverPort = '4444';
-    protected array $driverArguments = [];
+    /** @var array<string, bool> */
+    protected static array $browserDriverBooted = [];
+    protected static bool $webServerBooted = false;
+    protected static bool $dbProxyServerBooted = false;
+    /** @var array<Browser> */
+    protected array $browsers = [];
 
-    public function setUpWebDriver()
-    {
+    public function setUpWebDriver() {}
 
+    public function tearDownWebDriver() {
+        foreach ($this->browsers as $browser) {
+            $browser->quit();
+        }
     }
 
-    public function tearDownWebDriver()
+    public function bootWebDriver(string $browser)
     {
-
+        $this->startBrowserDriverProcess($browser);
+        $this->startWebServerProcess();
+        $this->startdbProxyServer();
     }
 
-    public function bootWebDriver()
+    protected function startBrowserDriverProcess($browser): void
     {
-        if ($this->booted) {
+        if (static::$browserDriverBooted[$browser] ?? false) {
             return;
         }
 
-        $process = new Process([$this->driverPath, '--port='.$this->driverPort]);
+        [$driverPath, $driverPort] = match ($browser) {
+            'chrome' => ['/usr/local/bin/chromedriver', 4444],
+            'safari' => ['/usr/bin/safaridriver', 4445],
+            default => throw new \Exception('Unknown browser driver: '.$browser),
+        };
+        $process = new Process([$driverPath, '--port='.$driverPort]);
         $process->start();
 
-        $phpBinaryPath = (new PhpExecutableFinder())->find();
+        if ($browser === 'safari') {
+            // safaridriver provides no output so we can't do anything but wait
+            // a second and _hope_ it has booted...
+            sleep(1);
+        } else {
+            $process->waitUntil(function ($type, $buffer) {
+                return str_contains($buffer, 'ChromeDriver was started successfully');
+            });
+        }
+
+        static::$browserDriverBooted[$browser] = true;
+    }
+
+    protected function startWebServerProcess(): void
+    {
+        if (static::$webServerBooted) {
+            return;
+        }
+
+        $phpBinaryPath = (new PhpExecutableFinder)->find();
         $webServer = (new Process([
             $phpBinaryPath,
             '-S',
@@ -45,40 +80,72 @@ trait WebDriver
             'CRAFTPEST_PROXY_DB' => true,
         ]));
         $webServer->start();
-        //sleep(5);
+
+        static::$webServerBooted = true;
     }
 
-    public function withBrowser(string $browser, string $driverPath, string $driverPort='4444')
+    protected function startDbProxyServer(): void
     {
-        $this->browser = $browser;
-        $this->driverPath = $driverPath;
-        $this->driverPort = $driverPort;
+        if (static::$dbProxyServerBooted) {
+            return;
+        }
 
-        return $this;
+        $statements = [];
+        $http = new HttpServer(function (ServerRequestInterface $request) use (&$statements) {
+            ['identifier' => $identifier, 'method' => $method, 'args' => $args] = json_decode($request->getBody()->getContents(), true);
+            if ($method === 'prepare') {
+                $statements[$identifier] = Craft::$app->getDb()->pdo->prepare(...unserialize($args));
+                return Response::plaintext('');
+            }
+            if ($method === '__get') {
+                return \React\Http\Message\Response::json([
+                    'identifier' => $identifier,
+                    'method' => $method,
+                    'result' => serialize($statements[$identifier]->$args),
+                ]);
+            }
+
+            $result = $statements[$identifier]->$method(...unserialize($args));
+            return \React\Http\Message\Response::json([
+                'identifier' => $identifier,
+                'method' => $method,
+                'result' => serialize($result),
+            ]);
+        });
+        $socket = new SocketServer('127.0.0.1:5551');
+        $http->listen($socket);
+
+        static::$dbProxyServerBooted = true;
+    }
+
+    public function openBrowser(string $browser, array $arguments = []): BrowserProxy
+    {
+        return $this->browsers[] = new BrowserProxy($browser, $arguments);
     }
 
     /**
      * https://developer.chrome.com/blog/chrome-for-testing/
      * https://pptr.dev/browsers-api
      */
-    public function withChrome($headless=true)
+    public function withChrome($headless = true)
     {
+        $arguments = [];
+
         if ($headless) {
-            $this->driverArguments[] = '--headless';
+            $arguments[] = '--headless';
         }
 
-        return $this->withBrowser('chrome', '/usr/local/bin/chromedriver', '4444');
+        return $this->openBrowser('chrome', $arguments);
     }
 
     public function withSafari()
     {
-        return $this->withBrowser('safari', '/usr/bin/safaridriver', '4444');
+        return $this->openBrowser('safari');
     }
 
     public function visit(string $url): BrowserProxy
     {
-        $this->bootWebDriver();
-
-        return (new BrowserProxy($this->browser, $this->driverArguments))->visit($url);
+        return $this->openBrowser('chrome', ['--headless'])
+            ->visit($url);
     }
 }

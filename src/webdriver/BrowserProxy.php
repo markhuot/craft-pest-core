@@ -3,30 +3,39 @@
 namespace markhuot\craftpest\webdriver;
 
 use Craft;
+use craft\helpers\UrlHelper;
 use Pest\TestSuite;
 use PHPUnit\Framework\Assert;
 use React\EventLoop\Loop;
-use React\Http\Message\Response;
 use Symfony\Component\Process\Process;
-
-use function markhuot\craftpest\helpers\test\dd;
-use function markhuot\craftpest\helpers\test\dump;
 
 class BrowserProxy
 {
+    protected array $constructorArgs = [];
+
     protected array $callstack = [];
+
     protected static array $counter = [];
 
+    protected ?string $sessionId = null;
+
     public function __construct(
-        string $browser,
-        array $arguments=[],
+        protected string $browser,
+        array $arguments = [],
     ) {
-        $this->callstack[] = ['__construct', $browser, $arguments];
+        $this->constructorArgs = ['browser' => $browser, 'arguments' => $arguments];
     }
 
     public function visit(string $url): self
     {
-        $this->callstack[] = ['visit', $url];
+        $site = Craft::$app->getSites()->getCurrentSite();
+
+        $originalBaseUrl = $site->getBaseUrl();
+        $site->setBaseUrl('http://127.0.0.1:8080/');
+        $url = UrlHelper::siteUrl($url);
+        $site->setBaseUrl($originalBaseUrl);
+
+        $this->callstack[] = ['visit', [$url]];
 
         return $this;
     }
@@ -34,60 +43,92 @@ class BrowserProxy
     public function screenshot(): void
     {
         [$filename, $alternateFilename] = $this->getScreenshotFilename();
-        $this->callstack[] = ['screenshot', $filename, $alternateFilename];
+        $shouldCreate = ! file_exists($filename);
 
+        $this->callstack[] = ['screenshot', [$shouldCreate, $filename, $alternateFilename]];
         $this->send();
 
         if (file_exists($alternateFilename)) {
             Assert::assertFileEquals($filename, $alternateFilename, 'Screenshots do not match');
-        }
-        else {
+        } else {
             test()->markTestIncomplete('No screenshot found for '.basename($filename).', creating one now');
         }
     }
 
-    public function send(): void
+    public function getTitle(): ?string
     {
-        $statements = [];
-        $http = new \React\Http\HttpServer(function (\Psr\Http\Message\ServerRequestInterface $request) use (&$statements) {
-            ['identifier' => $identifier, 'method' => $method, 'args' => $args] = json_decode($request->getBody()->getContents(), true);
-            if ($method === 'prepare') {
-                $statements[$identifier] = Craft::$app->getDb()->pdo->prepare(...unserialize($args));
-                return Response::plaintext('');
-            }
-            if ($method === '__get') {
-                return \React\Http\Message\Response::json([
-                    'identifier' => $identifier,
-                    'method' => $method,
-                    'result' => serialize($statements[$identifier]->$args),
-                ]);
-            }
+        $this->callstack[] = ['getTitle'];
 
-            $result = $statements[$identifier]->$method(...unserialize($args));
-            return \React\Http\Message\Response::json([
-                'identifier' => $identifier,
-                'method' => $method,
-                'result' => serialize($result),
-            ]);
-        });
-        $socket = new \React\Socket\SocketServer('127.0.0.1:5551');
-        $http->listen($socket);
+        return $this->send();
+    }
 
-        $testRunner =(new Process([
+    public function getPageSource(): string
+    {
+        $this->callstack[] = ['getPageSource'];
+
+        return $this->send();
+    }
+
+    public function getCurrentUrl(): string
+    {
+        $this->callstack[] = ['getCurrentUrl'];
+
+        return $this->send();
+    }
+
+    public function assertSee(string $needle): void
+    {
+        $this->callstack[] = ['getPageSource'];
+        $pageSource = $this->send();
+
+        Assert::assertStringContainsString($needle, $pageSource);
+    }
+
+    public function quit(): void
+    {
+        $this->callstack[] = ['quit'];
+
+        $this->send();
+    }
+
+    public function send(): mixed
+    {
+        TestSuite::getInstance()->test->bootWebDriver($this->browser);
+
+        $testRunner = (new Process([
             'php',
             __DIR__.'/../../bin/browser.php',
-            serialize($this->callstack),
+            serialize([
+                ['__construct', ['sessionId' => $this->sessionId, ...$this->constructorArgs]],
+                ...$this->callstack,
+            ]),
         ]));
         $testRunner->start();
 
+        $returnValue = null;
+
         $loop = Loop::get();
-        $loop->addPeriodicTimer(1, function () use ($testRunner) {
+        $timer = $loop->addPeriodicTimer(1, function () use ($testRunner, &$returnValue) {
             if (! $testRunner->isRunning()) {
+                if ($testRunner->getExitCode() !== 0) {
+                    throw new \RuntimeException($testRunner->getOutput());
+                }
+                $result = unserialize($testRunner->getOutput());
+                $returnValue = $result['returnValue'];
+                $this->sessionId ??= $result['sessionId'];
                 Loop::stop();
             }
         });
 
         $loop->run();
+
+        // Remove the timer so that the next time this is run we don't re-use the old process instance
+        $loop->cancelTimer($timer);
+
+        // Clear out our callstack so events are not repeated during further chaining
+        $this->callstack = [];
+
+        return $returnValue;
     }
 
     /**

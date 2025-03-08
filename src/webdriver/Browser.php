@@ -2,15 +2,15 @@
 
 namespace markhuot\craftpest\webdriver;
 
-use Facebook\WebDriver\Chrome\ChromeOptions;
-use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
+use Facebook\WebDriver\Remote\RemoteWebDriver;
 
 class Browser
 {
     protected RemoteWebDriver $driver;
 
     public function __construct(
+        ?string $sessionId = null,
         string $browser = 'safari',
         array $arguments = [],
     ) {
@@ -19,30 +19,62 @@ class Browser
         $browserClassName = ucfirst($browser);
         $optionsClassName = "\\Facebook\\WebDriver\\{$browserClassName}\\{$browserClassName}Options";
         if (class_exists($optionsClassName)) {
-            $options = new $optionsClassName();
+            $options = new $optionsClassName;
             $options->addArguments($arguments);
             $capabilities->setCapability($optionsClassName::CAPABILITY, $options);
         }
 
-        $this->driver = RemoteWebDriver::create('http://localhost:4444', $capabilities);
-    }
+        $driverPort = match ($browser) {
+            'chrome' => 4444,
+            'safari' => 4445,
+            default => throw new \Exception('Unknown browser driver: '.$browser),
+        };
 
-    public function visit(string $url): self
-    {
-        $this->driver->get($url);
-
-        return $this;
-    }
-
-    public function screenshot($filename, $alternateFilename): self
-    {
-        if (file_exists($filename)) {
-            $this->driver->takeScreenshot($alternateFilename);
+        if ($sessionId) {
+            $this->driver = RemoteWebDriver::createBySessionID($sessionId, 'http://localhost:'.$driverPort, null, null, true, $capabilities);
         }
         else {
+            $this->driver = RemoteWebDriver::create('http://localhost:'.$driverPort, $capabilities);
+        }
+    }
+
+    public function getWebDriverSessionId()
+    {
+        return $this->driver->getSessionID();
+    }
+
+    public function visit(string $url): void
+    {
+        $this->driver->get($url);
+    }
+
+    public function screenshot($shouldCreate, $filename, $alternateFilename): void
+    {
+        if ($shouldCreate) {
             $this->driver->takeScreenshot($filename);
         }
+        else {
+            $this->driver->takeScreenshot($alternateFilename);
+        }
+    }
 
-        return $this;
+    public function getTitle(): ?string
+    {
+        return $this->driver->getTitle();
+    }
+
+    public function getCurrentUrl(): string
+    {
+        return $this->driver->getCurrentURL();
+    }
+
+    public function getPageSource(): string
+    {
+        return $this->driver->getPageSource();
+    }
+
+    public function quit(): void
+    {
+        $this->driver->quit();
     }
 }
