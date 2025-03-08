@@ -12,6 +12,9 @@ return RectorConfig::configure()
     ->withPaths([
         __DIR__.'/src',
     ])
+    ->withSkipPath(
+        __DIR__.'/src/craft/services/Config.php',
+    )
     ->withPreparedSets(
         deadCode: true,
         codeQuality: true,
