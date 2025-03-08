@@ -51,6 +51,7 @@ class BrowserProxy
         if (file_exists($alternateFilename)) {
             Assert::assertFileEquals($filename, $alternateFilename, 'Screenshots do not match');
         } else {
+            // @phpstan-ignore-next-line
             test()->markTestIncomplete('No screenshot found for '.basename($filename).', creating one now');
         }
     }
@@ -93,6 +94,7 @@ class BrowserProxy
 
     public function send(): mixed
     {
+        // @phpstan-ignore-next-line
         TestSuite::getInstance()->test->bootWebDriver($this->browser);
 
         $testRunner = (new Process([
@@ -149,7 +151,7 @@ class BrowserProxy
             $description .= '__'.$count;
         }
 
-        static::$counter[$filename.$description] = ($count ?? 0) + 1;
+        static::$counter[$filename.$description] = $count + 1;
 
         return [
             sprintf('%s/%s/.craftpest/screenshots/%s/%s.png', $rootPath, $testPath, $relativePath, $description),
