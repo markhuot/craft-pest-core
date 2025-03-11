@@ -3,8 +3,7 @@
 namespace markhuot\craftpest\test;
 
 use craft\base\Element;
-use craft\db\Query;
-use craft\db\Table;
+use markhuot\craftpest\test\Assert;
 
 /**
  * # Database Assertions
@@ -22,9 +21,7 @@ trait DatabaseAssertions
      */
     public function assertDatabaseCount(string $tableName, int $expectedCount): void
     {
-        $actualCount = (new Query)->from($tableName)->count();
-
-        $this->assertEquals($expectedCount, $actualCount);
+        Assert::assertDatabaseCount($tableName, $expectedCount);
     }
 
     /**
@@ -37,9 +34,7 @@ trait DatabaseAssertions
      */
     public function assertDatabaseHas(string $tableName, array $condition): void
     {
-        $actualCount = (new Query)->from($tableName)->where($condition)->count();
-
-        $this->assertGreaterThanOrEqual(1, $actualCount);
+        Assert::assertDatabaseHas($tableName, $condition);
     }
 
     /**
@@ -52,9 +47,7 @@ trait DatabaseAssertions
      */
     public function assertDatabaseMissing(string $tableName, array $condition): void
     {
-        $actualCount = (new Query)->from($tableName)->where($condition)->count();
-
-        $this->assertSame(0, (int) $actualCount);
+        Assert::assertDatabaseMissing($tableName, $condition);
     }
 
     /**
@@ -66,9 +59,7 @@ trait DatabaseAssertions
      */
     public function assertTrashed(Element $element): void
     {
-        $row = (new Query)->from(Table::ELEMENTS)->where(['id' => $element->id])->one();
-
-        $this->assertNotEmpty($row['dateDeleted']);
+        Assert::assertTrashed($element);
     }
 
     /**
@@ -80,8 +71,6 @@ trait DatabaseAssertions
      */
     public function assertNotTrashed(Element $element): void
     {
-        $row = (new Query)->from(Table::ELEMENTS)->where(['id' => $element->id])->one();
-
-        $this->assertEmpty($row['dateDeleted']);
+        Assert::assertNotTrashed($element);
     }
 }

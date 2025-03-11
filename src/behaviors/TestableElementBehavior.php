@@ -2,8 +2,8 @@
 
 namespace markhuot\craftpest\behaviors;
 
-use PHPUnit\Framework\Assert;
 use yii\base\Behavior;
+use markhuot\craftpest\test\Assert as CraftAssert;
 
 use function markhuot\craftpest\helpers\test\test;
 
@@ -31,7 +31,7 @@ class TestableElementBehavior extends Behavior
      */
     public function assertValid(array $keys = [])
     {
-        Assert::assertCount(0, $this->owner->errors);
+        CraftAssert::assertValid($this->owner, $keys);
 
         return $this->owner;
     }
@@ -48,18 +48,7 @@ class TestableElementBehavior extends Behavior
      */
     public function assertInvalid(array $keys = [])
     {
-        if ($keys !== []) {
-            $errors = collect($keys)
-                ->mapWithKeys(fn ($key) => [$key => $this->owner->getErrors($key)])
-                ->filter(fn ($errors): bool => $errors === []);
-            if ($errors->count()) {
-                Assert::fail('The following keys were expected to be invalid but were not: '.implode(', ', $errors->keys()->all()));
-            } else {
-                Assert::assertTrue(true);
-            }
-        } else {
-            Assert::assertGreaterThanOrEqual(1, count($this->owner->errors));
-        }
+        CraftAssert::assertInvalid($this->owner, $keys);
 
         return $this->owner;
     }
@@ -75,7 +64,7 @@ class TestableElementBehavior extends Behavior
      */
     public function assertTrashed()
     {
-        test()->assertTrashed($this->owner);
+        CraftAssert::assertTrashed($this->owner);
 
         return $this->owner;
     }
@@ -89,7 +78,7 @@ class TestableElementBehavior extends Behavior
      */
     public function assertNotTrashed()
     {
-        test()->assertNotTrashed($this->owner);
+        CraftAssert::assertNotTrashed($this->owner);
 
         return $this->owner;
     }
