@@ -30,10 +30,10 @@ use function markhuot\craftpest\helpers\base\service;
 class Entry extends Element
 {
     /** @var string|\craft\models\Section|null */
-    protected $sectionIdentifier = null;
+    protected $sectionIdentifier;
 
     /** @var EntryType|string|null */
-    protected $entryTypeIdentifier = null;
+    protected $entryTypeIdentifier;
 
     protected $priorityAttributes = ['sectionId', 'typeId'];
 
@@ -47,7 +47,7 @@ class Entry extends Element
      *
      * If you do not pass a section, one will be created automatically.
      */
-    public function section($identifier)
+    public function section($identifier): static
     {
         $this->sectionIdentifier = $identifier;
 
@@ -57,7 +57,7 @@ class Entry extends Element
     /**
      * Set the entry type
      */
-    public function type($identifier)
+    public function type($identifier): static
     {
         $this->entryTypeIdentifier = $identifier;
 
@@ -68,7 +68,7 @@ class Entry extends Element
      * Set the post date by passing a `DateTime`, a string representing the date like
      * "2022-04-25 04:00:00", or a unix timestamp as an integer.
      */
-    public function postDate(\DateTime|string|int $value)
+    public function postDate(\DateTime|string|int $value): static
     {
         $this->setDateField('postDate', $value);
 
@@ -79,7 +79,7 @@ class Entry extends Element
      * Set the expiration date by passing a `DateTime`, a string representing the date like
      * "2022-04-25 04:00:00", or a unix timestamp as an integer.
      */
-    public function expiryDate(\DateTime|string|int $value)
+    public function expiryDate(\DateTime|string|int $value): static
     {
         $this->setDateField('expiryDate', $value);
 
@@ -95,7 +95,7 @@ class Entry extends Element
      * Entry::factory()->setDateField('approvedOn', 1665864918);
      * ```
      */
-    public function setDateField($key, $value)
+    public function setDateField($key, $value): void
     {
         if (is_numeric($value)) {
             $value = new \DateTime('@'.$value);
@@ -117,7 +117,7 @@ class Entry extends Element
      * Set the author of the entry. You may pass a full user object, a user ID,
      * a username, email, or a user ID.
      */
-    public function author(\craft\web\User|string|int $user)
+    public function author(\craft\web\User|string|int $user): static
     {
         if (is_numeric($user)) {
             $user = \Craft::$app->users->getUserById($user);
@@ -164,7 +164,7 @@ class Entry extends Element
      */
     public function inferTypeId(?int $sectionid): ?int
     {
-        if ($sectionid) {
+        if ($sectionid !== null && $sectionid !== 0) {
             $section = service(SectionsServiceInterface::class)->getSectionById($sectionid);
             $entryTypes = collect($section->getEntryTypes());
         } else {
@@ -177,7 +177,7 @@ class Entry extends Element
             $entryType = $entryTypes->where('id', $this->entryTypeIdentifier)->first();
         } elseif (is_string($this->entryTypeIdentifier)) {
             $entryType = $entryTypes->where('handle', $this->entryTypeIdentifier)->first();
-        } elseif ($sectionid) {
+        } elseif ($sectionid !== null && $sectionid !== 0) {
             $reflector = new \ReflectionClass($this);
             $className = $reflector->getShortName();
             $typeHandle = lcfirst($className);
@@ -194,7 +194,7 @@ class Entry extends Element
      *
      * @internal
      */
-    public function newElement()
+    public function newElement(): \craft\elements\Entry
     {
         return new \craft\elements\Entry;
     }
@@ -202,13 +202,13 @@ class Entry extends Element
     /**
      * @internal
      */
-    public function inferences(array $definition = [])
+    public function inferences(array $definition = []): array
     {
         $sectionId = $this->inferSectionId();
         $typeId = $this->inferTypeId($sectionId);
 
         // If you couldn't infer anything, then create a new section/type
-        if (empty($sectionId) && empty($typeId)) {
+        if (($sectionId === null || $sectionId === 0) && ($typeId === null || $typeId === 0)) {
             $sectionId = ($section = Section::factory()->create())->id;
             $typeId = collect($section->getEntryTypes())->first()?->id;
         }

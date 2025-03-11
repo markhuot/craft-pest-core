@@ -6,7 +6,7 @@ use craft\helpers\FileHelper;
 
 class CopyInitialStubs
 {
-    public function __invoke()
+    public function __invoke(): void
     {
         if (! is_dir(CRAFT_BASE_PATH.'/tests')) {
             mkdir(CRAFT_BASE_PATH.'/tests');

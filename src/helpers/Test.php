@@ -26,14 +26,14 @@ function spy($className)
 /**
  * @return Expectable|TestCall|TestCase|mixed
  */
-function test()
+function test(): \Pest\Support\HigherOrderTapProxy|\Pest\PendingCalls\TestCall
 {
     return \test();
 }
 
 // The default dump() and dd() methods that ship with Craft don't play well with Pest so
 // set the correct versions early
-function dump(...$args)
+function dump(...$args): void
 {
     $cloner = new \Symfony\Component\VarDumper\Cloner\VarCloner;
     $dumper = new \Symfony\Component\VarDumper\Dumper\CliDumper;
@@ -42,7 +42,7 @@ function dump(...$args)
     }
 }
 
-function dd(...$args)
+function dd(...$args): void
 {
     dump(...$args);
     exit;

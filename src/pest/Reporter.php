@@ -9,12 +9,7 @@ abstract class Reporter
 {
     const IGNORE = 'ignore';
 
-    protected File $file;
-
-    public function __construct(File $file)
-    {
-        $this->file = $file;
-    }
+    public function __construct(protected File $file) {}
 
     /**
      * @return bool|string
@@ -38,13 +33,13 @@ abstract class Reporter
     {
         return collect($this->file->lineCoverageData())
             ->mapWithKeys(fn ($value, $key) => [$this->getSourceLineFor($key) => $value])
-            ->filter(fn ($value, $key) => ! empty($key));
+            ->filter(fn ($value, $key): bool => $key !== 0 && ($key !== '' && $key !== '0'));
     }
 
     public function getUncoveredLines(): Collection
     {
         return $this->getLineCoverageData()
-            ->filter(fn ($line) => empty($line))
+            ->filter(fn ($line): bool => empty($line))
             ->keys();
     }
 
@@ -69,7 +64,7 @@ abstract class Reporter
             }
         }
 
-        return collect($ranges)->map(fn ($r) => implode('..', $r))->flatten();
+        return collect($ranges)->map(fn ($r): string => implode('..', $r))->flatten();
     }
 
     public function getNumberOfExecutableLines(): int

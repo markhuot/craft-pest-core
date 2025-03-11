@@ -15,6 +15,7 @@ use markhuot\craftpest\behaviors\FieldTypeHintBehavior;
 use markhuot\craftpest\behaviors\TestableElementBehavior;
 use markhuot\craftpest\behaviors\TestableElementQueryBehavior;
 use markhuot\craftpest\console\PestController;
+use markhuot\craftpest\database\PdoProxy;
 use markhuot\craftpest\interfaces\RenderCompiledClassesInterface;
 use markhuot\craftpest\interfaces\SectionsServiceInterface;
 use yii\base\BootstrapInterface;
@@ -25,8 +26,12 @@ use yii\base\Event;
  */
 class Pest implements BootstrapInterface
 {
-    public function bootstrap($app)
+    public function bootstrap($app): void
     {
+        if (getenv('CRAFTPEST_PROXY_DB')) {
+            Craft::$app->getDb()->pdo = new PdoProxy(Craft::$app->getDb()->pdo);
+        }
+
         Craft::setAlias('@markhuot/craftpest', __DIR__);
 
         if (Craft::$app->request->isConsoleRequest) {
@@ -36,7 +41,7 @@ class Pest implements BootstrapInterface
         Event::on(
             Entry::class,
             Entry::EVENT_DEFINE_BEHAVIORS,
-            function (DefineBehaviorsEvent $event) {
+            function (DefineBehaviorsEvent $event): void {
                 $event->behaviors['expectableBehavior'] = ExpectableBehavior::class;
                 $event->behaviors['testableElementBehavior'] = TestableElementBehavior::class;
             }
@@ -45,7 +50,7 @@ class Pest implements BootstrapInterface
         Event::on(
             ElementQuery::class,
             ElementQuery::EVENT_DEFINE_BEHAVIORS,
-            function (DefineBehaviorsEvent $event) {
+            function (DefineBehaviorsEvent $event): void {
                 $event->behaviors['testableElementQueryBehavior'] = TestableElementQueryBehavior::class;
             }
         );
@@ -53,7 +58,7 @@ class Pest implements BootstrapInterface
         Event::on(
             Field::class,
             Field::EVENT_DEFINE_BEHAVIORS,
-            function (DefineBehaviorsEvent $event) {
+            function (DefineBehaviorsEvent $event): void {
                 $event->behaviors['fieldTypeHintBehavior'] = FieldTypeHintBehavior::class;
             }
         );

@@ -80,14 +80,14 @@ would expect an array of strings to match.
 $nodeList->assertText('Hello World');
 ```
 
-## assertContainsString($expected)
+## assertContainsString(string $expected)
 Asserts that the given string is a part of the node list text content
 
 ```php
 $nodeList->assertContainsString('Hello');
 ```
 
-## assertCount($expected)
+## assertCount(int $expected)
 Asserts that the given count matches the count of nodes in the node list.
 
 ```php

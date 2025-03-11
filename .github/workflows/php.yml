@@ -3,7 +3,7 @@ name: Run Tests
 on:
   pull_request:
   push:
-    branches: 
+    branches:
       - main
 
 permissions:
@@ -14,8 +14,9 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
-        version: 
+        version:
           - constraint: ~4.5.0
             config: 4
           - constraint: ~4.6.0
@@ -50,7 +51,7 @@ jobs:
       CRAFT_OMIT_SCRIPT_NAME_IN_URLS: true
       CRAFT_DEV_MODE: true
       DEV_MODE: true
-      CRAFT_EXE_PATH: ./src/bin/craft
+      CRAFT_EXE_PATH: ./craft
       PRIMARY_SITE_URL: http://localhost:8080
 
     services:
@@ -73,6 +74,12 @@ jobs:
     - uses: shivammathur/setup-php@v2
       with:
         php-version: '8.3'
+
+    - uses: browser-actions/setup-chrome@v1
+      id: setup-chrome
+      with:
+        install-dependencies: true
+        install-chromedriver: true
 
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
@@ -107,6 +114,10 @@ jobs:
     - name: Run PHPStan
       run: ./vendor/bin/phpstan analyse src
 
+    - name: Run Rector
+      run: ./vendor/bin/rector process --dry-run
+      if: always()
+
     - name: Run pint
       run: ./vendor/bin/pint --test -vvv src/
       if: always()
@@ -114,3 +125,5 @@ jobs:
     - name: Run test suite
       run: ./vendor/bin/pest --compact -vvv
       if: always()
+      env:
+        CHROMEDRIVER_PATH: ${{ steps.setup-chrome.outputs.chromedriver-path }}

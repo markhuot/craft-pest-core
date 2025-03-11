@@ -18,7 +18,7 @@ abstract class WebRequest extends \craft\web\Request
 
     private const HEADER_X_FORWARDED_FOR = '127.0.0.1';
 
-    public static function make($uri): WebRequest
+    public static function make(string $uri): WebRequest
     {
         $config = App::webRequestConfig();
         $config['class'] = static::class;
@@ -110,7 +110,7 @@ abstract class WebRequest extends \craft\web\Request
         return $this;
     }
 
-    public function setDefaultProperties(string $url)
+    public function setDefaultProperties(string $url): void
     {
         // Split path and query params
         $parts = parse_url($url);
@@ -169,7 +169,7 @@ abstract class WebRequest extends \craft\web\Request
 
     public function assertMethod($method)
     {
-        Assert::assertSame(strtoupper($method), $this->getMethod());
+        Assert::assertSame(strtoupper((string) $method), $this->getMethod());
 
         return $this;
     }

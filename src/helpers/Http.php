@@ -13,7 +13,7 @@ function get(string $uri = '/'): TestableResponse|TestCall
     return test()->get($uri);
 }
 
-function expectGet($uri = '/')
+function expectGet($uri = '/'): \Pest\Expectation
 {
     return new Expectation(fn () => test()->get($uri));
 }

@@ -11,28 +11,25 @@ use yii\web\Cookie;
 
 class RequestBuilder
 {
-    private WebRequest $request;
+    private readonly WebRequest $request;
 
-    private \craft\web\Application $app;
+    private readonly \craft\web\Application $app;
 
-    private RequestHandler $handler;
-
-    protected string $method;
+    private readonly RequestHandler $handler;
 
     protected array $body = [];
 
     protected array $originalGlobals;
 
     public function __construct(
-        string $method,
+        protected string $method,
         string $uri,
         ?\craft\web\Application $app = null,
         ?RequestHandler $handler = null,
     ) {
-        $this->method = $method;
         $this->app = $app ?? \Craft::$app;
         $this->handler = $handler ?? new RequestHandler($this->app);
-        $this->request = $this->prepareRequest($method, $uri);
+        $this->request = $this->prepareRequest($this->method, $uri);
     }
 
     public function addHeader(string $name, $value): self
@@ -104,9 +101,9 @@ class RequestBuilder
 
         $_POST = $body = $this->body ?? [];
 
-        if (! empty($body)) {
+        if ($body !== []) {
             $contentType = $this->request->getContentType();
-            $isJson = strpos($contentType, 'json') !== false;
+            $isJson = str_contains($contentType, 'json');
 
             // Not needed just yet. If we add more content-types we'll need
             // to add more to this conditional
@@ -123,7 +120,6 @@ class RequestBuilder
 
     protected function resetGlobals()
     {
-        $_POST = $this->originalGlobals['_POST'] ?? [];
         $_POST = $this->originalGlobals['_SERVER'] ?? [];
         $this->originalGlobals = [];
     }
@@ -133,12 +129,10 @@ class RequestBuilder
      */
     private function prepareRequest(string $method, string $uri): WebRequest
     {
-        $request = match (strtolower($method)) {
+        return match (strtolower($method)) {
             'get' => GetRequest::make($uri),
             'post' => PostRequest::make($uri),
             default => throw new \InvalidArgumentException("Unable to build request. Unknown method '$method'"),
         };
-
-        return $request;
     }
 }

@@ -70,7 +70,7 @@ trait Benchmark
      * > Unlike the traditional Craft request/response lifecycle you are
      * free to make multiple requests in a single benchmark.
      */
-    public function endBenchmark()
+    public function endBenchmark(): \markhuot\craftpest\web\BenchmarkResult
     {
         $this->activeBenchmark['end'] = count(\Craft::getLogger()->getProfiling());
 
@@ -79,7 +79,7 @@ trait Benchmark
         return new BenchmarkResult($this->activeBenchmark['start'], $this->activeBenchmark['end']);
     }
 
-    public function tearDownBenchmark()
+    public function tearDownBenchmark(): void
     {
         $this->endBenchmark();
     }

@@ -29,7 +29,8 @@ trait ActingAs
             \Craft::$app->getUser()->logout(false);
 
             return $this;
-        } elseif (is_string($userOrName)) {
+        }
+        if (is_string($userOrName)) {
             $user = \Craft::$app->getUsers()->getUserByUsernameOrEmail($userOrName);
         } elseif (is_a($userOrName, User::class)) {
             $user = $userOrName;
@@ -74,7 +75,7 @@ trait ActingAs
         return $this;
     }
 
-    public function tearDownActingAs()
+    public function tearDownActingAs(): void
     {
         \Craft::$app->getUser()->logout(false);
     }

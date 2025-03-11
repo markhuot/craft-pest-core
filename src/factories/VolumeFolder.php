@@ -23,31 +23,29 @@ class VolumeFolder extends Factory
      * I can't type this because Craft 3 expects a craft\base\VolumeInterface but
      * Craft 4 expects a \craft\models\Volume
      */
-    public function volume($volume)
+    public function volume($volume): static
     {
         $this->volume = $volume;
 
         return $this;
     }
 
-    public function parent(\craft\models\VolumeFolder $parent)
+    public function parent(\craft\models\VolumeFolder $parent): static
     {
         $this->parent = $parent;
 
         return $this;
     }
 
-    public function newElement()
+    public function newElement(): \craft\models\VolumeFolder
     {
         return new \craft\models\VolumeFolder;
     }
 
     /**
      * The faker definition
-     *
-     * @return array
      */
-    public function definition(int $index = 0)
+    public function definition(int $index = 0): array
     {
         $name = $this->faker->words(2, true);
         $path = '/'.StringHelper::toCamelCase($name).'/';
@@ -66,7 +64,7 @@ class VolumeFolder extends Factory
     /**
      * @param  \craft\models\VolumeFolder  $element
      */
-    public function store($element)
+    public function store($element): bool
     {
         \Craft::$app->assets->createFolder($element);
 

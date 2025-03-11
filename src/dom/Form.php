@@ -38,7 +38,7 @@ class Form
         }
 
         if ($nodeList->count > 1) {
-            $ids = implode(', ', $nodeList->getNodeOrNodes(fn (Crawler $node) => $node->attr('id')));
+            $ids = implode(', ', $nodeList->getNodeOrNodes(fn (Crawler $node): ?string => $node->attr('id')));
             throw new \InvalidArgumentException("From selector is ambiguous. Found {$nodeList->count} forms: {$ids}.");
         }
 
@@ -167,7 +167,7 @@ class Form
             throw new \InvalidArgumentException('Unable to find exact button to click on.');
         }
 
-        $this->fill($button->attr('name'), $button->attr('value') ?: $button->attr('formaction'));
+        $this->fill($button->attr('name'), $button->attr('value') !== null && $button->attr('value') !== '' && $button->attr('value') !== '0' ? $button->attr('value') : $button->attr('formaction'));
 
         return $this->submit();
     }

@@ -15,19 +15,19 @@ class Category extends Element
     /** {@inheritdoc} */
     protected $priorityAttributes = ['groupId'];
 
-    public function group($handle)
+    public function group($handle): static
     {
         $this->groupHandle = $handle;
 
         return $this;
     }
 
-    public function newElement()
+    public function newElement(): \craft\elements\Category
     {
         return new \craft\elements\Category;
     }
 
-    public function definition(int $index = 0)
+    public function definition(int $index = 0): array
     {
         /** @var \craft\elements\Category $group */
         $group = \Craft::$app->categories->getGroupByHandle($this->groupHandle);

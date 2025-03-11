@@ -7,23 +7,23 @@ use craft\models\MatrixBlockType;
 
 trait AddsMatrixBlocks
 {
-    public function handlesMagicAddsMatrixBlocksCall($key, $args)
+    public function handlesMagicAddsMatrixBlocksCall($key, $args): bool
     {
-        return preg_match('/^addBlockTo(.*)$/', $key, $fieldMatches) ||
-            preg_match('/^add(.+)To(.*)$/', $key, $blockTypeMatches);
+        return preg_match('/^addBlockTo(.*)$/', (string) $key, $fieldMatches) ||
+            preg_match('/^add(.+)To(.*)$/', (string) $key, $blockTypeMatches);
     }
 
-    public function callMagicAddsMatrixBlocksCall($key, $args)
+    public function callMagicAddsMatrixBlocksCall(string $key, $args)
     {
         preg_match('/^addBlockTo(.*)$/', $key, $fieldMatches);
-        if (! empty($fieldMatches)) {
+        if ($fieldMatches !== []) {
             $fieldName = lcfirst($fieldMatches[1]);
 
             return $this->addBlockTo($fieldName, ...$args);
         }
 
         preg_match('/^add(.+)To(.*)$/', $key, $blockTypeMatches);
-        if (! empty($blockTypeMatches)) {
+        if ($blockTypeMatches !== []) {
             $blockType = lcfirst($blockTypeMatches[1]);
             $fieldName = lcfirst($blockTypeMatches[2]);
 
@@ -41,7 +41,7 @@ trait AddsMatrixBlocks
         if (is_string($fieldOrHandle)) {
             /** @var Matrix $field */
             $field = \Craft::$app->fields->getFieldByHandle($fieldOrHandle);
-        } elseif (is_a($fieldOrHandle, Matrix::class)) {
+        } elseif ($fieldOrHandle instanceof \craft\fields\Matrix) {
             $field = $fieldOrHandle;
         }
 
@@ -59,11 +59,7 @@ trait AddsMatrixBlocks
             $blockType = $field->getBlockTypes()[0];
         }
 
-        if (! empty($args[0]) && is_array($args[0])) {
-            $fieldData = $args[0];
-        } else {
-            $fieldData = $args;
-        }
+        $fieldData = ! empty($args[0]) && is_array($args[0]) ? $args[0] : $args;
 
         $this->set($field->handle, Block::factory()
             ->type($blockType)

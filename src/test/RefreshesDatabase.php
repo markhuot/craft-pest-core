@@ -24,7 +24,7 @@ trait RefreshesDatabase
      *
      * @var string
      */
-    public $oldConfigVersion = null;
+    public $oldConfigVersion;
 
     /**
      * @var Transaction
@@ -49,7 +49,7 @@ trait RefreshesDatabase
      */
     protected $autoCommittedModels = [];
 
-    public function setUpRefreshesDatabase()
+    public function setUpRefreshesDatabase(): void
     {
         $this->listenForStores();
         $this->beginTransaction();
@@ -76,9 +76,9 @@ trait RefreshesDatabase
         Event::off(Factory::class, Factory::EVENT_AFTER_STORE, [$this, 'afterStore']);
     }
 
-    public function beforeStore(FactoryStoreEvent $event)
+    public function beforeStore(FactoryStoreEvent $event): void
     {
-        $isFieldFactory = is_a($event->sender, Field::class) || is_subclass_of($event->sender, Field::class);
+        $isFieldFactory = $event->sender instanceof \markhuot\craftpest\factories\Field || is_subclass_of($event->sender, Field::class);
         $isCraft4 = InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '~4.0');
 
         // We don't need to worry about autocommiting fields in Craft 5 because there is no longer
@@ -93,7 +93,7 @@ trait RefreshesDatabase
         }
     }
 
-    public function afterStore(FactoryStoreEvent $event)
+    public function afterStore(FactoryStoreEvent $event): void
     {
         // If Yii thinks we're in a transaction but the transaction isn't
         // active anymore (probably because it was autocommitted) then we
@@ -115,13 +115,13 @@ trait RefreshesDatabase
         }
     }
 
-    public function beginTransaction()
+    public function beginTransaction(): void
     {
         $this->oldConfigVersion = \Craft::$app->info->configVersion;
         $this->transaction = \Craft::$app->db->beginTransaction();
     }
 
-    public function rollBackTransaction()
+    public function rollBackTransaction(): void
     {
         if (empty($this->transaction)) {
             return;
@@ -137,13 +137,13 @@ trait RefreshesDatabase
         $this->transaction = null;
     }
 
-    public function rollBackAutoCommittedModels()
+    public function rollBackAutoCommittedModels(): void
     {
         foreach ($this->autoCommittedModels as $model) {
             if (is_a($model, \craft\base\Field::class) || is_subclass_of($model, \craft\base\Field::class)) {
                 \Craft::$app->fields->deleteField($model);
             } else {
-                throw new \Exception('Found orphaned model ['.get_class($model).'] that was not cleaned up in a transaction and of an unknown type for craft-pest to clean up. You must remove this model manually.');
+                throw new \Exception('Found orphaned model ['.$model::class.'] that was not cleaned up in a transaction and of an unknown type for craft-pest to clean up. You must remove this model manually.');
             }
         }
     }

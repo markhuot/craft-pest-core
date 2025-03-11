@@ -13,7 +13,7 @@ class BlockType extends Factory
 {
     use Fieldable;
 
-    public function definition(int $index = 0)
+    public function definition(int $index = 0): array
     {
         $name = $this->faker->words(2, true);
 
@@ -22,7 +22,7 @@ class BlockType extends Factory
         ];
     }
 
-    public function inferences(array $definition = [])
+    public function inferences(array $definition = []): array
     {
         if (empty($definition['handle']) && ! empty($definition['name'])) {
             $definition['handle'] = StringHelper::toCamelCase($definition['name']);
@@ -36,7 +36,7 @@ class BlockType extends Factory
         return new MatrixBlockType;
     }
 
-    public function store($blockType)
+    public function store($blockType): never
     {
         throw new \Exception('Block types can not be saved on their own. They must be saved via their parent Matrix Field.');
     }

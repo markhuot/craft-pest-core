@@ -12,14 +12,14 @@ use function markhuot\craftpest\helpers\test\test;
 
 class RequestHandler
 {
-    private \craft\web\Application $app;
+    private readonly \craft\web\Application $app;
 
     public function __construct(?\craft\web\Application $app = null)
     {
         $this->app = $app ?? \Craft::$app;
     }
 
-    public function handle($request, $skipSpecialHandling = false): TestableResponse
+    public function handle($request, bool $skipSpecialHandling = false): TestableResponse
     {
         $obLevel = ob_get_level();
         $this->registerWithCraft($request);

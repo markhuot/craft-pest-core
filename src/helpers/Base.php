@@ -13,7 +13,7 @@ if (! function_exists('collection_wrap')) {
 }
 
 if (! function_exists('array_wrap')) {
-    function array_wrap($value)
+    function array_wrap($value): array
     {
         if (is_array($value)) {
             return $value;
@@ -28,7 +28,7 @@ if (! function_exists('array_wrap')) {
 }
 
 if (! function_exists('version_greater_than_or_equal_to')) {
-    function version_greater_than_or_equal_to(string $version1, string $version2)
+    function version_greater_than_or_equal_to(string $version1, string $version2): bool
     {
         return version_compare($version1, $version2) >= 0;
     }
