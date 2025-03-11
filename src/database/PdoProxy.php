@@ -4,8 +4,6 @@ namespace markhuot\craftpest\database;
 
 use Craft;
 
-use function markhuot\craftpest\helpers\test\dump;
-
 /**
  * @mixin \PDO
  */
@@ -13,12 +11,11 @@ class PdoProxy
 {
     public function __construct(
         private readonly \PDO $pdo
-    ) {
-    }
+    ) {}
 
     public function __call($method, $args)
     {
-        $result =  $this->pdo->$method(...$args);
+        $result = $this->pdo->$method(...$args);
 
         if ($method === 'prepare') {
             $identifier = md5(uniqid());
@@ -26,7 +23,7 @@ class PdoProxy
             Craft::createGuzzleClient()->post('http://127.0.0.1:5551', ['json' => [
                 'identifier' => $identifier,
                 'method' => 'prepare',
-                'args' => serialize($args)
+                'args' => serialize($args),
             ]]);
 
             $result = new PdoStatementProxy($identifier, $result);

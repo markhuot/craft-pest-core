@@ -16,14 +16,18 @@ trait WebDriver
 {
     /** @var array<string, bool> */
     protected static array $browserDriverBooted = [];
+
     protected static bool $webServerBooted = false;
+
     protected static bool $dbProxyServerBooted = false;
+
     /** @var array<Browser> */
     protected array $browsers = [];
 
     public function setUpWebDriver() {}
 
-    public function tearDownWebDriver(): void {
+    public function tearDownWebDriver(): void
+    {
         foreach ($this->browsers as $browser) {
             $browser->quit();
         }
@@ -55,7 +59,7 @@ trait WebDriver
             // a second and _hope_ it has booted...
             sleep(1);
         } else {
-            $process->waitUntil(fn($type, $buffer): bool => str_contains((string) $buffer, 'ChromeDriver was started successfully'));
+            $process->waitUntil(fn ($type, $buffer): bool => str_contains((string) $buffer, 'ChromeDriver was started successfully'));
         }
 
         static::$browserDriverBooted[$browser] = true;
@@ -93,6 +97,7 @@ trait WebDriver
             ['identifier' => $identifier, 'method' => $method, 'args' => $args] = json_decode($request->getBody()->getContents(), true);
             if ($method === 'prepare') {
                 $statements[$identifier] = Craft::$app->getDb()->pdo->prepare(...unserialize($args));
+
                 return Response::plaintext('');
             }
             if ($method === '__get') {
@@ -104,6 +109,7 @@ trait WebDriver
             }
 
             $result = $statements[$identifier]->$method(...unserialize($args));
+
             return \React\Http\Message\Response::json([
                 'identifier' => $identifier,
                 'method' => $method,

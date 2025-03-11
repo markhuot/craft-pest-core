@@ -38,12 +38,12 @@ function parseClass(string $className): array
         if ($method->getDeclaringClass()->getName() === $reflection->getName() &&
             $comment = $method->getDocComment() &&
             $method->isPublic() &&
-            !str_starts_with($method->getName(), '__') &&
+            ! str_starts_with($method->getName(), '__') &&
             in_array(str_contains($method->getDocComment(), '@internal'), [0, false], true)
         ) {
             $comment = parseComment($method->getDocComment());
             if ($comment !== '' && $comment !== '0') {
-                $params = array_map(fn(ReflectionParameter $param): string => ($param->getType() instanceof \ReflectionType ? $param->getType().' ' : ''). // @phpstan-ignore-line for some reason PHP stan doesn't like ->getName on a type
+                $params = array_map(fn (ReflectionParameter $param): string => ($param->getType() instanceof \ReflectionType ? $param->getType().' ' : ''). // @phpstan-ignore-line for some reason PHP stan doesn't like ->getName on a type
                     '$'.$param->getName().
                     ($param->isDefaultValueAvailable() ? ' = '.preg_replace('/[\r\n]+/', '', var_export($param->getDefaultValue(), true)) : ''), $method->getParameters());
                 $contents[] = '## '.$method->getName().'('.implode(', ', $params).")\n".$comment;

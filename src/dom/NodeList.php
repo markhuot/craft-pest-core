@@ -105,6 +105,7 @@ class NodeList implements \Countable
     /**
      * Loop over each matched node and apply the callback to the node. Returns
      * an array of results for each matched node.
+     *
      * @return mixed[]
      */
     public function each(callable $callback): array

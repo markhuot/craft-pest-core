@@ -83,7 +83,7 @@ trait CookieState
      */
     public function storeCookieCollection(?CookieCollection $cookies)
     {
-        if (!$cookies instanceof \yii\web\CookieCollection) {
+        if (! $cookies instanceof \yii\web\CookieCollection) {
             return $this;
         }
 

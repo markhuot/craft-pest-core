@@ -16,7 +16,7 @@ class TwigReporter extends Reporter
         parent::__construct($file);
 
         $firstClass = array_keys($this->file->classes())[0] ?? '';
-        if (!str_starts_with($firstClass, '__TwigTemplate_')) {
+        if (! str_starts_with($firstClass, '__TwigTemplate_')) {
             return;
         }
 

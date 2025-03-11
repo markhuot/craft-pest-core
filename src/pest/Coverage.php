@@ -9,7 +9,6 @@ use SebastianBergmann\CodeCoverage\Node\File;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
 class Coverage implements AddsOutput, HandlesArguments
@@ -38,9 +37,7 @@ class Coverage implements AddsOutput, HandlesArguments
      */
     public $coverageMin = 80.0;
 
-    public function __construct(private readonly \Symfony\Component\Console\Output\OutputInterface $output)
-    {
-    }
+    public function __construct(private readonly \Symfony\Component\Console\Output\OutputInterface $output) {}
 
     /**
      * This method is called every time pest is executed

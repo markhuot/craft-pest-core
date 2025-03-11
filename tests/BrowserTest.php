@@ -1,10 +1,8 @@
 <?php
 
 use markhuot\craftpest\factories\Entry;
-
 use markhuot\craftpest\factories\Section;
 use markhuot\craftpest\factories\User;
-use function markhuot\craftpest\helpers\test\dd;
 
 it('takes screenshots in Safari', function () {
     $this->withSafari()

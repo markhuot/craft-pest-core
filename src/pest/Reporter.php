@@ -9,9 +9,7 @@ abstract class Reporter
 {
     const IGNORE = 'ignore';
 
-    public function __construct(protected File $file)
-    {
-    }
+    public function __construct(protected File $file) {}
 
     /**
      * @return bool|string

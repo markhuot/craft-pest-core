@@ -23,13 +23,13 @@ class AssertableJsonString implements ArrayAccess, Countable
     /**
      * Create a new assertable JSON string instance.
      *
-     * @param \Illuminate\Contracts\Support\Jsonable|\JsonSerializable|array|string $json
+     * @param  \Illuminate\Contracts\Support\Jsonable|\JsonSerializable|array|string  $json
      * @return void
      */
     public function __construct(/**
      * The original encoded json.
      */
-    public $json)
+        public $json)
     {
         if ($this->json instanceof JsonSerializable) {
             $this->decoded = $this->json->jsonSerialize();

@@ -27,7 +27,7 @@ trait Snapshotable
         };
 
         $customFields = collect($this->getFieldLayout()->getCustomFields())
-            ->mapWithKeys(fn($field) => [$field->handle => $field])
+            ->mapWithKeys(fn ($field) => [$field->handle => $field])
 
             // remove any ElementQueries from the element so we don't try to snapshot
             // a serialized query. It will never match because it may have a dynamic `->where()`

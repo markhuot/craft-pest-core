@@ -136,6 +136,7 @@ abstract class Factory
             $callsMethodName = 'callMagic'.$trait->getShortName().'Call';
             if ($trait->hasMethod($handlesMethodName) && $this->$handlesMethodName($method, $args)) {
                 $this->$callsMethodName($method, $args);
+
                 return $this;
             }
         }
@@ -547,7 +548,7 @@ abstract class Factory
         $attributes = $this->getAttributes($definition);
 
         [$priorityAttributes, $attributes] = collect($attributes)
-            ->partition(fn($_, $key): bool => in_array($key, $this->priorityAttributes, true));
+            ->partition(fn ($_, $key): bool => in_array($key, $this->priorityAttributes, true));
 
         $element = $this->setPriorityAttributes($priorityAttributes->toArray(), $element);
 

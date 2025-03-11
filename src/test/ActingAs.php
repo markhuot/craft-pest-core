@@ -27,6 +27,7 @@ trait ActingAs
     {
         if (is_null($userOrName)) {
             \Craft::$app->getUser()->logout(false);
+
             return $this;
         }
         if (is_string($userOrName)) {

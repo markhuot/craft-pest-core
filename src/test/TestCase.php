@@ -22,8 +22,8 @@ class TestCase extends \PHPUnit\Framework\TestCase
         Mocks,
         RequestBuilders,
         SnapshotAssertions,
-        WithExceptionHandling,
-        WebDriver;
+        WebDriver,
+        WithExceptionHandling;
 
     public Collection $seedData;
 

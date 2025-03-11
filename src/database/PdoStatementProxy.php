@@ -9,12 +9,10 @@ use Craft;
  */
 class PdoStatementProxy
 {
-
     public function __construct(
         public string $identifier,
         private readonly \PDOStatement $pdoStatement,
-    ) {
-    }
+    ) {}
 
     public function __call($method, $args)
     {
@@ -24,6 +22,7 @@ class PdoStatementProxy
             'args' => serialize($args),
         ]]);
         $results = json_decode((string) $result->getBody()->getContents(), true);
+
         return unserialize($results['result']);
     }
 
@@ -35,6 +34,7 @@ class PdoStatementProxy
             'args' => $name,
         ]]);
         $results = json_decode((string) $result->getBody()->getContents(), true);
+
         return unserialize($results['result']);
     }
 }

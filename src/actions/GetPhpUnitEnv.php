@@ -4,8 +4,6 @@ namespace markhuot\craftpest\actions;
 
 use SimpleXMLElement;
 
-use function markhuot\craftpest\helpers\test\dd;
-
 class GetPhpUnitEnv
 {
     public function __invoke(): array
@@ -14,7 +12,7 @@ class GetPhpUnitEnv
 
         // find the PHP unit config
         foreach (['phpunit.xml', 'phpunit.xml.dist'] as $file) {
-            $path = CRAFT_BASE_PATH . '/' . $file;
+            $path = CRAFT_BASE_PATH.'/'.$file;
             if (file_exists($path)) {
                 $xml = simplexml_load_file($path);
                 $env = array_merge($env, $this->getEnv($xml));

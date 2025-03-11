@@ -11,7 +11,6 @@ if ($callstack[0][0] === '__construct') {
     $constructorArgs = $callstack[0][1];
 }
 
-
 $returnValue = null;
 $browser = new Browser(...$constructorArgs);
 foreach (array_slice($callstack, 1) as $call) {
@@ -19,8 +18,7 @@ foreach (array_slice($callstack, 1) as $call) {
     $args = $call[1] ?? [];
     try {
         $returnValue = $browser->$method(...$args);
-    }
-    catch (\Facebook\WebDriver\Exception\Internal\UnexpectedResponseException $e) {
+    } catch (\Facebook\WebDriver\Exception\Internal\UnexpectedResponseException $e) {
         if ($method !== 'quit') {
             throw $e;
         }

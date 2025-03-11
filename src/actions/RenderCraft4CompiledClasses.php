@@ -52,6 +52,7 @@ class RenderCraft4CompiledClasses implements RenderCompiledClassesInterface
         ]);
 
         file_put_contents($compiledClassPath, $compiledClass);
+
         return null;
     }
 

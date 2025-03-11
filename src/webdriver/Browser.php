@@ -32,8 +32,7 @@ class Browser
 
         if ($sessionId !== null && $sessionId !== '' && $sessionId !== '0') {
             $this->driver = RemoteWebDriver::createBySessionID($sessionId, 'http://localhost:'.$driverPort, null, null, true, $capabilities);
-        }
-        else {
+        } else {
             $this->driver = RemoteWebDriver::create('http://localhost:'.$driverPort, $capabilities);
         }
     }
@@ -52,8 +51,7 @@ class Browser
     {
         if ($shouldCreate) {
             $this->driver->takeScreenshot($filename);
-        }
-        else {
+        } else {
             $this->driver->takeScreenshot($alternateFilename);
         }
     }

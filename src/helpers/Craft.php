@@ -71,6 +71,7 @@ if (! function_exists('createVolume')) {
             // @phpstan-ignore-next-line Ignored because one of these will fail based on the installed version of Craft
             return new \craft\volumes\Local;
         }
+
         return null;
     }
 }

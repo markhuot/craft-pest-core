@@ -5,7 +5,6 @@ namespace markhuot\craftpest\illuminate;
 use ArrayObject;
 use PHPUnit\Framework\Constraint\Constraint;
 use SebastianBergmann\Comparator\ComparisonFailure;
-use Traversable;
 
 /**
  * @internal This class is not meant to be used or overwritten outside the framework itself.
@@ -17,9 +16,7 @@ final class ArraySubset extends Constraint
      *
      * @return void
      */
-    public function __construct(private iterable|array $subset, private readonly bool $strict = false)
-    {
-    }
+    public function __construct(private iterable|array $subset, private readonly bool $strict = false) {}
 
     /**
      * Evaluates the constraint for parameter $other.
@@ -106,6 +103,7 @@ final class ArraySubset extends Constraint
         if ($other instanceof ArrayObject) {
             return $other->getArrayCopy();
         }
+
         return iterator_to_array($other);
     }
 }

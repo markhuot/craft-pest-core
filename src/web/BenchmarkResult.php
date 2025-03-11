@@ -67,7 +67,7 @@ class BenchmarkResult
 
     public function getDuplicateQueries()
     {
-        return $this->getQueryTiming()->filter(fn(array $query): bool => preg_match('/^SHOW/', (string) $query['info']) === false)->duplicates('info');
+        return $this->getQueryTiming()->filter(fn (array $query): bool => preg_match('/^SHOW/', (string) $query['info']) === false)->duplicates('info');
     }
 
     public function getPanels()
@@ -178,7 +178,7 @@ class BenchmarkResult
      */
     public function assertAllQueriesFasterThan(float $expectedQueryTime): void
     {
-        $failing = $this->getQueryTiming()->filter(fn(array $query): bool => (float) $query['duration'] > $expectedQueryTime);
+        $failing = $this->getQueryTiming()->filter(fn (array $query): bool => (float) $query['duration'] > $expectedQueryTime);
 
         if ($failing->count()) {
             Assert::fail($failing->count().' queries were slower than '.$expectedQueryTime);
