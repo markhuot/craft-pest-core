@@ -8,7 +8,7 @@ use markhuot\craftpest\factories\User;
 use Pest\Support\HigherOrderTapProxy;
 
 if (! function_exists('entry')) {
-    function entry(string $handle)
+    function entry(string $handle): \markhuot\craftpest\factories\Entry
     {
         return Entry::factory()->section($handle);
         // return test(null, fn () => Entry::factory()->section($sectionHandle));

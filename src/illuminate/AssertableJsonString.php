@@ -147,7 +147,7 @@ class AssertableJsonString implements ArrayAccess, Countable
      * @param  bool  $exact
      * @return $this
      */
-    public function assertMissing(array $data, $exact = false)
+    public function assertMissing(array $data, $exact = false): static
     {
         if ($exact) {
             return $this->assertMissingExact($data);

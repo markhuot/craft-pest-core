@@ -145,7 +145,7 @@ class TestableResponseBehavior extends Behavior
         return $testJson;
     }
 
-    public function json()
+    public function json(): \markhuot\craftpest\illuminate\AssertableJsonString
     {
         return $this->getJsonContent();
     }
@@ -204,7 +204,7 @@ class TestableResponseBehavior extends Behavior
      * $response->expectSelector('h1')->text->toBe('Hello World!');
      * ```
      */
-    public function expectSelector(string $selector)
+    public function expectSelector(string $selector): \Pest\Expectation
     {
         return $this->querySelector($selector)->expect();
     }
@@ -330,7 +330,7 @@ class TestableResponseBehavior extends Behavior
      * $response->assertCreated();
      * ```
      */
-    public function assertCreated()
+    public function assertCreated(): \markhuot\craftpest\web\TestableResponse
     {
         return $this->assertStatus(201);
     }
@@ -437,7 +437,7 @@ class TestableResponseBehavior extends Behavior
      * $response->assertForbidden();
      * ```
      */
-    public function assertForbidden()
+    public function assertForbidden(): \markhuot\craftpest\web\TestableResponse
     {
         return $this->assertStatus(403);
     }
@@ -612,7 +612,7 @@ class TestableResponseBehavior extends Behavior
      * $response->assertLocationPath('/foo');
      * ```
      */
-    public function assertLocationPath(string $uri)
+    public function assertLocationPath(string $uri): \markhuot\craftpest\web\TestableResponse
     {
         return $this->assertLocation($uri, ['path']);
     }
@@ -661,7 +661,7 @@ class TestableResponseBehavior extends Behavior
      * $response->assertNotFound();
      * ```
      */
-    public function assertNotFound()
+    public function assertNotFound(): \markhuot\craftpest\web\TestableResponse
     {
         return $this->assertStatus(404);
     }
@@ -673,7 +673,7 @@ class TestableResponseBehavior extends Behavior
      * $response->assertOk();
      * ```
      */
-    public function assertOk()
+    public function assertOk(): \markhuot\craftpest\web\TestableResponse
     {
         return $this->assertStatus(200);
     }
@@ -795,7 +795,7 @@ class TestableResponseBehavior extends Behavior
      * $response->assertSeeText('foo bar');
      * ```
      */
-    public function assertSeeText(string $text)
+    public function assertSeeText(string $text): \markhuot\craftpest\web\TestableResponse
     {
         return $this->assertSeeTextInOrder([$text]);
     }
@@ -906,7 +906,7 @@ class TestableResponseBehavior extends Behavior
     /**
      * Asserts that the response's status code is 401
      */
-    public function assertUnauthorized()
+    public function assertUnauthorized(): \markhuot\craftpest\web\TestableResponse
     {
         return $this->assertStatus(401);
     }

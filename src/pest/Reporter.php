@@ -35,7 +35,7 @@ abstract class Reporter
     {
         return collect($this->file->lineCoverageData())
             ->mapWithKeys(fn ($value, $key) => [$this->getSourceLineFor($key) => $value])
-            ->filter(fn ($value, $key): bool => ! empty($key));
+            ->filter(fn ($value, $key): bool => $key !== 0 && ($key !== '' && $key !== '0'));
     }
 
     public function getUncoveredLines(): Collection
