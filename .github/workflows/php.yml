@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
         version:
           - constraint: ~4.5.0
@@ -126,4 +127,3 @@ jobs:
       if: always()
       env:
         CHROMEDRIVER_PATH: ${{ steps.setup-chrome.outputs.chromedriver-path }}
-
