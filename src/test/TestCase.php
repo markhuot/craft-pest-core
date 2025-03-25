@@ -98,9 +98,9 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
         // After installation, the Craft::$app may be out of sync because the installation happened in a sub
         // process. We need to force the $app to reload its state.
-//        if ($needsRefresh) {
-//            exit($this->reRunPest());
-//        }
+        if ($needsRefresh) {
+            exit($this->reRunPest());
+        }
 
         return Craft::$app;
     }
