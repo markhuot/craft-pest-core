@@ -112,5 +112,5 @@ jobs:
       if: always()
 
     - name: Run test suite
-      run: ./vendor/bin/pest --ci
+      run: ./vendor/bin/pest
       if: always()
