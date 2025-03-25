@@ -129,7 +129,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
         $process->start();
 
         foreach ($process as $type => $data) {
-            if ($type === $process::OUT) {
+            if ($type === Process::OUT) {
                 echo $data;
             } else {
                 echo $data;
@@ -150,7 +150,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
         $process->start();
 
         foreach ($process as $type => $data) {
-            if ($type === $process::OUT) {
+            if ($type === Process::OUT) {
                 echo $data;
             } else {
                 echo $data;
@@ -171,7 +171,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
         $process->start();
 
         foreach ($process as $type => $data) {
-            if ($type === $process::OUT) {
+            if ($type === Process::OUT) {
                 echo $data;
             } else {
                 echo $data;
@@ -191,7 +191,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
         $process->start();
 
         foreach ($process as $type => $data) {
-            if ($type === $process::OUT) {
+            if ($type === Process::OUT) {
                 echo $data;
             } else {
                 echo $data;
