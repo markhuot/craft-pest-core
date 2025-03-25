@@ -94,8 +94,6 @@ trait Queues
      *
      * Note: when passing a callable with a type-hinted job parameter the system will automatically filter
      * out any jobs not matching the type-hint.
-     *
-     * @param  array<array-key, string|callable>|string|callable  $assertions
      */
     public function assertJob(string|callable ...$assertions)
     {
