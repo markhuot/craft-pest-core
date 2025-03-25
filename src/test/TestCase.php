@@ -187,8 +187,8 @@ class TestCase extends \PHPUnit\Framework\TestCase
     protected function reRunPest()
     {
         $process = new Process($_SERVER['argv']);
-        $process->setTty(Process::isTtySupported());
-        $process->setTimeout(null);
+        //$process->setTty(Process::isTtySupported());
+        //$process->setTimeout(null);
         $process->run(function ($type, $data): void {
             if ($type === Process::OUT) {
                 echo $data;
