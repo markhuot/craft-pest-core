@@ -7,8 +7,7 @@ it('executes console commands')
     ->assertSuccesful()
     ->assertSee('stdout')
     ->assertSee('stderr')
-    ->assertDontSee('missing')
-    ->skip();
+    ->assertDontSee('missing');
 
 it('gets stdout and stderr', function () {
     $response = $this->console(PestController::class, 'internal');
@@ -16,4 +15,4 @@ it('gets stdout and stderr', function () {
     expect($response->exitCode)->toBe(0);
     expect($response->stdout)->toContain('stdout');
     expect($response->stderr)->toContain('stderr');
-})->skip();
+});
