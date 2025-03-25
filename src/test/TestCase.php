@@ -67,13 +67,13 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
         $this->requireCraft();
 
-//        $needsRefresh = false;
-//
-//        if (! Craft::$app->getIsInstalled(true)) {
-//            $this->craftInstall();
-//            $needsRefresh = true;
-//        }
-//
+        $needsRefresh = false;
+
+        if (! Craft::$app->getIsInstalled(true)) {
+            $this->craftInstall();
+            $needsRefresh = true;
+        }
+
 //        if (
 //            Craft::$app->getMigrator()->getNewMigrations() ||
 //            Craft::$app->getContentMigrator()->getNewMigrations()
