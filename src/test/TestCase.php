@@ -100,7 +100,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
         // process. We need to force the $app to reload its state.
         if ($needsRefresh) {
             $returnCode = $this->reRunPest();
-            //exit($returnCode);
+            exit($returnCode);
         }
 
         return Craft::$app;
@@ -189,15 +189,13 @@ class TestCase extends \PHPUnit\Framework\TestCase
         $process = new Process($_SERVER['argv']);
         $process->setTty(Process::isTtySupported());
         $process->setTimeout(null);
-        $process->start();
-
-        foreach ($process as $type => $data) {
+        $process->run(function ($type, $data): void {
             if ($type === Process::OUT) {
                 echo $data;
             } else {
                 echo $data;
             }
-        }
+        });
 
         return $process->getExitCode();
     }
