@@ -65,20 +65,27 @@ class TestCase extends \PHPUnit\Framework\TestCase
             return Craft::$app;
         }
 
+        echo "calling requireCraft".PHP_EOL;
         $this->requireCraft();
 
         $needsRefresh = false;
 
+        echo "checking installed".PHP_EOL;
         if (! Craft::$app->getIsInstalled(true)) {
+            echo "installing".PHP_EOL;
             $this->craftInstall();
+            echo "installing done".PHP_EOL;
             $needsRefresh = true;
         }
 
+        echo "checking migrations".PHP_EOL;
         if (
             Craft::$app->getMigrator()->getNewMigrations() ||
             Craft::$app->getContentMigrator()->getNewMigrations()
         ) {
+            echo "running migrations".PHP_EOL;
             $this->craftMigrateAll();
+            echo "running migrations done".PHP_EOL;
             $needsRefresh = true;
         }
 
@@ -91,14 +98,19 @@ class TestCase extends \PHPUnit\Framework\TestCase
         // even though it actually _is_ changed. This ensures that there isn't any cache sharing between dev
         // and test.
         Craft::$app->getCache()->flush();
+        echo "checking yaml changes".PHP_EOL;
         if (Craft::$app->getProjectConfig()->areChangesPending(null, true)) {
+            echo "applying yaml changes".PHP_EOL;
             $this->craftProjectConfigApply();
+            echo "applying yaml changes done".PHP_EOL;
             $needsRefresh = true;
         }
 
         // After installation, the Craft::$app may be out of sync because the installation happened in a sub
         // process. We need to force the $app to reload its state.
+        echo "checking refresh".PHP_EOL;
         if ($needsRefresh) {
+            echo "re-running Pest".PHP_EOL;
             exit($this->reRunPest());
         }
 
