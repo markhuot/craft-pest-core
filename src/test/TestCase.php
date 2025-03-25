@@ -186,23 +186,20 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function reRunPest()
     {
-        var_dump($_SERVER['argv']);
-//        $process = new Process($_SERVER['argv']);
-//        $process->setTty(Process::isTtySupported());
-//        $process->setTimeout(null);
-//        $process->start();
-//
-//        foreach ($process as $type => $data) {
-//            var_dump($type);
-//            var_dump($data);
-//            if ($type === Process::OUT) {
-//                echo $data;
-//            } else {
-//                echo $data;
-//            }
-//        }
-//
-//        return $process->getExitCode();
+        $process = new Process($_SERVER['argv']);
+        $process->setTty(Process::isTtySupported());
+        $process->setTimeout(null);
+        $process->start();
+
+        foreach ($process as $type => $data) {
+            if ($type === Process::OUT) {
+                echo $data;
+            } else {
+                echo $data;
+            }
+        }
+
+        return $process->getExitCode();
     }
 
     public function renderCompiledClasses()
