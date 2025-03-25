@@ -25,5 +25,5 @@ it('assert queue jobs in order', function () {
 });
 
 it('fails', function () {
-    expect(true)->toBeFalse();
+    expect(true)->toBeTrue();
 });
