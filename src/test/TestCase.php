@@ -67,20 +67,20 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
         $this->requireCraft();
 
-        $needsRefresh = false;
-
-        if (! Craft::$app->getIsInstalled(true)) {
-            $this->craftInstall();
-            $needsRefresh = true;
-        }
-
-        if (
-            Craft::$app->getMigrator()->getNewMigrations() ||
-            Craft::$app->getContentMigrator()->getNewMigrations()
-        ) {
-            $this->craftMigrateAll();
-            $needsRefresh = true;
-        }
+//        $needsRefresh = false;
+//
+//        if (! Craft::$app->getIsInstalled(true)) {
+//            $this->craftInstall();
+//            $needsRefresh = true;
+//        }
+//
+//        if (
+//            Craft::$app->getMigrator()->getNewMigrations() ||
+//            Craft::$app->getContentMigrator()->getNewMigrations()
+//        ) {
+//            $this->craftMigrateAll();
+//            $needsRefresh = true;
+//        }
 
         // We have to flush the data cache to make sure we're getting an accurate look at whether or not there
         // are pending changes.
@@ -90,17 +90,17 @@ class TestCase extends \PHPUnit\Framework\TestCase
         // tests you'll reach in to the same cache as the dev side and pull that the project config is unchanged
         // even though it actually _is_ changed. This ensures that there isn't any cache sharing between dev
         // and test.
-        Craft::$app->getCache()->flush();
-        if (Craft::$app->getProjectConfig()->areChangesPending(null, true)) {
-            $this->craftProjectConfigApply();
-            $needsRefresh = true;
-        }
+//        Craft::$app->getCache()->flush();
+//        if (Craft::$app->getProjectConfig()->areChangesPending(null, true)) {
+//            $this->craftProjectConfigApply();
+//            $needsRefresh = true;
+//        }
 
         // After installation, the Craft::$app may be out of sync because the installation happened in a sub
         // process. We need to force the $app to reload its state.
-        if ($needsRefresh) {
-            exit($this->reRunPest());
-        }
+//        if ($needsRefresh) {
+//            exit($this->reRunPest());
+//        }
 
         return Craft::$app;
     }
