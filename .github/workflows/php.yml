@@ -16,24 +16,24 @@ jobs:
     strategy:
       matrix:
         version: 
-          # - constraint: ~4.5.0
-          #   config: 4
-          # - constraint: ~4.6.0
-          #   config: 4
-          # - constraint: ~4.7.0
-          #   config: 4
-          # - constraint: ~5.0.0
-          #   config: 5
-          # - constraint: ~5.1.0
-          #   config: 5
-          # - constraint: ~5.2.0
-          #   config: 5.2
+          - constraint: ~4.5.0
+            config: 4
+          - constraint: ~4.6.0
+            config: 4
+          - constraint: ~4.7.0
+            config: 4
+          - constraint: ~5.0.0
+            config: 5
+          - constraint: ~5.1.0
+            config: 5
+          - constraint: ~5.2.0
+            config: 5.2
           - constraint: ~5.3.0
             config: 5.3
-          # - constraint: ~5.4.0
-          #   config: 5.4
-          # - constraint: ~5.5.0
-          #   config: 5.5
+          - constraint: ~5.4.0
+            config: 5.4
+          - constraint: ~5.5.0
+            config: 5.5
 
     env:
       CRAFT_APP_ID: pest
