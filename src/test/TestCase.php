@@ -191,9 +191,9 @@ class TestCase extends \PHPUnit\Framework\TestCase
         $process->setTimeout(null);
         $process->run(function ($type, $data): void {
             if ($type === Process::OUT) {
-                echo $data;
+                fwrite(STDOUT, $data);
             } else {
-                echo $data;
+                fwrite(STDERR, $data);
             }
         });
 
