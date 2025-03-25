@@ -74,14 +74,14 @@ class TestCase extends \PHPUnit\Framework\TestCase
             $needsRefresh = true;
         }
 
-        if (
-            Craft::$app->getMigrator()->getNewMigrations() ||
-            Craft::$app->getContentMigrator()->getNewMigrations()
-        ) {
-            \markhuot\craftpest\helpers\test\dd('has migrations');
-            $this->craftMigrateAll();
-            $needsRefresh = true;
-        }
+        \markhuot\craftpest\helpers\test\dd(Craft::$app->getMigrator()->getNewMigrations());
+//        if (
+//            Craft::$app->getMigrator()->getNewMigrations() ||
+//            Craft::$app->getContentMigrator()->getNewMigrations()
+//        ) {
+//            $this->craftMigrateAll();
+//            $needsRefresh = true;
+//        }
 
         // We have to flush the data cache to make sure we're getting an accurate look at whether or not there
         // are pending changes.
