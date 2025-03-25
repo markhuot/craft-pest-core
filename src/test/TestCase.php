@@ -61,7 +61,9 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
     public function createApplication()
     {
+        echo "needs require statements: ".($this->needsRequireStatements() ? 'yes' : 'no').PHP_EOL;
         if (! $this->needsRequireStatements()) {
+            echo "returning Craft::\$app".PHP_EOL;
             return Craft::$app;
         }
 
