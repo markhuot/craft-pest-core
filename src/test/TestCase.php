@@ -185,6 +185,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function reRunPest()
     {
+        var_dump($_SERVER['argv']);
         $process = new Process($_SERVER['argv']);
         $process->setTty(Process::isTtySupported());
         $process->setTimeout(null);
