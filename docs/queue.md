@@ -23,7 +23,6 @@ it('runs queues', function() {
     $this->assertJob(\craft\queue\jobs\UpdateSearchIndex::class);
 });
 ```
-```
 
 ## assertJob(callable|string $assertions)
 You can assert a job was added to the queue by passing in one or more matching
