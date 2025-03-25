@@ -5,7 +5,6 @@ namespace markhuot\craftpest\test;
 use Craft;
 use craft\base\Event;
 use Illuminate\Support\Collection;
-use PHP_CodeSniffer\Exceptions\RuntimeException;
 use PHPUnit\Framework\Assert;
 use ReflectionNamedType;
 use yii\queue\ExecEvent;
@@ -43,12 +42,12 @@ use yii\queue\Queue;
 trait Queues
 {
     /**
-     * @var Collection<array-key, ExecEvent> $payloads
+     * @var Collection<array-key, ExecEvent>
      */
     protected Collection $payloads;
 
     /**
-     * @var array<array-key, array<array-key, callable>> $assertions
+     * @var array<array-key, array<array-key, callable>>
      */
     protected array $assertions = [];
 
@@ -96,7 +95,7 @@ trait Queues
      * Note: when passing a callable with a type-hinted job parameter the system will automatically filter
      * out any jobs not matching the type-hint.
      *
-     * @param array<array-key, string|callable>|string|callable $jobs
+     * @param  array<array-key, string|callable>|string|callable  $jobs
      */
     public function assertJob(string|callable ...$assertions)
     {
@@ -121,7 +120,7 @@ trait Queues
         $payloadIndex = 0;
 
         foreach ($steps as $step) {
-            for ($i = $payloadIndex; $i<$this->payloads->count(); $i++) {
+            for ($i = $payloadIndex; $i < $this->payloads->count(); $i++) {
                 $reflect = new \ReflectionFunction($step);
                 $type = $reflect->getParameters()[0]->getType();
                 if ($type && $type instanceof ReflectionNamedType) {
@@ -133,6 +132,7 @@ trait Queues
 
                 if ($step($this->payloads[$i]->job, $this->payloads[$i])) {
                     $payloadIndex = $i;
+
                     continue 2; // continue to the next step
                 }
             }

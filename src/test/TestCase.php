@@ -19,10 +19,10 @@ class TestCase extends \PHPUnit\Framework\TestCase
         Dd,
         ExecuteConsoleCommands,
         Mocks,
+        Queues,
         RequestBuilders,
         SnapshotAssertions,
-        WithExceptionHandling,
-        Queues;
+        WithExceptionHandling;
 
     public Collection $seedData;
 
