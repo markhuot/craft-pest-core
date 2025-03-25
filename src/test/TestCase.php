@@ -11,7 +11,7 @@ use Symfony\Component\Process\Process;
 
 class TestCase extends \PHPUnit\Framework\TestCase
 {
-    use ActingAs,
+//    use ActingAs,
 //        Benchmark,
 //        CleanupRequestState,
 //        CookieState,
@@ -22,18 +22,18 @@ class TestCase extends \PHPUnit\Framework\TestCase
 //        Queues,
 //        RequestBuilders,
 //        SnapshotAssertions,
-        WithExceptionHandling;
+//        WithExceptionHandling;
 
     public Collection $seedData;
 
     protected function setUp(): void
     {
-        $this->createApplication();
+        //$this->createApplication();
 
-        $this->callTraits('setUp');
+        //$this->callTraits('setUp');
 
         // Have to do this after setup to make sure the app is installed first
-        $this->renderCompiledClasses();
+        //$this->renderCompiledClasses();
     }
 
     protected function tearDown(): void
