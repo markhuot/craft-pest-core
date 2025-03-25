@@ -74,7 +74,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
             $needsRefresh = true;
         }
 
-        \markhuot\craftpest\helpers\test\dump(Craft::$app->getMigrator()->getNewMigrations());
+        //Craft::$app->getMigrator()->getNewMigrations();
 //        if (
 //            Craft::$app->getMigrator()->getNewMigrations() ||
 //            Craft::$app->getContentMigrator()->getNewMigrations()
