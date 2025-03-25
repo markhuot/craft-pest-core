@@ -74,7 +74,8 @@ class TestCase extends \PHPUnit\Framework\TestCase
             $needsRefresh = true;
         }
 
-        //Craft::$app->getMigrator()->getNewMigrations();
+//        Craft::$app->getMigrator()->getNewMigrations();
+//        Craft::$app->getContentMigrator()->getNewMigrations();
 //        if (
 //            Craft::$app->getMigrator()->getNewMigrations() ||
 //            Craft::$app->getContentMigrator()->getNewMigrations()
