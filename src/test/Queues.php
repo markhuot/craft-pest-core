@@ -37,7 +37,6 @@ use yii\queue\Queue;
  *     $this->assertJob(\craft\queue\jobs\UpdateSearchIndex::class);
  * });
  * ```
- * ```
  */
 trait Queues
 {
