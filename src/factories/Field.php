@@ -25,7 +25,7 @@ class Field extends Factory
     public function group(string $groupName)
     {
         $this->attributes['groupId'] = function () use ($groupName) {
-            foreach (\Craft::$app->fields->getAllGroups() as $group) { //@phpstan-ignore-line
+            foreach (\Craft::$app->fields->getAllGroups() as $group) { // @phpstan-ignore-line
                 if ($group->name === $groupName) {
                     return $group->id;
                 }

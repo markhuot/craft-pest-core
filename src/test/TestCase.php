@@ -19,6 +19,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
         Dd,
         ExecuteConsoleCommands,
         Mocks,
+        Queues,
         RequestBuilders,
         SnapshotAssertions,
         WithExceptionHandling;
@@ -38,20 +39,6 @@ class TestCase extends \PHPUnit\Framework\TestCase
     protected function tearDown(): void
     {
         $this->callTraits('tearDown');
-    }
-
-    /**
-     * Run the queue after every test case if it's setup as a sync queue
-     */
-    protected function assertPostConditions(): void
-    {
-        $queue = Craft::$app->queue;
-
-        if ($queue instanceof \yii\queue\sync\Queue) {
-            $queue->run();
-        }
-
-        parent::assertPostConditions();
     }
 
     protected function callTraits($prefix)
@@ -112,7 +99,8 @@ class TestCase extends \PHPUnit\Framework\TestCase
         // After installation, the Craft::$app may be out of sync because the installation happened in a sub
         // process. We need to force the $app to reload its state.
         if ($needsRefresh) {
-            exit($this->reRunPest());
+            $returnCode = $this->reRunPest();
+            exit($returnCode);
         }
 
         return Craft::$app;
@@ -142,10 +130,10 @@ class TestCase extends \PHPUnit\Framework\TestCase
         $process->start();
 
         foreach ($process as $type => $data) {
-            if ($type === $process::OUT) {
-                echo $data;
+            if ($type === Process::OUT) {
+                fwrite(STDOUT, $data);
             } else {
-                echo $data;
+                fwrite(STDERR, $data);
             }
         }
 
@@ -163,10 +151,10 @@ class TestCase extends \PHPUnit\Framework\TestCase
         $process->start();
 
         foreach ($process as $type => $data) {
-            if ($type === $process::OUT) {
-                echo $data;
+            if ($type === Process::OUT) {
+                fwrite(STDOUT, $data);
             } else {
-                echo $data;
+                fwrite(STDERR, $data);
             }
         }
 
@@ -184,10 +172,10 @@ class TestCase extends \PHPUnit\Framework\TestCase
         $process->start();
 
         foreach ($process as $type => $data) {
-            if ($type === $process::OUT) {
-                echo $data;
+            if ($type === Process::OUT) {
+                fwrite(STDOUT, $data);
             } else {
-                echo $data;
+                fwrite(STDERR, $data);
             }
         }
 
@@ -204,10 +192,10 @@ class TestCase extends \PHPUnit\Framework\TestCase
         $process->start();
 
         foreach ($process as $type => $data) {
-            if ($type === $process::OUT) {
-                echo $data;
+            if ($type === Process::OUT) {
+                fwrite(STDOUT, $data);
             } else {
-                echo $data;
+                fwrite(STDERR, $data);
             }
         }
 
