@@ -28,7 +28,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function setUp(): void
     {
-        //$this->createApplication();
+        $this->createApplication();
 
         //$this->callTraits('setUp');
 
