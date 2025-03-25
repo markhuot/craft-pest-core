@@ -131,9 +131,9 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
         foreach ($process as $type => $data) {
             if ($type === Process::OUT) {
-                echo $data;
+                fwrite(STDOUT, $data);
             } else {
-                echo $data;
+                fwrite(STDERR, $data);
             }
         }
 
@@ -152,9 +152,9 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
         foreach ($process as $type => $data) {
             if ($type === Process::OUT) {
-                echo $data;
+                fwrite(STDOUT, $data);
             } else {
-                echo $data;
+                fwrite(STDERR, $data);
             }
         }
 
@@ -173,9 +173,9 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
         foreach ($process as $type => $data) {
             if ($type === Process::OUT) {
-                echo $data;
+                fwrite(STDOUT, $data);
             } else {
-                echo $data;
+                fwrite(STDERR, $data);
             }
         }
 
@@ -189,13 +189,15 @@ class TestCase extends \PHPUnit\Framework\TestCase
         $process = new Process(['php', './vendor/bin/pest']);
         $process->setTty(Process::isTtySupported());
         $process->setTimeout(null);
-        $process->run(function ($type, $data): void {
+        $process->start();
+
+        foreach ($process as $type => $data) {
             if ($type === Process::OUT) {
                 fwrite(STDOUT, $data);
             } else {
                 fwrite(STDERR, $data);
             }
-        });
+        }
 
         return $process->getExitCode();
     }
