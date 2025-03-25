@@ -191,6 +191,8 @@ class TestCase extends \PHPUnit\Framework\TestCase
         $process->start();
 
         foreach ($process as $type => $data) {
+            var_dump($type);
+            var_dump($data);
             if ($type === Process::OUT) {
                 echo $data;
             } else {
