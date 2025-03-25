@@ -30,10 +30,10 @@ class TestCase extends \PHPUnit\Framework\TestCase
     {
         $this->createApplication();
 
-        //$this->callTraits('setUp');
+        $this->callTraits('setUp');
 
         // Have to do this after setup to make sure the app is installed first
-        //$this->renderCompiledClasses();
+        $this->renderCompiledClasses();
     }
 
     protected function tearDown(): void
