@@ -23,7 +23,3 @@ it('assert queue jobs in order', function () {
         fn (\craft\queue\jobs\PruneRevisions $job) => $job->canonicalId === $entry2->id,
     );
 });
-
-it('fails', function () {
-    expect(true)->toBeTrue();
-});
