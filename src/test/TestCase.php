@@ -100,8 +100,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
         // process. We need to force the $app to reload its state.
         if ($needsRefresh) {
             $returnCode = $this->reRunPest();
-            sleep(10);
-            exit($returnCode);
+            //exit($returnCode);
         }
 
         return Craft::$app;
