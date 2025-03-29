@@ -3,7 +3,7 @@ name: Run Tests
 on:
   pull_request:
   push:
-    branches: 
+    branches:
       - main
 
 permissions:
@@ -15,7 +15,7 @@ jobs:
 
     strategy:
       matrix:
-        version: 
+        version:
           - constraint: ~4.5.0
             config: 4
           - constraint: ~4.6.0
