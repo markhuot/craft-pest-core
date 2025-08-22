@@ -20,6 +20,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
         Dd,
         ExecuteConsoleCommands,
         Mocks,
+        Queues,
         RequestBuilders,
         SnapshotAssertions,
         WithExceptionHandling;
@@ -39,20 +40,6 @@ class TestCase extends \PHPUnit\Framework\TestCase
     protected function tearDown(): void
     {
         $this->callTraits('tearDown');
-    }
-
-    /**
-     * Run the queue after every test case if it's setup as a sync queue
-     */
-    protected function assertPostConditions(): void
-    {
-        $queue = Craft::$app->queue;
-
-        if ($queue instanceof \yii\queue\sync\Queue) {
-            $queue->run();
-        }
-
-        parent::assertPostConditions();
     }
 
     protected function callTraits($prefix)

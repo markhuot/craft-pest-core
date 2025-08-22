@@ -50,7 +50,7 @@ jobs:
       CRAFT_OMIT_SCRIPT_NAME_IN_URLS: true
       CRAFT_DEV_MODE: true
       DEV_MODE: true
-      CRAFT_EXE_PATH: ./src/bin/craft
+      CRAFT_EXE_PATH: ./craft
       PRIMARY_SITE_URL: http://localhost:8080
 
     services:
@@ -119,5 +119,5 @@ jobs:
       if: always()
 
     - name: Run test suite
-      run: ./vendor/bin/pest --compact -vvv
+      run: ./vendor/bin/pest
       if: always()
