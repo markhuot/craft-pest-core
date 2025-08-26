@@ -8,18 +8,20 @@ use function markhuot\craftpest\helpers\craft\isCraftFive;
 
 it('can create singles', function () {
     $section = \markhuot\craftpest\factories\Section::factory()
+        ->name('Single Section')
         ->type('single')
         ->create();
 
-    expect(service(SectionsServiceInterface::class)->getSectionByHandle($section->handle)->type)->toBe('single');
+    expect(service(SectionsServiceInterface::class)->getSectionByHandle('singleSection')->type)->toBe('single');
 });
 
 it('can create channels', function () {
     $section = \markhuot\craftpest\factories\Section::factory()
+        ->name('Channel Section')
         ->type('channel')
         ->create();
 
-    expect(service(SectionsServiceInterface::class)->getSectionByHandle($section->handle)->type)->toBe('channel');
+    expect(service(SectionsServiceInterface::class)->getSectionByHandle('channelSection')->type)->toBe('channel');
 });
 
 it('can create structures', function () {
