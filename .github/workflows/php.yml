@@ -47,6 +47,7 @@ jobs:
       CRAFT_DB_PASSWORD: root
       CRAFT_DB_TABLE_PREFIX: craft_
       CRAFT_TEMPLATES_PATH: ./tests/templates
+      CRAFT_TIMEZONE: UTC
       CRAFT_OMIT_SCRIPT_NAME_IN_URLS: true
       CRAFT_DEV_MODE: true
       DEV_MODE: true
