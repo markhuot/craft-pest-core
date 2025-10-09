@@ -3,6 +3,7 @@
 namespace markhuot\craftpest\test;
 
 use Craft;
+use craft\enums\CmsEdition;
 use craft\helpers\App;
 use craft\migrations\Install;
 use craft\models\Site;
@@ -101,13 +102,10 @@ class TestCase extends \PHPUnit\Framework\TestCase
             'username' => (App::env('CRAFT_INSTALL_USERNAME') ?? 'user@example.com'),
             'email' => (App::env('CRAFT_INSTALL_EMAIL') ?? 'user@example.com'),
             'password' => (App::env('CRAFT_INSTALL_PASSWORD') ?? 'secret'),
-        ];
-
-        $args = array_merge($args, [
             'siteName' => (App::env('CRAFT_INSTALL_SITENAME') ?? '"Craft CMS"'),
             'siteUrl' => (App::env('CRAFT_INSTALL_SITEURL') ?? 'http://localhost:8080'),
             'language' => (App::env('CRAFT_INSTALL_LANGUAGE') ?? 'en-US'),
-        ]);
+        ];
 
         $siteConfig = [
             'name' => $args['siteName'],
@@ -128,7 +126,15 @@ class TestCase extends \PHPUnit\Framework\TestCase
             'site' => $site,
         ]);
 
-        $migration->up(true);
+        $migrator = Craft::$app->getMigrator();
+        $migrator->migrateUp($migration);
+
+        Craft::$app->getProjectConfig()->reset();
+        Craft::$app->getProjectConfig()->applyExternalChanges();
+        Craft::$app->getProjectConfig()->flush();
+
+        $edition = Craft::$app->getProjectConfig()->get('system.edition');
+        Craft::$app->setEdition(CmsEdition::fromHandle($edition));
     }
 
     protected function craftMigrateAll()
