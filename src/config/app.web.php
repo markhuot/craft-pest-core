@@ -7,12 +7,13 @@ return [
     'class' => Application::class,
 
     'components' => [
-        'projectConfig' => function() {
+        'projectConfig' => function () {
             $config = App::projectConfigConfig();
             $config['writeYamlAutomatically'] = false;
+
             return Craft::createObject($config);
         },
-    ]
+    ],
 
     // I dont want to force enable this here because there's a lot of logic in
     // the craft\web\Application::bootstrapDebug() that handles some edge cases. All
