@@ -165,6 +165,10 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
     public function renderCompiledClasses()
     {
+        if (! Craft::$app->isInstalled) {
+            return;
+        }
+
         Craft::$container->get(RenderCompiledClassesInterface::class)->handle();
     }
 
