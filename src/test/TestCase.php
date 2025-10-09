@@ -134,7 +134,13 @@ class TestCase extends \PHPUnit\Framework\TestCase
         Craft::$app->getProjectConfig()->flush();
 
         $edition = Craft::$app->getProjectConfig()->get('system.edition');
-        Craft::$app->setEdition(CmsEdition::fromHandle($edition));
+        if (method_exists(App::class, 'editionIdByHandle')) {
+            Craft::$app->setEdition(App::editionIdByHandle($edition));
+        } elseif (class_exists(CmsEdition::class)) {
+            Craft::$app->setEdition(CmsEdition::fromHandle($edition));
+        } else {
+            throw new \RuntimeException('Could not determine a [system.edition] based on the project config.');
+        }
     }
 
     protected function craftMigrateAll()
