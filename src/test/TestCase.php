@@ -3,11 +3,14 @@
 namespace markhuot\craftpest\test;
 
 use Craft;
+use craft\enums\CmsEdition;
 use craft\helpers\App;
+use craft\migrations\Install;
+use craft\models\Site;
+use craft\services\ProjectConfig;
 use Illuminate\Support\Collection;
 use markhuot\craftpest\actions\CallSeeders;
 use markhuot\craftpest\interfaces\RenderCompiledClassesInterface;
-use Symfony\Component\Process\Process;
 
 class TestCase extends \PHPUnit\Framework\TestCase
 {
@@ -67,11 +70,8 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
         $this->requireCraft();
 
-        $needsRefresh = false;
-
         if (! Craft::$app->getIsInstalled(true)) {
             $this->craftInstall();
-            $needsRefresh = true;
         }
 
         if (
@@ -79,7 +79,6 @@ class TestCase extends \PHPUnit\Framework\TestCase
             Craft::$app->getContentMigrator()->getNewMigrations()
         ) {
             $this->craftMigrateAll();
-            $needsRefresh = true;
         }
 
         // We have to flush the data cache to make sure we're getting an accurate look at whether or not there
@@ -93,14 +92,6 @@ class TestCase extends \PHPUnit\Framework\TestCase
         Craft::$app->getCache()->flush();
         if (Craft::$app->getProjectConfig()->areChangesPending(null, true)) {
             $this->craftProjectConfigApply();
-            $needsRefresh = true;
-        }
-
-        // After installation, the Craft::$app may be out of sync because the installation happened in a sub
-        // process. We need to force the $app to reload its state.
-        if ($needsRefresh) {
-            $returnCode = $this->reRunPest();
-            exit($returnCode);
         }
 
         return Craft::$app;
@@ -109,97 +100,67 @@ class TestCase extends \PHPUnit\Framework\TestCase
     protected function craftInstall()
     {
         $args = [
-            '--username='.(App::env('CRAFT_INSTALL_USERNAME') ?? 'user@example.com'),
-            '--email='.(App::env('CRAFT_INSTALL_EMAIL') ?? 'user@example.com'),
-            '--password='.(App::env('CRAFT_INSTALL_PASSWORD') ?? 'secret'),
-            '--interactive='.(App::env('CRAFT_INSTALL_INTERACTIVE') ?? '0'),
+            'username' => (App::env('CRAFT_INSTALL_USERNAME') ?? 'user@example.com'),
+            'email' => (App::env('CRAFT_INSTALL_EMAIL') ?? 'user@example.com'),
+            'password' => (App::env('CRAFT_INSTALL_PASSWORD') ?? 'secret'),
+            'siteName' => (App::env('CRAFT_INSTALL_SITENAME') ?? '"Craft CMS"'),
+            'siteUrl' => (App::env('CRAFT_INSTALL_SITEURL') ?? 'http://localhost:8080'),
+            'language' => (App::env('CRAFT_INSTALL_LANGUAGE') ?? 'en-US'),
         ];
 
-        if (! file_exists(Craft::getAlias('@config/project/project.yaml'))) {
-            $args = array_merge($args, [
-                '--siteName='.(App::env('CRAFT_INSTALL_SITENAME') ?? '"Craft CMS"'),
-                '--siteUrl='.(App::env('CRAFT_INSTALL_SITEURL') ?? 'http://localhost:8080'),
-                '--language='.(App::env('CRAFT_INSTALL_LANGUAGE') ?? 'en-US'),
-            ]);
-        }
+        $siteConfig = [
+            'name' => $args['siteName'],
+            'handle' => 'default',
+            'hasUrls' => true,
+            'baseUrl' => $args['siteUrl'],
+            'language' => $args['language'],
+            'primary' => true,
+        ];
 
-        $craftExePath = getenv('CRAFT_EXE_PATH') ?: './craft';
-        $process = new Process([$craftExePath, 'install', ...$args]);
-        $process->setTty(Process::isTtySupported());
-        $process->setTimeout(null);
-        $process->start();
+        $site = new Site($siteConfig);
 
-        foreach ($process as $type => $data) {
-            if ($type === Process::OUT) {
-                fwrite(STDOUT, $data);
-            } else {
-                fwrite(STDERR, $data);
-            }
-        }
+        $migration = new Install([
+            'db' => \Craft::$app->getDb(),
+            'username' => $args['username'],
+            'password' => $args['password'],
+            'email' => $args['email'],
+            'site' => $site,
+        ]);
 
-        if (! $process->isSuccessful()) {
-            throw new \Exception('Failed installing Craft');
+        $migrator = Craft::$app->getMigrator();
+        $migrator->migrateUp($migration);
+
+        Craft::$app->getProjectConfig()->reset();
+        Craft::$app->getProjectConfig()->applyExternalChanges();
+        Craft::$app->getProjectConfig()->saveModifiedConfigData();
+
+        $edition = Craft::$app->getProjectConfig()->get('system.edition');
+        if (method_exists(App::class, 'editionIdByHandle')) {
+            Craft::$app->setEdition(App::editionIdByHandle($edition));
+        } elseif (class_exists(CmsEdition::class)) {
+            Craft::$app->setEdition(CmsEdition::fromHandle($edition));
+        } else {
+            throw new \RuntimeException('Could not determine a [system.edition] based on the project config.');
         }
     }
 
     protected function craftMigrateAll()
     {
-        $craftExePath = getenv('CRAFT_EXE_PATH') ?: './craft';
-        $process = new Process([$craftExePath, 'migrate/all', '--interactive=0']);
-        $process->setTty(Process::isTtySupported());
-        $process->setTimeout(null);
-        $process->start();
-
-        foreach ($process as $type => $data) {
-            if ($type === Process::OUT) {
-                fwrite(STDOUT, $data);
-            } else {
-                fwrite(STDERR, $data);
-            }
-        }
-
-        if (! $process->isSuccessful()) {
-            throw new \Exception('Failed migrating Craft');
-        }
+        Craft::$app->getContentMigrator()->up();
     }
 
     protected function craftProjectConfigApply()
     {
-        $craftExePath = getenv('CRAFT_EXE_PATH') ?: './craft';
-        $process = new Process([$craftExePath, 'project-config/apply', '--interactive=0']);
-        $process->setTty(Process::isTtySupported());
-        $process->setTimeout(null);
-        $process->start();
+        // applyExternalChanges is going to add event listeners automatically (because internally it makes calls to
+        // ->reset() which calls ->int() which adds event listeners). Normally, this is fine because it gets called
+        // at the _end_ of a request lifecycle. But in our case we're calling it early in the lifecycle and that's
+        // adding duplicate listeners. So we'll remove the listeners here so they can be re-added without duplication.
+        $projectConfig = Craft::$app->getProjectConfig();
+        $projectConfig->off(ProjectConfig::EVENT_ADD_ITEM, [$projectConfig, 'handleChangeEvent']);
+        $projectConfig->off(ProjectConfig::EVENT_UPDATE_ITEM, [$projectConfig, 'handleChangeEvent']);
+        $projectConfig->off(ProjectConfig::EVENT_REMOVE_ITEM, [$projectConfig, 'handleChangeEvent']);
 
-        foreach ($process as $type => $data) {
-            if ($type === Process::OUT) {
-                fwrite(STDOUT, $data);
-            } else {
-                fwrite(STDERR, $data);
-            }
-        }
-
-        if (! $process->isSuccessful()) {
-            throw new \Exception('Project config apply failed');
-        }
-    }
-
-    protected function reRunPest()
-    {
-        $process = new Process($_SERVER['argv']);
-        $process->setTty(Process::isTtySupported());
-        $process->setTimeout(null);
-        $process->start();
-
-        foreach ($process as $type => $data) {
-            if ($type === Process::OUT) {
-                fwrite(STDOUT, $data);
-            } else {
-                fwrite(STDERR, $data);
-            }
-        }
-
-        return $process->getExitCode();
+        Craft::$app->getProjectConfig()->applyExternalChanges();
     }
 
     public function renderCompiledClasses()

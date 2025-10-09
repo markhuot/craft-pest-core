@@ -19,4 +19,9 @@
       <directory suffix=".php">./storage/runtime/compiled_templates</directory>
     </include>
   </source>
+  <!-- example environment override
+  <php>
+    <env name="CRAFT_DB_DATABASE" value="craftpest_test" />
+  </php>
+  -->
 </phpunit>

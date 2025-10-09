@@ -1,8 +1,13 @@
 <?php
 
+use craft\enums\CmsEdition;
 use markhuot\craftpest\factories\User;
 
 it('logs in users by factory', function () {
+    if (class_exists(CmsEdition::class)) {
+        expect(\Craft::$app->edition)->toBe(CmsEdition::Pro, 'Must be running Craft Pro to use user factories');
+    }
+
     $userFactory = User::factory();
 
     $this->actingAs($userFactory);
