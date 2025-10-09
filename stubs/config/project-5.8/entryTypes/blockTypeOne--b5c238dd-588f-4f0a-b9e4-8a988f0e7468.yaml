@@ -1,0 +1,83 @@
+color: null
+fieldLayouts:
+  2f77cf1c-a3db-4396-8d2f-efff2172466e:
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            autocapitalize: true
+            autocomplete: false
+            autocorrect: true
+            class: null
+            dateAdded: '2024-11-20T09:14:23-08:00'
+            disabled: false
+            elementCondition: null
+            id: null
+            includeInCards: false
+            inputType: null
+            instructions: null
+            label: null
+            max: null
+            min: null
+            name: null
+            orientation: null
+            placeholder: null
+            providesThumbs: false
+            readonly: false
+            requirable: false
+            size: null
+            step: null
+            tip: null
+            title: null
+            type: craft\fieldlayoutelements\entries\EntryTitleField
+            uid: 463de371-8db2-4f1d-b9b1-b9aca58b5c86
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            dateAdded: '2024-11-20T09:14:23-08:00'
+            elementCondition: null
+            fieldUid: c05f8773-60a8-4f5e-9925-3cc36a064793 # Matrix Field - Block Type One - Field One
+            handle: null
+            includeInCards: true
+            instructions: null
+            label: 'Field One'
+            providesThumbs: false
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 6a242257-5d04-4ffb-8afb-f0b091472335
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            dateAdded: '2024-11-20T09:14:23-08:00'
+            elementCondition: null
+            fieldUid: 10199d0e-57f0-4724-aefb-1ef4ed73b408 # Matrix Field - Block Type One - Field Two
+            handle: null
+            includeInCards: false
+            instructions: null
+            label: 'Field Two'
+            providesThumbs: false
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 4b8f210d-545c-4d57-9777-08cdb93862df
+            userCondition: null
+            warning: null
+            width: 100
+        name: Content
+        uid: aad92478-a4a8-49e5-b88b-5fff4734eb2c
+        userCondition: null
+handle: blockTypeOne
+hasTitleField: false
+icon: null
+name: 'Block Type One'
+showSlugField: true
+showStatusField: true
+slugTranslationKeyFormat: null
+slugTranslationMethod: site
+titleFormat: null
+titleTranslationKeyFormat: null
+titleTranslationMethod: site

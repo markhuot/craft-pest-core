@@ -46,12 +46,18 @@ trait Snapshotable
             // snapshot any eager loaded element queries so nested elements are downcasted
             // to a reproducible array
             ->map(function ($value, $handle) {
-                if ($this->{$handle} instanceof ElementCollection) {
+                // Special call-out for `status` because it's sometimes uninitialized on new Entry elements and can't
+                // be grabbed with $this->status. Instead $this->getStatus() will initialize the property and return
+                // the value in one go.
+                // @todo, this should be abstracted to always call get{Property} if it exists instead of directly
+                // accessing the property
+                if ($handle === 'status') {
+                    return $this->getStatus();
+                } elseif ($this->{$handle} instanceof ElementCollection) {
                     $value = $this->{$handle};
 
                     return $value->map->toSnapshotArray(); // @phpstan-ignore-line can't get PHPStan to reason about the ->map higher order callable
-                }
-                if ($this->{$handle} instanceof MatrixBlockType) {
+                } elseif ($this->{$handle} instanceof MatrixBlockType) {
                     return collect($this->{$handle}->toArray())->only(['name', 'handle']);
                 }
 

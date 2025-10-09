@@ -1,0 +1,78 @@
+field: c7529b61-60cd-4e18-a272-3084aee7fa89 # Matrix Field
+fieldLayouts:
+  2f77cf1c-a3db-4396-8d2f-efff2172466e:
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            elementCondition: null
+            fieldUid: c05f8773-60a8-4f5e-9925-3cc36a064793 # Matrix Field - Block Type One - Field One
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 6a242257-5d04-4ffb-8afb-f0b091472335
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: 10199d0e-57f0-4724-aefb-1ef4ed73b408 # Matrix Field - Block Type One - Field Two
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 4b8f210d-545c-4d57-9777-08cdb93862df
+            userCondition: null
+            warning: null
+            width: 100
+        name: Content
+        uid: aad92478-a4a8-49e5-b88b-5fff4734eb2c
+        userCondition: null
+fields:
+  10199d0e-57f0-4724-aefb-1ef4ed73b408: # Matrix Field - Block Type One - Field Two
+    columnSuffix: swmzeype
+    contentColumnType: text
+    fieldGroup: null
+    handle: fieldTwo
+    instructions: null
+    name: 'Field Two'
+    searchable: false
+    settings:
+      byteLimit: null
+      charLimit: null
+      code: false
+      columnType: null
+      initialRows: 4
+      multiline: false
+      placeholder: null
+      uiMode: normal
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\PlainText
+  c05f8773-60a8-4f5e-9925-3cc36a064793: # Matrix Field - Block Type One - Field One
+    columnSuffix: jnvscjst
+    contentColumnType: text
+    fieldGroup: null
+    handle: fieldOne
+    instructions: null
+    name: 'Field One'
+    searchable: false
+    settings:
+      byteLimit: null
+      charLimit: null
+      code: false
+      columnType: null
+      initialRows: 4
+      multiline: false
+      placeholder: null
+      uiMode: normal
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\PlainText
+handle: blockTypeOne
+name: 'Block Type One'
+sortOrder: 1

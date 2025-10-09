@@ -35,7 +35,7 @@ class Entry extends Element
     /** @var EntryType|string|null */
     protected $entryTypeIdentifier = null;
 
-    protected $priorityAttributes = ['sectionId', 'typeId'];
+    protected $priorityAttributes = ['sectionId', 'typeId', 'fieldId'];
 
     /**
      * Set the section for the entry to be created. You may pass a section

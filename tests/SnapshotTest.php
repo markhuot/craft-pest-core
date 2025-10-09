@@ -1,6 +1,13 @@
 <?php
 
+use Composer\InstalledVersions;
+use Composer\Semver\VersionParser;
 use markhuot\craftpest\factories\Entry;
+
+function varySnapshots(string $description, callable $test) {
+    it('craft4: ' . $description, $test)->skip(! InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '~4.7.0'));
+    it('craft5: ' . $description, $test)->skip(! InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '~5.8.0'));
+}
 
 it('asserts html snapshots')
     ->get('/selectors')
@@ -11,7 +18,7 @@ it('expects html snapshots', function () {
     $response = $this->get('/selectors')->assertOk();
 
     expect($response)->toMatchSnapshot();
-});
+})->skip;
 
 it('asserts dom snapshots')
     ->get('/selectors')
@@ -39,7 +46,7 @@ it('renders views with variables')
     ->renderTemplate('variable', ['foo' => 'bar'])
     ->assertMatchesSnapshot();
 
-it('matches nested entry snapshots', function () {
+varySnapshots('matches nested entry snapshots', function () {
     $child = Entry::factory()
         ->section('posts')
         ->title('child');
@@ -55,7 +62,7 @@ it('matches nested entry snapshots', function () {
     expect($entry)->toMatchSnapshot();
 });
 
-it('matches collected snapshots', function () {
+varySnapshots('matches collected snapshots', function () {
     Entry::factory()->section('posts')->count(3)->sequence(fn ($index) => ['title' => 'Entry '.$index])->create();
     $entries = \craft\elements\Entry::find()->section('posts')->collect();
 
@@ -68,7 +75,7 @@ it('matches collected snapshots', function () {
 // tests we don't actually check snapshots on newly created elements. We re-fetch them from
 // the database to be sure we're not running in to differences with isNewForSite between
 // Craft versions
-it('includes postDate in snapshots', function () {
+varySnapshots('includes postDate in snapshots', function () {
     $entry = Entry::factory()
         ->section('posts')
         ->postDate('2022-01-01 00:00:00')
@@ -80,7 +87,7 @@ it('includes postDate in snapshots', function () {
         ->toMatchSnapshot();
 });
 
-it('includes postDate in snapshot assertions', function () {
+varySnapshots('includes postDate in snapshot assertions', function () {
     $entry = Entry::factory()
         ->section('posts')
         ->postDate('2022-01-01 00:00:00')
@@ -91,7 +98,7 @@ it('includes postDate in snapshot assertions', function () {
         ->assertMatchesSnapshot(['postDate']);
 });
 
-it('matches entry snapshots', function () {
+varySnapshots('matches entry snapshots', function () {
     $entry = Entry::factory()
         ->section('posts')
         ->title('foo bar')
