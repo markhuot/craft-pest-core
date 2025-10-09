@@ -67,6 +67,23 @@ abstract class Element extends Factory
         // Resolve out any factories
         foreach ($values as $index => $value) {
             if (is_subclass_of($value, Factory::class)) {
+                // Matrix fields are downcast to arrays on save. This way the normal Craft POST logic can run over
+                // the matrix field data and validate/save it as it normally would.
+                if ($field instanceof Matrix) {
+                    // Since Craft 5.8+ you need to set the `fieldId` on the nested entry before you can set any custom
+                    // fields on the entry. This is because Craft needs to know the field layout of the entry and it
+                    // determines it by the entry type + the fieldId.
+                    $value->set('fieldId', $field->id);
+                    $values[$index] = collection_wrap($value->make())->map(function (\craft\elements\Entry|array $entry) {
+                        return is_array($entry) ? $entry : [
+                            'type' => $entry->getType()->handle,
+                            'enabled' => true,
+                            'collapsed' => false,
+                            'fields' => $entry->getSerializedFieldValues(),
+                        ];
+                    });
+                }
+
                 // This is unfortunately an artifact of the current Craft model structure. We can't
                 // ->make() sub models because Craft doesn't know what to do with them on save and
                 // doesn't provide us any native way to get back the made object so we can save it
@@ -74,14 +91,10 @@ abstract class Element extends Factory
                 // will go in to the model okay, but when you try to pull them back out to save them
                 // you get an EntryQuery with no access to the raw array of unsaved entries.
                 // Because of that we call ->create() here on all nested factories.
-                $values[$index] = $field instanceof Matrix ? collection_wrap($value->make())->map(function (\craft\elements\Entry|array $entry) {
-                    return is_array($entry) ? $entry : [
-                        'type' => $entry->getType()->handle,
-                        'enabled' => true,
-                        'collapsed' => false,
-                        'fields' => $entry->getSerializedFieldValues(),
-                    ];
-                }) : $value->create();
+                else {
+                    $values[$index] = $value->create();
+                }
+
                 $flattenIndexes[] = $index;
             }
         }
