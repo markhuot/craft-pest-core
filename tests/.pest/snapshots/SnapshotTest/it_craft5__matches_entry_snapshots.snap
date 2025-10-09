@@ -17,6 +17,8 @@
         "label": "One",
         "value": "one",
         "selected": true,
-        "valid": true
+        "valid": true,
+        "icon": null,
+        "color": null
     }
 }

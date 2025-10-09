@@ -22,6 +22,8 @@
         "label": null,
         "value": null,
         "selected": true,
-        "valid": false
+        "valid": false,
+        "icon": null,
+        "color": null
     }
 }
