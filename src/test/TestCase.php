@@ -131,7 +131,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
         Craft::$app->getProjectConfig()->reset();
         Craft::$app->getProjectConfig()->applyExternalChanges();
-        Craft::$app->getProjectConfig()->flush();
+        Craft::$app->getProjectConfig()->saveModifiedConfigData();
 
         $edition = Craft::$app->getProjectConfig()->get('system.edition');
         if (method_exists(App::class, 'editionIdByHandle')) {
