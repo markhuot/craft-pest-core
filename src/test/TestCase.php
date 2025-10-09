@@ -7,6 +7,7 @@ use craft\enums\CmsEdition;
 use craft\helpers\App;
 use craft\migrations\Install;
 use craft\models\Site;
+use craft\services\ProjectConfig;
 use Illuminate\Support\Collection;
 use markhuot\craftpest\actions\CallSeeders;
 use markhuot\craftpest\interfaces\RenderCompiledClassesInterface;
@@ -150,6 +151,15 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function craftProjectConfigApply()
     {
+        // applyExternalChanges is going to add event listeners automatically (because internally it makes calls to
+        // ->reset() which calls ->int() which adds event listeners). Normally, this is fine because it gets called
+        // at the _end_ of a request lifecycle. But in our case we're calling it early in the lifecycle and that's
+        // adding duplicate listeners. So we'll remove the listeners here so they can be re-added without duplication.
+        $projectConfig = Craft::$app->getProjectConfig();
+        $projectConfig->off(ProjectConfig::EVENT_ADD_ITEM, [$projectConfig, 'handleChangeEvent']);
+        $projectConfig->off(ProjectConfig::EVENT_UPDATE_ITEM, [$projectConfig, 'handleChangeEvent']);
+        $projectConfig->off(ProjectConfig::EVENT_REMOVE_ITEM, [$projectConfig, 'handleChangeEvent']);
+
         Craft::$app->getProjectConfig()->applyExternalChanges();
     }
 
