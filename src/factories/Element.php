@@ -73,7 +73,11 @@ abstract class Element extends Factory
                     // Since Craft 5.8+ you need to set the `fieldId` on the nested entry before you can set any custom
                     // fields on the entry. This is because Craft needs to know the field layout of the entry and it
                     // determines it by the entry type + the fieldId.
-                    $value->set('fieldId', $field->id);
+                    if (property_exists($value, 'fieldId')) {
+                        $value->set('fieldId', $field->id);
+                    }
+
+                    // now downcast all the matrix block factories in to arrays
                     $values[$index] = collection_wrap($value->make())->map(function (\craft\elements\Entry|array $entry) {
                         return is_array($entry) ? $entry : [
                             'type' => $entry->getType()->handle,
