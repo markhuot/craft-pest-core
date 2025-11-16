@@ -50,6 +50,9 @@
             "pestphp/pest-plugin": true,
             "craftcms/plugin-installer": true
         }
+        "audit": {
+            "block-insecure": false
+        }
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
