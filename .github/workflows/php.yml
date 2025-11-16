@@ -91,7 +91,8 @@ jobs:
 
     - name: Install dependencies
       run: |
-        composer require "craftcms/cms:${{ matrix.version.constraint }}" --prefer-dist --no-progress --no-audit
+        composer config audit.block-insecure false
+        composer require "craftcms/cms:${{ matrix.version.constraint }}" --prefer-dist --no-progress
         ./bin/post-clone.sh
 
     - name: Copy config files
