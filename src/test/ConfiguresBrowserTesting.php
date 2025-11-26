@@ -4,12 +4,14 @@ namespace markhuot\craftpest\test;
 
 trait ConfiguresBrowserTesting
 {
-    public function bootConfiguresBrowserTesting(): void
+    public function setUpConfiguresBrowserTesting(): void
     {
-        // Configure browser testing to use CraftHttpServer if the browser plugin is available
-        if (class_exists(\Pest\Browser\ServerManager::class)) {
-            $this->configureBrowserTesting();
+        // If the browser plugin is not available, we don't need to configure anything
+        if (! class_exists(\Pest\Browser\ServerManager::class)) {
+            return;
         }
+
+        $this->configureBrowserTesting();
     }
 
     /**

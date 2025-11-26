@@ -11,6 +11,7 @@ use Amp\Http\Server\RequestHandler\ClosureRequestHandler;
 use Amp\Http\Server\Response;
 use Amp\Http\Server\SocketHttpServer;
 use craft\helpers\UrlHelper;
+use markhuot\craftpest\http\requests\GetRequest;
 use markhuot\craftpest\http\requests\WebRequest;
 use markhuot\craftpest\http\RequestHandler;
 use Pest\Browser\Exceptions\ServerNotFoundException;
@@ -215,37 +216,44 @@ class CraftHttpServer implements \Pest\Browser\Contracts\HttpServer
         $contentType = $request->getHeader('content-type') ?? '';
         $method = mb_strtoupper($request->getMethod());
         $rawBody = (string) $request->getBody();
-        $parameters = [];
-        
+        $bodyParams = [];
+
         if ($method !== 'GET' && str_starts_with(mb_strtolower($contentType), 'application/x-www-form-urlencoded')) {
-            parse_str($rawBody, $parameters);
+            parse_str($rawBody, $bodyParams);
+        } elseif ($method !== 'GET' && str_starts_with(mb_strtolower($contentType), 'application/json')) {
+            $bodyParams = json_decode($rawBody, true) ?? [];
         }
 
-        // Build server variables for Yii
-        $serverVars = [
-            'REQUEST_METHOD' => $method,
-            'REQUEST_URI' => $fullPath,
-            'QUERY_STRING' => $query,
-            'HTTP_HOST' => $this->host.':'.$this->port,
-            'SERVER_NAME' => $this->host,
-            'SERVER_PORT' => $this->port,
-        ];
+        // Create the request using the factory method
+        $craftRequest = GetRequest::make($absoluteUrl);
 
-        // Add headers to server variables
+        // Override properties for browser server context
+        $craftRequest->setHostInfo($this->url());
+        $craftRequest->setHostName($this->host);
+        $craftRequest->setPort($this->port);
+        $craftRequest->setBody($rawBody);
+        $craftRequest->setBodyParams($bodyParams);
+
+        // Set headers
         foreach ($request->getHeaders() as $name => $values) {
-            $headerName = 'HTTP_'.strtoupper(str_replace('-', '_', $name));
-            $serverVars[$headerName] = is_array($values) ? implode(', ', $values) : $values;
+            $value = is_array($values) ? implode(', ', $values) : $values;
+            $craftRequest->headers->set($name, $value);
         }
 
-        $craftRequest = new WebRequest([
-            'url' => $absoluteUrl,
-            'method' => $method,
-            'params' => $parameters,
-            'cookies' => $request->getCookies(),
-            'headers' => $request->getHeaders(),
-            'body' => $rawBody,
-            'serverVars' => $serverVars,
-        ]);
+        // Set cookies
+        $cookies = new \yii\web\CookieCollection(['readOnly' => false]);
+        foreach ($request->getCookies() as $name => $value) {
+            $cookies->add(new \yii\web\Cookie([
+                'name' => $name,
+                'value' => $value,
+            ]));
+        }
+        $craftRequest->setCookies($cookies);
+
+        // Override the method if needed
+        if ($method !== 'GET') {
+            $craftRequest->headers->set('X-Http-Method-Override', $method);
+        }
 
         try {
             $craftResponse = $this->requestHandler->handle($craftRequest);

@@ -17,6 +17,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
     use ActingAs,
         Benchmark,
         CleanupRequestState,
+        ConfiguresBrowserTesting,
         CookieState,
         DatabaseAssertions,
         Dd,

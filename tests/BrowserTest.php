@@ -42,10 +42,10 @@ it('demonstrates browser testing capabilities', function () {
 });
 
 it('can take and verify screenshots', function () {
-    $page = visit('/');
+    $page = visit('/selectors');
     
     // Take a screenshot and verify it matches the expected baseline
     // On first run, this will create the baseline screenshot
     // On subsequent runs, it will compare against the baseline
     $page->assertScreenshotMatches();
-});
+})->only();

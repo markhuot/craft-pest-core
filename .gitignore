@@ -17,6 +17,7 @@ node_modules
 /docs/.vitepress/dist
 /composer.lock
 /composer-local.lock
+/bun.lock
 /storage
 /web
 /bootstrap.php
