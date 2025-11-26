@@ -2,48 +2,299 @@
 
 namespace markhuot\craftpest\browser;
 
+use Amp\ByteStream\ReadableResourceStream;
+use Amp\Http\Server\DefaultErrorHandler;
+use Amp\Http\Server\HttpServer as AmpHttpServer;
+use Amp\Http\Server\HttpServerStatus;
+use Amp\Http\Server\Request as AmpRequest;
+use Amp\Http\Server\RequestHandler\ClosureRequestHandler;
+use Amp\Http\Server\Response;
+use Amp\Http\Server\SocketHttpServer;
 use craft\helpers\UrlHelper;
+use markhuot\craftpest\http\requests\WebRequest;
+use markhuot\craftpest\http\RequestHandler;
+use Pest\Browser\Exceptions\ServerNotFoundException;
+use Pest\Browser\Execution;
+use Pest\Browser\GlobalState;
+use Psr\Log\NullLogger;
+use Symfony\Component\Mime\MimeTypes;
 use Throwable;
 
 class CraftHttpServer implements \Pest\Browser\Contracts\HttpServer
 {
+    /**
+     * The underlying socket server instance, if any.
+     */
+    private ?AmpHttpServer $socket = null;
+
+    /**
+     * The last throwable that occurred during the server's execution.
+     */
+    private ?Throwable $lastThrowable = null;
+
+    /**
+     * The Craft request handler instance.
+     */
+    private RequestHandler $requestHandler;
+
+    /**
+     * Creates a new Craft http server instance.
+     */
+    public function __construct(
+        public readonly string $host,
+        public readonly int $port,
+    ) {
+        $this->requestHandler = new RequestHandler();
+    }
+
+    /**
+     * Destroy the server instance and stop listening for incoming connections.
+     */
+    public function __destruct()
+    {
+        // $this->stop();
+    }
+
+    /**
+     * Get the base path for static assets.
+     */
     protected function getBasePath(): string
     {
         return \Craft::getAlias('@webroot');
     }
 
+    /**
+     * Start the server and listen for incoming connections.
+     */
     public function start(): void
     {
-        // TODO: Implement start() method.
+        if ($this->socket instanceof AmpHttpServer) {
+            return;
+        }
+
+        $this->socket = $server = SocketHttpServer::createForDirectAccess(new NullLogger());
+
+        $server->expose("{$this->host}:{$this->port}");
+        $server->start(
+            new ClosureRequestHandler($this->handleRequest(...)),
+            new DefaultErrorHandler(),
+        );
     }
 
+    /**
+     * Stop the server and close all connections.
+     */
     public function stop(): void
     {
-        // TODO: Implement stop() method.
+        if ($this->socket instanceof AmpHttpServer) {
+            $this->flush();
+
+            if ($this->socket instanceof AmpHttpServer) {
+                if (in_array($this->socket->getStatus(), [HttpServerStatus::Starting, HttpServerStatus::Started], true)) {
+                    $this->socket->stop();
+                }
+
+                $this->socket = null;
+            }
+        }
     }
 
+    /**
+     * Rewrite the given URL to match the server's host and port.
+     */
     public function rewrite(string $url): string
     {
-        return UrlHelper::url($url);
+        if (! str_starts_with($url, 'http://') && ! str_starts_with($url, 'https://')) {
+            $url = mb_ltrim($url, '/');
+            $url = '/'.$url;
+        }
+
+        $parts = parse_url($url);
+        $queryParameters = [];
+        $path = $parts['path'] ?? '/';
+        parse_str($parts['query'] ?? '', $queryParameters);
+
+        // Build the URL manually
+        $baseUrl = $this->url();
+        $fullUrl = rtrim($baseUrl, '/').$path;
+        
+        if (!empty($queryParameters)) {
+            $fullUrl .= '?'.http_build_query($queryParameters);
+        }
+        
+        return $fullUrl;
     }
 
+    /**
+     * Flush pending requests and close all connections.
+     */
     public function flush(): void
     {
-        // TODO: Implement flush() method.
+        if (! $this->socket instanceof AmpHttpServer) {
+            return;
+        }
+
+        Execution::instance()->tick();
+
+        $this->lastThrowable = null;
     }
 
+    /**
+     * Bootstrap the server and set the application URL.
+     */
     public function bootstrap(): void
     {
-        // Nothing to do here, Craft is already bootstrapped by the Pest / PHPUnit parent process
+        $this->start();
+
+        // Craft doesn't need special URL configuration for browser testing
+        // The server URL will be used automatically through the request context
     }
 
+    /**
+     * Get the last throwable that occurred during the server's execution.
+     */
     public function lastThrowable(): ?Throwable
     {
-        // TODO: Implement lastThrowable() method.
+        return $this->lastThrowable;
     }
 
+    /**
+     * Throws the last throwable if it should be thrown.
+     *
+     * @throws Throwable
+     */
     public function throwLastThrowableIfNeeded(): void
     {
-        // TODO: Implement throwLastThrowableIfNeeded() method.
+        if (! $this->lastThrowable instanceof Throwable) {
+            return;
+        }
+
+        // In Craft/Pest, we check if we should render exceptions as HTML
+        // If not, we should throw them for the test to catch
+        if (! \markhuot\craftpest\helpers\test\test()->shouldRenderExceptionsAsHtml()) {
+            throw $this->lastThrowable;
+        }
+    }
+
+    /**
+     * Get the server URL.
+     */
+    private function url(): string
+    {
+        if (! $this->socket instanceof AmpHttpServer) {
+            throw new ServerNotFoundException('The HTTP server is not running.');
+        }
+
+        return sprintf('http://%s:%d', $this->host, $this->port);
+    }
+
+    /**
+     * Handle the incoming request and return a response.
+     */
+    private function handleRequest(AmpRequest $request): Response
+    {
+        GlobalState::flush();
+
+        if (Execution::instance()->isWaiting() === false) {
+            Execution::instance()->tick();
+        }
+
+        $uri = $request->getUri();
+        $path = in_array($uri->getPath(), ['', '0'], true) ? '/' : $uri->getPath();
+        $query = $uri->getQuery() ?? '';
+        $fullPath = $path.($query !== '' ? '?'.$query : '');
+        $absoluteUrl = mb_rtrim($this->url(), '/').$fullPath;
+
+        // Check if this is a static asset request
+        $filepath = $this->getBasePath().$path;
+        if (file_exists($filepath) && ! is_dir($filepath)) {
+            return $this->asset($filepath);
+        }
+
+        // Create a Craft web request
+        $contentType = $request->getHeader('content-type') ?? '';
+        $method = mb_strtoupper($request->getMethod());
+        $rawBody = (string) $request->getBody();
+        $parameters = [];
+        
+        if ($method !== 'GET' && str_starts_with(mb_strtolower($contentType), 'application/x-www-form-urlencoded')) {
+            parse_str($rawBody, $parameters);
+        }
+
+        // Build server variables for Yii
+        $serverVars = [
+            'REQUEST_METHOD' => $method,
+            'REQUEST_URI' => $fullPath,
+            'QUERY_STRING' => $query,
+            'HTTP_HOST' => $this->host.':'.$this->port,
+            'SERVER_NAME' => $this->host,
+            'SERVER_PORT' => $this->port,
+        ];
+
+        // Add headers to server variables
+        foreach ($request->getHeaders() as $name => $values) {
+            $headerName = 'HTTP_'.strtoupper(str_replace('-', '_', $name));
+            $serverVars[$headerName] = is_array($values) ? implode(', ', $values) : $values;
+        }
+
+        $craftRequest = new WebRequest([
+            'url' => $absoluteUrl,
+            'method' => $method,
+            'params' => $parameters,
+            'cookies' => $request->getCookies(),
+            'headers' => $request->getHeaders(),
+            'body' => $rawBody,
+            'serverVars' => $serverVars,
+        ]);
+
+        try {
+            $craftResponse = $this->requestHandler->handle($craftRequest);
+        } catch (Throwable $e) {
+            $this->lastThrowable = $e;
+            throw $e;
+        }
+
+        // Check if the response has an exception
+        if (property_exists($craftResponse, 'exception') && $craftResponse->exception !== null) {
+            $this->lastThrowable = $craftResponse->exception;
+        }
+
+        $content = $craftResponse->content;
+
+        if ($content === null || $content === false) {
+            try {
+                ob_start();
+                $craftResponse->send();
+            } finally {
+                $content = mb_trim(ob_get_clean() ?: '');
+            }
+        }
+
+        return new Response(
+            $craftResponse->statusCode ?? 200,
+            $craftResponse->headers->toArray(),
+            $content,
+        );
+    }
+
+    /**
+     * Return an asset response.
+     */
+    private function asset(string $filepath): Response
+    {
+        $file = fopen($filepath, 'r');
+
+        if ($file === false) {
+            return new Response(404);
+        }
+
+        $mimeTypes = new MimeTypes();
+        $contentType = $mimeTypes->getMimeTypes(pathinfo($filepath, PATHINFO_EXTENSION));
+
+        $contentType = $contentType[0] ?? 'application/octet-stream';
+
+        return new Response(200, [
+            'Content-Type' => $contentType,
+        ], new ReadableResourceStream($file));
     }
 }

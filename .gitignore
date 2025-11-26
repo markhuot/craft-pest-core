@@ -26,3 +26,4 @@ node_modules
 /node_modules
 /.env.example
 /cpresources
+tests/Browser/Screenshots
