@@ -48,4 +48,4 @@ it('can take and verify screenshots', function () {
     // On first run, this will create the baseline screenshot
     // On subsequent runs, it will compare against the baseline
     $page->assertScreenshotMatches();
-})->only();
+});
