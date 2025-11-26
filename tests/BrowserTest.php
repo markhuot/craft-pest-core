@@ -15,7 +15,7 @@
 
 it('can perform browser testing with CraftHttpServer', function () {
     $page = visit('/');
-    
+
     // Verify the CraftHttpServer is running and responding
     expect($page->url())->toContain('127.0.0.1');
     expect($page->content())->not->toBeEmpty();
