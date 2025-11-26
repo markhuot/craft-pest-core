@@ -213,6 +213,8 @@ abstract class Factory
      * Sometimes you need to ensure an attribute is unset, not just null. If you
      * set an attribute's value to `Factory::NULL` it will be removed from the
      * model before it is made.
+     *
+     * @deprecated use the shorthands wherever possible. E.g., instead of ->set('foo', 'bar') use ->foo('bar')
      */
     public function set($key, $value = null)
     {
