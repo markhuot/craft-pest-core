@@ -136,5 +136,5 @@ jobs:
       if: always()
 
     - name: Run test suite
-      run: ./vendor/bin/pest -vvv
+      run: ./vendor/bin/pest -vvv --diff
       if: always()
