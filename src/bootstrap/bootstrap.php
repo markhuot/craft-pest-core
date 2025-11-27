@@ -44,6 +44,10 @@ $_SERVER['REQUEST_URI'] = '/';
 $_SERVER['SCRIPT_NAME'] = '/index.php';
 $_SERVER['SCRIPT_FILENAME'] = 'index.php';
 
+// Unset argv to prevent Craft from throwing exceptions in later versions
+// when it detects CLI arguments in a web request context
+unset($_SERVER['argv'], $_SERVER['argc']);
+
 // Load and run Craft. We have two ways we can do this. The safe way or the flexible way.
 //
 // First, the safe way allows us to just lean on Craft and let it do its thing. The problem

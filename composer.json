@@ -49,6 +49,9 @@
             "yiisoft/yii2-composer": true,
             "pestphp/pest-plugin": true,
             "craftcms/plugin-installer": true
+        },
+        "audit": {
+            "block-insecure": false
         }
     },
     "minimum-stability": "dev",
