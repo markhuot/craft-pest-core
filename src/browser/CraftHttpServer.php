@@ -10,10 +10,8 @@ use Amp\Http\Server\Request as AmpRequest;
 use Amp\Http\Server\RequestHandler\ClosureRequestHandler;
 use Amp\Http\Server\Response;
 use Amp\Http\Server\SocketHttpServer;
-use craft\helpers\UrlHelper;
-use markhuot\craftpest\http\requests\GetRequest;
-use markhuot\craftpest\http\requests\WebRequest;
 use markhuot\craftpest\http\RequestHandler;
+use markhuot\craftpest\http\requests\GetRequest;
 use Pest\Browser\Exceptions\ServerNotFoundException;
 use Pest\Browser\Execution;
 use Pest\Browser\GlobalState;
@@ -45,7 +43,7 @@ class CraftHttpServer implements \Pest\Browser\Contracts\HttpServer
         public readonly string $host,
         public readonly int $port,
     ) {
-        $this->requestHandler = new RequestHandler();
+        $this->requestHandler = new RequestHandler;
     }
 
     /**
@@ -73,12 +71,12 @@ class CraftHttpServer implements \Pest\Browser\Contracts\HttpServer
             return;
         }
 
-        $this->socket = $server = SocketHttpServer::createForDirectAccess(new NullLogger());
+        $this->socket = $server = SocketHttpServer::createForDirectAccess(new NullLogger);
 
         $server->expose("{$this->host}:{$this->port}");
         $server->start(
             new ClosureRequestHandler($this->handleRequest(...)),
-            new DefaultErrorHandler(),
+            new DefaultErrorHandler,
         );
     }
 
@@ -118,11 +116,11 @@ class CraftHttpServer implements \Pest\Browser\Contracts\HttpServer
         // Build the URL manually
         $baseUrl = $this->url();
         $fullUrl = rtrim($baseUrl, '/').$path;
-        
-        if (!empty($queryParameters)) {
+
+        if (! empty($queryParameters)) {
             $fullUrl .= '?'.http_build_query($queryParameters);
         }
-        
+
         return $fullUrl;
     }
 
@@ -202,8 +200,8 @@ class CraftHttpServer implements \Pest\Browser\Contracts\HttpServer
 
         $uri = $request->getUri();
         $path = in_array($uri->getPath(), ['', '0'], true) ? '/' : $uri->getPath();
-        $query = $uri->getQuery() ?? '';
-        $fullPath = $path.($query !== '' ? '?'.$query : '');
+        $query = $uri->getQuery();
+        $fullPath = $path.($query !== '' && $query !== null ? '?'.$query : '');
         $absoluteUrl = mb_rtrim($this->url(), '/').$fullPath;
 
         // Check if this is a static asset request
@@ -236,7 +234,7 @@ class CraftHttpServer implements \Pest\Browser\Contracts\HttpServer
 
         // Set headers
         foreach ($request->getHeaders() as $name => $values) {
-            $value = is_array($values) ? implode(', ', $values) : $values;
+            $value = implode(', ', $values);
             $craftRequest->headers->set($name, $value);
         }
 
@@ -269,7 +267,7 @@ class CraftHttpServer implements \Pest\Browser\Contracts\HttpServer
 
         $content = $craftResponse->content;
 
-        if ($content === null || $content === false) {
+        if ($content === null) {
             try {
                 ob_start();
                 $craftResponse->send();
@@ -296,7 +294,7 @@ class CraftHttpServer implements \Pest\Browser\Contracts\HttpServer
             return new Response(404);
         }
 
-        $mimeTypes = new MimeTypes();
+        $mimeTypes = new MimeTypes;
         $contentType = $mimeTypes->getMimeTypes(pathinfo($filepath, PATHINFO_EXTENSION));
 
         $contentType = $contentType[0] ?? 'application/octet-stream';

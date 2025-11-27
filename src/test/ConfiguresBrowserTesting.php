@@ -22,7 +22,7 @@ trait ConfiguresBrowserTesting
         try {
             $reflection = new \ReflectionClass(\Pest\Browser\ServerManager::class);
             $instance = $reflection->getMethod('instance')->invoke(null);
-            
+
             $httpProperty = $reflection->getProperty('http');
             $httpProperty->setAccessible(true);
             $httpProperty->setValue(
