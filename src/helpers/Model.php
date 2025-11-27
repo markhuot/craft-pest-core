@@ -8,6 +8,9 @@ use markhuot\craftpest\factories\User;
 use Pest\Support\HigherOrderTapProxy;
 
 if (! function_exists('entry')) {
+    /**
+     * @deprecated Use the Entry::factory() directly.
+     */
     function entry(string $handle)
     {
         return Entry::factory()->section($handle);
@@ -21,6 +24,9 @@ if (! function_exists('entry')) {
 }
 
 if (! function_exists('user')) {
+    /**
+     * @deprecated Use the User::factory() directly
+     */
     function user()
     {
         return User::factory();

@@ -4,9 +4,10 @@ use Composer\InstalledVersions;
 use Composer\Semver\VersionParser;
 use markhuot\craftpest\factories\Entry;
 
-function varySnapshots(string $description, callable $test) {
-    it('craft4: ' . $description, $test)->skip(! InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '~4.7.0'));
-    it('craft5: ' . $description, $test)->skip(! InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '~5.8.0'));
+function varySnapshots(string $description, callable $test)
+{
+    it('craft4: '.$description, $test)->skip(! InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '~4.7.0'));
+    it('craft5: '.$description, $test)->skip(! InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '~5.8.0'));
 }
 
 it('asserts html snapshots')

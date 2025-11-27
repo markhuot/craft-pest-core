@@ -92,7 +92,21 @@ jobs:
     - name: Install dependencies
       run: |
         composer require "craftcms/cms:${{ matrix.version.constraint }}" --prefer-dist --no-progress
+        composer require pestphp/pest-plugin-browser
         ./bin/post-clone.sh
+
+    - name: Cache NPM packages
+      id: npm-cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          pankage-lock.json
+          node_modules
+        key: ${{ runner.os }}-npm-${{ matrix.version.constraint }}-node_modules-${{ hashFiles('package-lock.json') }}
+
+    - name: Install npm dependencies
+      run: |
+        npm install && npx playwright install
 
     - name: Copy config files
       run: |
@@ -122,5 +136,5 @@ jobs:
       if: always()
 
     - name: Run test suite
-      run: ./vendor/bin/pest -vvv
+      run: ./vendor/bin/pest -vvv --diff
       if: always()

@@ -82,6 +82,20 @@ abstract class WebRequest extends \craft\web\Request
         return $this;
     }
 
+    public function setHostName(string $hostName): self
+    {
+        $this->setRaw(['_hostName' => $hostName]);
+
+        return $this;
+    }
+
+    public function setCookies(\yii\web\CookieCollection $cookies): self
+    {
+        $this->setRaw(['_cookies' => $cookies]);
+
+        return $this;
+    }
+
     /**
      * Populate private properties
      */
