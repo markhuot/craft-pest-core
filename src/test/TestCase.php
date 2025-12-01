@@ -10,6 +10,7 @@ use craft\models\Site;
 use craft\services\ProjectConfig;
 use Illuminate\Support\Collection;
 use markhuot\craftpest\actions\CallSeeders;
+use markhuot\craftpest\http\TestController;
 use markhuot\craftpest\interfaces\RenderCompiledClassesInterface;
 
 class TestCase extends \PHPUnit\Framework\TestCase
@@ -181,6 +182,9 @@ class TestCase extends \PHPUnit\Framework\TestCase
     protected function requireCraft()
     {
         require __DIR__.'/../bootstrap/bootstrap.php';
+
+        // Set a bogus controller so plugins can interact with Craft:$app->controller without erroring
+        Craft::$app->controller = new TestController('test-controller', Craft::$app);
     }
 
     /**
