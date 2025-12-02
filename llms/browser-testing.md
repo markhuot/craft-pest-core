@@ -71,5 +71,99 @@ it('tests JavaScript interactions in a component', function () {
 **Parameters:**
 - `$template` (string) - The template path relative to your templates directory (e.g., `'_components/hero'` or `'pages/about'`)
 - `$params` (array, optional) - Variables to pass to the template, defaults to `[]`
+- `$layout` (string|null, optional) - Layout template to wrap the content in
+- `$block` (string|null, optional) - Block name where template content will be rendered
+
+#### Passing Element Objects to Templates
+
+When testing templates that need entries or other elements, you can pass element objects directly. They'll be automatically converted to IDs for transmission and resolved back to full objects during rendering:
+
+```php
+use markhuot\craftpest\factories\Entry;
+
+it('renders an entry card component', function () {
+    // Create an entry using a factory
+    $entry = Entry::factory()
+        ->section('posts')
+        ->title('My Blog Post')
+        ->create();
+
+    // Pass the element object directly - it's automatically converted
+    $page = $this->visitTemplate('_components/entry-card', [
+        'entry' => $entry,
+    ]);
+
+    $page->assertSee('My Blog Post');
+});
+
+it('renders a component with multiple elements', function () {
+    $author = Entry::factory()
+        ->section('authors')
+        ->title('John Doe')
+        ->create();
+
+    $post = Entry::factory()
+        ->section('posts')
+        ->title('Great Article')
+        ->create();
+
+    // Pass multiple elements
+    $page = $this->visitTemplate('_components/post-with-author', [
+        'post' => $post,
+        'author' => $author,
+        'showDate' => true,  // Regular parameters work too
+    ]);
+
+    $page->assertSee('Great Article');
+    $page->assertSee('John Doe');
+});
+```
+
+**Alternative Syntax:**
+
+If you prefer explicit control, you can still use the `element:` prefix with element IDs:
+
+```php
+it('explicitly passes element IDs', function () {
+    $entry = Entry::factory()->create();
+
+    // Both syntaxes work and produce the same result
+    $page = $this->visitTemplate('_components/card', [
+        'element:entry' => $entry->id,  // Explicit syntax
+    ]);
+});
+```
+
+#### Using Layouts with Templates
+
+Wrap your template in a layout to test how components render within your site structure:
+
+```php
+it('renders component within layout', function () {
+    $page = $this->visitTemplate('_components/hero', [
+        'title' => 'Welcome',
+    ], layout: '_layouts/base', block: 'content');
+
+    // Assert layout elements are present
+    $page->assertSee('Site Header');  // From layout
+    $page->assertSee('Welcome');      // From component
+    $page->assertSee('Site Footer');  // From layout
+});
+
+// Set a default layout for all visitTemplate() calls
+beforeEach(function () {
+    $this->setDefaultVisitTemplateLayout('_layouts/base', 'content');
+});
+
+it('uses default layout automatically', function () {
+    $page = $this->visitTemplate('_components/hero', [
+        'title' => 'Hello',
+    ]);
+
+    // Layout is automatically applied
+    $page->assertSee('Site Header');
+    $page->assertSee('Hello');
+});
+```
 
 **Learn more:** [Pest Browser Testing Documentation](https://pestphp.com/docs/browser-testing)
