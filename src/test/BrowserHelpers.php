@@ -295,7 +295,7 @@ trait BrowserHelpers
         $processedParams = [];
         foreach ($params as $key => $value) {
             if ($value instanceof ElementInterface) {
-                $processedParams["element:{$key}"] = $value->id;
+                $processedParams["element:{$key}"] = $value->getId();
             } else {
                 $processedParams[$key] = $value;
             }
