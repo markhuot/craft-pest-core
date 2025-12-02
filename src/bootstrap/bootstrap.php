@@ -1,5 +1,10 @@
 <?php
 
+// Mute deprecation warnings on php8.4+
+// https://github.com/craftcms/cms/issues/16606#issuecomment-3436971416
+// https://github.com/craftcms/craft/commit/e31038d7cbe7a03e1c35c15883bd0248f4306c8d
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
+
 // Define path constants
 define('CRAFT_BASE_PATH', getcwd());
 define('CRAFT_VENDOR_PATH', CRAFT_BASE_PATH.'/vendor');
