@@ -65,6 +65,37 @@ use Pest\Browser\Support\Screenshot;
  * });
  * ```
  *
+ * ### Setting a Global Layout
+ *
+ * If all your `visitTemplate()` calls should use the same layout, you can configure
+ * it globally in your `tests/Pest.php` file or in a `beforeEach()` hook:
+ *
+ * ```php
+ * // In tests/Pest.php
+ * uses()->beforeEach(function() {
+ *     $this->setDefaultVisitTemplateLayout('_layouts/base', 'content');
+ * });
+ *
+ * // Or in a specific test file's beforeEach
+ * beforeEach(function() {
+ *     $this->setDefaultVisitTemplateLayout('_layouts/base', 'content');
+ * });
+ * ```
+ *
+ * With this configured, all `visitTemplate()` calls will automatically wrap templates
+ * in your layout. You can still override it on a per-call basis if needed:
+ *
+ * ```php
+ * // Uses the default layout
+ * $page = $this->visitTemplate('_components/hero', ['title' => 'Hello']);
+ *
+ * // Override with a different layout
+ * $page = $this->visitTemplate('_components/card', [], layout: '_layouts/minimal', block: 'main');
+ *
+ * // Skip the layout entirely
+ * $page = $this->visitTemplate('_components/standalone', [], layout: null);
+ * ```
+ *
  * ## Common Browser Interactions
  *
  * Pest's browser testing provides many methods for interacting with pages:
