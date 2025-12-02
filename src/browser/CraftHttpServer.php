@@ -332,6 +332,7 @@ class CraftHttpServer implements \Pest\Browser\Contracts\HttpServer
         }
 
         try {
+            $params = $this->resolveElementParams($params);
             $content = Craft::$app->getView()->renderTemplate($template, $params);
 
             return new Response(200, [
@@ -347,5 +348,32 @@ class CraftHttpServer implements \Pest\Browser\Contracts\HttpServer
                 htmlspecialchars($e->getMessage()),
             ));
         }
+    }
+
+    /**
+     * Resolve element params by looking up element IDs.
+     *
+     * Params with keys prefixed with "element:" will have their values
+     * resolved to full element objects via getElementById().
+     *
+     * For example: ['element:entry' => 123] becomes ['entry' => <Entry>]
+     *
+     * @param  array<string, mixed>  $params
+     * @return array<string, mixed>
+     */
+    private function resolveElementParams(array $params): array
+    {
+        $resolved = [];
+
+        foreach ($params as $key => $value) {
+            if (str_starts_with($key, 'element:')) {
+                $actualKey = substr($key, strlen('element:'));
+                $resolved[$actualKey] = Craft::$app->getElements()->getElementById((int) $value);
+            } else {
+                $resolved[$key] = $value;
+            }
+        }
+
+        return $resolved;
     }
 }

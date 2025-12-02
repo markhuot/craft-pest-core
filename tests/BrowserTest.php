@@ -63,3 +63,15 @@ it('can pass variables to visitTemplate()', function () {
     // Verify the variable was passed and rendered
     expect($page->content())->toContain('test-value-123');
 });
+
+it('can resolve element IDs to objects with element: prefix', function () {
+    $entry = \markhuot\craftpest\factories\Entry::factory()
+        ->section('posts')
+        ->title('Browser Test Entry')
+        ->create();
+
+    $page = $this->visitTemplate('entry', ['element:entry' => $entry->id]);
+
+    // Verify the element was resolved and rendered
+    expect($page->content())->toContain('Browser Test Entry');
+});
