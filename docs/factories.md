@@ -35,6 +35,17 @@ it('renders detail views', function () {
 
 That example uses most of the common factory methods.
 
+## Working with Field Types
+
+When setting field values on entries, some Craft CMS field types return objects instead of scalar values.
+For detailed guides on working with specific field types in tests, see:
+
+- **[Rich Text Fields](factories/field-types/rich-text.md)** - Working with CKEditor/Redactor fields that return `HtmlFieldData` objects
+- **[Link Fields](factories/field-types/link.md)** - Creating various link types (URL, entry, asset, email, phone, SMS) with optional properties
+- **[Asset Fields](factories/field-types/assets.md)** - Attaching images, documents, and other files to entries
+- **[Matrix Fields](factories/field-types/matrix.md)** - Creating repeatable content blocks with different field combinations
+- **[Relation Fields](factories/field-types/relations.md)** - Linking to other entries, categories, users, and elements
+
 ## factory()
 Create a new factory by calling `::factory()` on the type of element to be
 created, such as `Entry::factory()` or `Asset::factory()`.
