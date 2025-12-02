@@ -10,6 +10,8 @@ use Pest\Browser\Api\PendingAwaitablePage;
  *
  * Provides convenience methods for browser testing with Craft CMS,
  * such as rendering templates directly in the browser.
+ *
+ * @mixin \Pest\Browser\Browsable
  */
 trait BrowserHelpers
 {
@@ -37,7 +39,6 @@ trait BrowserHelpers
      *
      * @param  string  $template  The template path (e.g., '_components/hero' or 'pages/about')
      * @param  array<string, mixed>  $params  Variables to pass to the template
-     * @return PendingAwaitablePage
      */
     public function visitTemplate(string $template, array $params = []): PendingAwaitablePage
     {
