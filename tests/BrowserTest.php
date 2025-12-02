@@ -75,3 +75,26 @@ it('can resolve element IDs to objects with element: prefix', function () {
     // Verify the element was resolved and rendered
     expect($page->content())->toContain('Browser Test Entry');
 });
+
+it('can render a template within a layout', function () {
+    $page = $this->visitTemplate('variable', ['foo' => 'Layout Test Content'], '_layouts/base', 'content');
+
+    // Verify the layout wraps the template
+    expect($page->content())->toContain('Layout Header');
+    expect($page->content())->toContain('Layout Test Content');
+    expect($page->content())->toContain('Layout Footer');
+});
+
+it('uses default layout when set globally', function () {
+    \markhuot\craftpest\browser\VisitTemplateConfig::setDefaultLayout('_layouts/base', 'content');
+
+    $page = $this->visitTemplate('variable', ['foo' => 'Default Layout Test']);
+
+    // Verify the default layout is used
+    expect($page->content())->toContain('Layout Header');
+    expect($page->content())->toContain('Default Layout Test');
+    expect($page->content())->toContain('Layout Footer');
+
+    // Reset for other tests
+    \markhuot\craftpest\browser\VisitTemplateConfig::reset();
+});

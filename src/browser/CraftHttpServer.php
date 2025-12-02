@@ -217,6 +217,8 @@ class CraftHttpServer implements \Pest\Browser\Contracts\HttpServer
             return $this->renderTemplate(
                 $queryParams['template'] ?? '',
                 json_decode($queryParams['params'] ?? '[]', true) ?? [],
+                $queryParams['layout'] ?? null,
+                $queryParams['block'] ?? 'content',
             );
         }
 
@@ -325,7 +327,7 @@ class CraftHttpServer implements \Pest\Browser\Contracts\HttpServer
      *
      * @param  array<string, mixed>  $params
      */
-    private function renderTemplate(string $template, array $params): Response
+    private function renderTemplate(string $template, array $params, ?string $layout = null, string $block = 'content'): Response
     {
         if ($template === '') {
             return new Response(400, [], 'Template path is required.');
@@ -333,7 +335,21 @@ class CraftHttpServer implements \Pest\Browser\Contracts\HttpServer
 
         try {
             $params = $this->resolveElementParams($params);
-            $content = Craft::$app->getView()->renderTemplate($template, $params);
+
+            if ($layout !== null) {
+                // Render the template within a layout by dynamically creating
+                // a wrapper template that extends the layout and includes the
+                // content template in the specified block
+                $wrapperTemplate = sprintf(
+                    "{%% extends '%s' %%}\n{%% block %s %%}\n{%% include '%s' %%}\n{%% endblock %%}",
+                    $layout,
+                    $block,
+                    $template,
+                );
+                $content = Craft::$app->getView()->renderString($wrapperTemplate, $params);
+            } else {
+                $content = Craft::$app->getView()->renderTemplate($template, $params);
+            }
 
             return new Response(200, [
                 'Content-Type' => 'text/html; charset=utf-8',

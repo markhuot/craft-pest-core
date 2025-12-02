@@ -3,6 +3,7 @@
 namespace markhuot\craftpest\test;
 
 use markhuot\craftpest\browser\CraftHttpServer;
+use markhuot\craftpest\browser\VisitTemplateConfig;
 use Pest\Browser\Api\PendingAwaitablePage;
 
 /**
@@ -27,29 +28,45 @@ trait BrowserHelpers
      * parameters, which CraftHttpServer intercepts to render the template.
      *
      * ```php
-     * it('renders my template', function () {
-     *     $page = $this->visitTemplate('_components/hero', [
-     *         'title' => 'Hello World',
-     *         'description' => 'Welcome to my site',
-     *     ]);
+     * // Simple usage
+     * $page = $this->visitTemplate('_components/hero', [
+     *     'title' => 'Hello World',
+     * ]);
      *
-     *     $page->assertSee('Hello World');
-     * });
+     * // With a layout (template is included in the specified block)
+     * $page = $this->visitTemplate('_components/hero', [
+     *     'title' => 'Hello World',
+     * ], '_layouts/base', 'content');
      * ```
      *
      * @param  string  $template  The template path (e.g., '_components/hero' or 'pages/about')
      * @param  array<string, mixed>  $params  Variables to pass to the template
+     * @param  string|null  $layout  Layout template to wrap the content (null uses default if set)
+     * @param  string|null  $block  Block name in layout where template is rendered (null uses default)
      */
-    public function visitTemplate(string $template, array $params = []): PendingAwaitablePage
-    {
+    public function visitTemplate(
+        string $template,
+        array $params = [],
+        ?string $layout = null,
+        ?string $block = null,
+    ): PendingAwaitablePage {
         $this->bootstrapBrowserTestingIfNeeded();
 
-        $query = http_build_query([
+        // Use provided layout/block or fall back to defaults
+        $layout = $layout ?? VisitTemplateConfig::getDefaultLayout();
+        $block = $block ?? VisitTemplateConfig::getDefaultBlock();
+
+        $queryParams = [
             'template' => $template,
             'params' => json_encode($params),
-        ]);
+        ];
 
-        return $this->visit(CraftHttpServer::TEMPLATE_RENDER_PATH.'?'.$query);
+        if ($layout !== null) {
+            $queryParams['layout'] = $layout;
+            $queryParams['block'] = $block;
+        }
+
+        return $this->visit(CraftHttpServer::TEMPLATE_RENDER_PATH.'?'.http_build_query($queryParams));
     }
 
     /**
