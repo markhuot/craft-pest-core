@@ -4,49 +4,6 @@ Craft Pest includes full support for Pest PHP's browser testing plugin, which pr
 an elegant browser testing framework built on Playwright. You can interact with your
 Craft site in real browsers and test your templates, components, and user interfaces.
 
-## When to Use Browser Testing
-
-**Only use browser tests when regular unit tests or `->get()` requests won't work.**
-
-Browser tests are slower and more resource-intensive than regular tests, so use them judiciously.
-
-### When NOT to use browser testing:
-
-- ❌ Verifying HTML contains expected output (use `->renderTemplate()` or `->get()` instead)
-- ❌ Confirming status codes (use `->get()` with `->assertStatus()`)
-- ❌ Confirming a template renders correctly (use `->renderTemplate()` with HTML assertions)
-
-### When TO use browser testing:
-
-- ✅ JavaScript execution is required for the test
-- ✅ Verifying interactive elements (modals opening/closing, dropdowns, etc.)
-- ✅ Testing visual properties (padding, margin, colors, layout)
-- ✅ Simulating user interactions (clicks, form submissions with JS validation)
-
-**Example of appropriate browser test:**
-
-```php
-<?php
-
-it('opens a modal when button is clicked', function () {
-    $page = visit('/page');
-
-    $page->click('@open-modal-button')
-        ->waitFor('@modal')
-        ->assertVisible('@modal')
-        ->assertSee('Modal Content');
-});
-
-it('has correct spacing', function () {
-    $page = visit('/component');
-
-    $page->assertStyle('@hero-section', 'padding', '2rem');
-});
-```
-
-For faster, non-JavaScript template testing, see [Rendering Templates](rendering-templates.md).
-For full HTTP request testing, see [Making Requests](making-requests.md).
-
 ## Installation
 
 First, install the Pest browser plugin and Playwright:
