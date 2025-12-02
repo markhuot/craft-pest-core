@@ -5,6 +5,8 @@ namespace markhuot\craftpest\test;
 use markhuot\craftpest\browser\CraftHttpServer;
 use markhuot\craftpest\browser\VisitTemplateConfig;
 use Pest\Browser\Api\PendingAwaitablePage;
+use Pest\Browser\ServerManager;
+use Pest\Browser\Support\Screenshot;
 
 /**
  * Craft-specific browser testing helpers.
@@ -74,8 +76,8 @@ trait BrowserHelpers
         $this->bootstrapBrowserTestingIfNeeded();
 
         // Use provided layout/block or fall back to defaults
-        $layout = $layout ?? VisitTemplateConfig::getDefaultLayout();
-        $block = $block ?? VisitTemplateConfig::getDefaultBlock();
+        $layout ??= VisitTemplateConfig::getDefaultLayout();
+        $block ??= VisitTemplateConfig::getDefaultBlock();
 
         $queryParams = [
             'template' => $template,
@@ -102,6 +104,9 @@ trait BrowserHelpers
         if ($this->browserTestingBootstrapped) {
             return;
         }
+
+        ServerManager::instance()->playwright()->start();
+        Screenshot::cleanup();
 
         if (method_exists($this, '__markAsBrowserTest')) {
             $this->__markAsBrowserTest();
