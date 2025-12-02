@@ -220,10 +220,20 @@ Visit a template in the browser with optional variables.
 This method builds a URL with the template path and variables as query
 parameters, which CraftHttpServer intercepts to render the template.
 
+Element parameters are automatically detected and converted to their IDs
+for transmission to the browser, then resolved back to element objects
+during rendering.
+
 ```php
 // Simple usage
 $page = $this->visitTemplate('_components/hero', [
     'title' => 'Hello World',
+]);
+
+// With elements (automatically converted)
+$entry = Entry::factory()->create();
+$page = $this->visitTemplate('_components/entry-card', [
+    'entry' => $entry,
 ]);
 
 // With a layout (template is included in the specified block)
