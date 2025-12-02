@@ -172,273 +172,394 @@ it('validates email', function (string $email) {
 ]);
 ```
 
-## Factories
+## HTTP Requests
 
-Factories in Craft Pest provide a powerful way to create test data for your Craft CMS projects. They allow you to quickly generate entries, fields, sections, assets, and other elements with realistic test data.
+Pest provides methods to test HTTP endpoints by simulating requests and asserting on responses.
 
-### Basic Entry Creation
-
-The simplest way to create an entry is using the `Entry::factory()` method:
+### Basic GET Requests
 
 ```php
-use markhuot\craftpest\factories\Entry;
+<?php
 
-// Create a basic entry
-$entry = Entry::factory()->create();
+it('loads the homepage', function () {
+    $this->get('/')
+        ->assertOk();
+});
 
-// Create entry in a specific section
-$entry = Entry::factory()
-    ->section('posts')
-    ->create();
+// Can be chained in a fluent style
+it('returns json data')
+    ->get('/api/data')
+    ->assertOk()
+    ->assertJson(['status' => 'success']);
 ```
 
-#### Make vs Create
-
-- `make()` - Creates instances without saving to the database
-- `create()` - Creates instances and saves them to the database
+### POST Requests
 
 ```php
-// Create without saving
-$entry = Entry::factory()->make();
+<?php
 
-// Create and save
-$entry = Entry::factory()->create();
+it('posts to an action', function () {
+    $this->post('/post-data', ['foo' => 'bar'])
+        ->assertOk()
+        ->assertSee('"foo":"bar"');
+});
+
+// Post JSON data
+it('posts json to an action', function () {
+    $response = $this->postJson('/post-data', ['foo' => 'bar'])
+        ->assertHeader('content-type', 'application/json')
+        ->assertOk();
+
+    expect($response->json()->json())->foo->toBe('bar');
+});
 ```
 
-#### Creating Multiple Entries
+### Authenticated Requests
+
+Use `actingAs()` to make requests as a specific user:
 
 ```php
-// Create 5 entries
-$entries = Entry::factory()
-    ->section('posts')
-    ->count(5)
-    ->create();  // Returns a Collection when count > 1
-```
+<?php
 
-### Setting Basic Entry Properties
-
-```php
-$entry = Entry::factory()
-    ->section('posts')
-    ->title('My Custom Title')
-    ->slug('my-custom-slug')
-    ->enabled(true)
-    ->postDate('2024-01-15 10:00:00')
-    ->create();
-```
-
-### Setting Field Values
-
-You can set custom field values on entries using magic methods. Assuming you have a section called 'posts' with a plain text field called 'summary':
-
-```php
-use markhuot\craftpest\factories\Entry;
-
-// Set field values using magic methods (field handle)
-$entry = Entry::factory()
-    ->section('posts')
-    ->summary('This is my summary text')
-    ->create();
-```
-
-### Working with Craft CMS Field Types
-
-Some Craft CMS field types return objects instead of scalar values. When working with these fields in tests, you need to understand how to set values and make assertions on them.
-
-**Detailed documentation for each field type:**
-
-- **[Rich Text Fields](field-types/rich-text.md)** - Working with CKEditor/Redactor fields that return `HtmlFieldData` objects
-- **[Link Fields](field-types/link.md)** - Creating various link types (URL, entry, asset, email, phone, SMS) with optional properties
-- **[Asset Fields](field-types/assets.md)** - Attaching images, documents, and other files to entries
-- **[Matrix Fields](field-types/matrix.md)** - Creating repeatable content blocks with different field combinations
-- **[Relation Fields](field-types/relations.md)** - Linking to other entries, categories, users, and elements
-
-**Quick Reference:**
-
-```php
-use markhuot\craftpest\factories\{Entry, Asset};
-
-// Rich Text - cast to string for assertions
-expect((string)$entry->heading)->toBe('<p>Content</p>');
-
-// Link Field - pass array with type and value
-$entry->ctaLink(['type' => 'url', 'value' => 'https://example.com']);
-
-// Asset Field - use ->one() or ->all() to get assets
-expect($entry->featuredImage->one())->not->toBeNull();
-
-// Matrix Field - use magic methods or direct factory syntax
-$entry->addTextBlockToContentBlocks(heading: 'Title', body: 'Content');
-
-// Relation Field - use ->one(), ->all(), or ->count()
-expect($entry->relatedPosts->count())->toBe(3);
-```
-
-### Advanced Techniques
-
-#### Using Sequences
-
-Create entries with different values in a sequence:
-
-```php
-$entries = Entry::factory()
-    ->section('posts')
-    ->sequence(
-        ['title' => 'First Entry', 'slug' => 'first'],
-        ['title' => 'Second Entry', 'slug' => 'second'],
-        ['title' => 'Third Entry', 'slug' => 'third'],
-    )
-    ->count(3)
-    ->create();
-
-// Or with a callback
-$entries = Entry::factory()
-    ->section('posts')
-    ->sequence(fn ($index) => [
-        'title' => "Entry {$index}",
-        'slug' => "entry-{$index}",
-    ])
-    ->count(10)
-    ->create();
-```
-
-#### Setting Authors
-
-```php
 use markhuot\craftpest\factories\User;
 
-$user = User::factory()->create();
+it('allows authenticated users to access protected pages', function () {
+    $user = User::factory()->create();
 
-// By object, ID, username, or email
-$entry = Entry::factory()->author($user)->create();
-$entry = Entry::factory()->author($user->id)->create();
-$entry = Entry::factory()->author('username')->create();
-$entry = Entry::factory()->author('user@example.com')->create();
+    $this->actingAs($user)
+        ->get('/admin/settings')
+        ->assertOk();
+});
+
+// Shorthand for admin users
+it('allows admins to access settings')
+    ->actingAsAdmin()
+    ->get('/admin/settings')
+    ->assertOk();
 ```
 
-### Complete Example
-
-Here's a complete test example combining multiple field types. This assumes you have a 'posts' section set up with fields: summary (plain text), featuredImage (asset), relatedPosts (entries), and contentBlocks (matrix with textBlock type):
+### Common Response Assertions
 
 ```php
-use markhuot\craftpest\factories\{Entry, Asset};
+<?php
 
-it('creates a blog post with all field types', function () {
-    // Create an asset for the featured image
-    $image = Asset::factory()
-        ->volume('images')
-        ->create();
+// Status codes
+->assertOk()                      // 200
+->assertCreated()                 // 201
+->assertForbidden()               // 403
+->assertNotFound()                // 404
 
-    // Create some related posts
-    $relatedPost1 = Entry::factory()
-        ->section('posts')
-        ->title('Related Post 1')
-        ->create();
+// Content assertions
+->assertSee('text')               // Response contains text
+->assertDontSee('text')           // Response doesn't contain text
 
-    $relatedPost2 = Entry::factory()
-        ->section('posts')
-        ->title('Related Post 2')
-        ->create();
+// JSON assertions
+->assertJson(['key' => 'value'])          // Contains JSON subset
+->assertExactJson(['key' => 'value'])     // Exact JSON match
+->assertJsonPath('foo', 'bar')            // Assert value at path
+->assertJsonCount(2)                       // Assert JSON array count
+->assertJsonStructure(['foo', 'bar'])     // Assert JSON structure
+->assertJsonFragment(['baz' => 'qux'])    // Contains JSON fragment
+->assertJsonMissing(['missing'])          // JSON doesn't contain value
+->assertJsonMissingPath('qux')            // Path doesn't exist
 
-    // Create the main entry with all fields populated
-    $entry = Entry::factory()
-        ->section('posts')
-        ->title('My Blog Post')
-        ->summary('This is a summary of the post')
-        ->featuredImage($image)
-        ->relatedPosts($relatedPost1, $relatedPost2)
-        ->addTextBlockToContentBlocks(
-            heading: 'Introduction',
-            body: 'Welcome to my blog post...',
-        )
-        ->addTextBlockToContentBlocks(
-            heading: 'Main Content',
-            body: 'Here is the main content...',
-        )
-        ->create();
+// Header assertions
+->assertHeader('x-foo')                   // Header exists
+->assertHeader('x-foo', 'bar')            // Header has value
+->assertHeaderMissing('x-qux')            // Header doesn't exist
 
-    // Assert the entry was created correctly
-    expect($entry->title)->toBe('My Blog Post');
-    expect($entry->summary)->toBe('This is a summary of the post');
-    expect($entry->featuredImage->one()->id)->toBe($image->id);
-    expect($entry->relatedPosts->count())->toBe(2);
-    expect($entry->contentBlocks->count())->toBe(2);
+// Cookie assertions
+->assertCookie('cookieName')                      // Cookie exists
+->assertCookie('cookieName', 'cookieValue')       // Cookie has value
+->assertCookieMissing('foo')                      // Cookie doesn't exist
+->assertCookieExpired('cookieName')               // Cookie is expired
+->assertCookieNotExpired('cookieName')            // Cookie is valid
+
+// Other assertions
+->assertDownload('file.jpg')              // Response is a download
+->assertCacheTag('foo', 'baz')            // Response has cache tags
+```
+
+### Working with Response Data
+
+```php
+<?php
+
+it('processes json response data', function () {
+    $response = $this->get('/api/users');
+
+    // Access JSON data
+    $data = $response->json();
+    expect($data)->toHaveKey('users');
+
+    // Access response content
+    $content = $response->content;
+    expect($content)->toContain('expected text');
 });
 ```
 
-## Browser Testing
-
-Pest provides browser testing capabilities for visual and JavaScript-based testing. **Only use browser tests when regular unit tests or `->get()` requests won't work.**
-
-**When NOT to use browser testing:**
-
-- ❌ Verifying HTML contains expected output (use regular assertions instead)
-- ❌ Confirming status codes (use `->get()` with `->assertStatus()`)
-- ❌ Confirming a template renders correctly (use `->get()` with HTML assertions)
-
-**When TO use browser testing:**
-
-- ✅ JavaScript execution is required for the test
-- ✅ Verifying interactive elements (modals opening/closing, dropdowns, etc.)
-- ✅ Testing visual properties (padding, margin, colors, layout)
-- ✅ Simulating user interactions (clicks, form submissions with JS validation)
-
-### Basic Browser Test Example
+### Testing Forms and Links
 
 ```php
-it('opens a modal when button is clicked', function () {
-    $page = visit('/page');
+<?php
 
-    $page->click('@open-modal-button')
-        ->waitFor('@modal')
-        ->assertVisible('@modal')
-        ->assertSee('Modal Content');
-});
-
-it('has correct spacing', function () {
-    $page = visit('/component');
-
-    $page->assertStyle('@hero-section', 'padding', '2rem');
+it('clicks links and follows redirects', function () {
+    $this->get('/links')
+        ->querySelector('a')
+        ->click()
+        ->assertOk()
+        ->assertSee('Hello World');
 });
 ```
 
-### Visiting Templates Directly
+### Best Practices for HTTP Testing
 
-Use `visitTemplate()` to render a Twig template directly in the browser without needing a route:
+1. **Test Your Logic, Not the Framework**: Focus on custom validation, rendering logic, or business rules rather than testing if Craft CMS works
+
+2. **Use Meaningful Assertions**: Assert on the actual behavior that matters to your application
+
+3. **Clean URLs**: Use relative URLs starting with `/` for consistency
+
+4. **Chain Assertions**: Take advantage of fluent chaining for readable tests
+
+Example of a well-focused HTTP test:
 
 ```php
-it('renders the hero component correctly', function () {
-    $page = $this->visitTemplate('_components/hero', [
-        'title' => 'Welcome',
-        'subtitle' => 'Hello World',
+<?php
+
+it('validates that blog posts require a title', function () {
+    $this->actingAsAdmin()
+        ->post('/actions/entries/save', [
+            'sectionId' => 1,
+            'typeId' => 1,
+            'title' => '', // Empty title
+            'slug' => 'test-post',
+        ])
+        ->assertSessionHasErrors('title');
+});
+```
+
+## Rendering Templates Directly
+
+Use `->renderTemplate()` to render Twig templates directly without the overhead of a full HTTP request. This is faster and more focused than `->get()` when you only need to test template output.
+
+### Basic Template Rendering
+
+```php
+<?php
+
+it('renders a template', function () {
+    $this->renderTemplate('pages/home')
+        ->assertSee('Welcome');
+});
+
+// Can be chained in a fluent style
+it('renders the hero component')
+    ->renderTemplate('_components/hero')
+    ->assertSee('Hero Content');
+```
+
+### Passing Variables to Templates
+
+Pass variables as the second parameter, just like you would in Twig:
+
+```php
+<?php
+
+it('renders a template with variables', function () {
+    $this->renderTemplate('_components/card', [
+        'title' => 'My Card Title',
+        'description' => 'Card description text',
+    ])
+        ->assertSee('My Card Title')
+        ->assertSee('Card description text');
+});
+
+// Pass complex data
+it('renders a list with entries', function () {
+    $entries = Entry::factory()
+        ->section('posts')
+        ->count(3)
+        ->create();
+
+    $this->renderTemplate('_partials/entry-list', [
+        'entries' => $entries,
+    ])
+        ->assertSee($entries[0]->title)
+        ->assertSee($entries[1]->title)
+        ->assertSee($entries[2]->title);
+});
+```
+
+### All HTTP Assertions Work
+
+Since `renderTemplate()` returns a `TestableResponse` object (same as `->get()` and `->post()`), all the same assertions are available:
+
+```php
+<?php
+
+it('uses various assertions on rendered templates', function () {
+    $response = $this->renderTemplate('_components/hero', [
+        'heading' => 'Welcome',
+        'showCta' => true,
     ]);
 
-    $page->assertSee('Welcome');
-    $page->assertSee('Hello World');
-});
+    // Content assertions
+    $response->assertSee('Welcome');
+    $response->assertDontSee('Hidden Content');
 
-it('tests JavaScript interactions in a component', function () {
-    $page = $this->visitTemplate('_components/accordion', [
-        'items' => [
-            ['title' => 'Section 1', 'content' => 'Content 1'],
-            ['title' => 'Section 2', 'content' => 'Content 2'],
-        ],
-    ]);
-
-    // Click to expand the first accordion item
-    $page->click('[data-accordion-trigger]:first-child');
-
-    // Wait for animation and verify content is visible
-    $page->waitFor('[data-accordion-content]:first-child')
-        ->assertVisible('[data-accordion-content]:first-child');
+    // Access the raw content
+    expect($response->content)->toContain('<h1>');
 });
 ```
 
-**Parameters:**
-- `$template` (string) - The template path relative to your templates directory (e.g., `'_components/hero'` or `'pages/about'`)
-- `$params` (array, optional) - Variables to pass to the template, defaults to `[]`
+### DOM Selection and Testing
 
-**Learn more:** [Pest Browser Testing Documentation](https://pestphp.com/docs/browser-testing)
+Use `->querySelector()` to select and test specific elements:
+
+```php
+<?php
+
+it('selects and tests specific elements', function () {
+    $this->renderTemplate('_components/navigation')
+        ->querySelector('nav ul')
+        ->assertSee('Home')
+        ->assertSee('About');
+});
+
+it('tests element attributes', function () {
+    $this->renderTemplate('_components/button', ['type' => 'primary'])
+        ->querySelector('button')
+        ->assertAttribute('class', 'btn-primary');
+});
+
+it('tests nested elements')
+    ->renderTemplate('_layouts/page')
+    ->querySelector('header h1')
+    ->assertSee('Page Title');
+```
+
+### Snapshot Testing
+
+Templates work great with snapshot testing:
+
+```php
+<?php
+
+it('matches template snapshot', function () {
+    $this->renderTemplate('_components/card', [
+        'title' => 'Test Card',
+        'content' => 'Test content',
+    ])
+        ->assertMatchesSnapshot();
+});
+
+it('matches element snapshot', function () {
+    $this->renderTemplate('_partials/footer')
+        ->querySelector('.copyright')
+        ->assertMatchesSnapshot();
+});
+```
+
+### When to Use renderTemplate() vs get()
+
+**Use `->renderTemplate()` when:**
+- ✅ Testing template logic in isolation
+- ✅ Testing components or partials that don't have their own routes
+- ✅ You need faster tests (no HTTP overhead)
+- ✅ Testing pure template rendering without controllers or routing
+
+**Use `->get()` when:**
+- ✅ Testing full request/response cycles
+- ✅ Testing routing, controllers, or middleware
+- ✅ Testing with authentication or session state
+- ✅ The route performs logic before rendering
+
+**Use browser testing (`visit()` or `visitTemplate()`) when:**
+- ✅ Testing JavaScript interactions
+- ✅ Testing visual properties (CSS, layout, spacing)
+- ✅ Testing dynamic behavior that requires a browser
+
+See **[Browser Testing Documentation](browser-testing.md)** for comprehensive information on browser testing with `visit()` and `visitTemplate()`.
+
+### Best Practices
+
+1. **Test Template Logic, Not Framework Features**: Focus on your custom Twig logic, conditionals, loops, and output
+
+    ```php
+    <?php
+
+    // ✅ Good - Testing custom conditional logic
+    it('shows CTA when flag is enabled', function () {
+        $this->renderTemplate('_components/hero', ['showCta' => true])
+            ->assertSee('Call to Action');
+
+        $this->renderTemplate('_components/hero', ['showCta' => false])
+            ->assertDontSee('Call to Action');
+    });
+
+    // ❌ Bad - Just testing that Twig works
+    it('renders a template', function () {
+        $this->renderTemplate('_components/hero')
+            ->assertSee('Hero');
+    });
+    ```
+
+2. **Use for Component Testing**: Perfect for testing reusable components in isolation
+
+    ```php
+    <?php
+
+    it('renders alert component with different types', function ($type, $expected) {
+        $this->renderTemplate('_components/alert', ['type' => $type])
+            ->assertSee($expected);
+    })->with([
+        ['success', 'alert-success'],
+        ['error', 'alert-error'],
+        ['warning', 'alert-warning'],
+    ]);
+    ```
+
+3. **Combine with Factories**: Use factories to create realistic test data
+
+    ```php
+    <?php
+
+    it('renders entry card with all fields', function () {
+        $entry = Entry::factory()
+            ->section('articles')
+            ->title('Test Article')
+            ->description('Article description')
+            ->featuredImage($imageId)
+            ->create();
+
+        $this->renderTemplate('_components/entry-card', ['entry' => $entry])
+            ->assertSee('Test Article')
+            ->assertSee('Article description')
+            ->querySelector('img')
+            ->assertAttribute('src');
+    });
+    ```
+
+4. **Template Paths**: Use relative paths from your templates directory
+
+    ```php
+    <?php
+
+    // Correct paths
+    $this->renderTemplate('pages/home')           // templates/pages/home.twig
+    $this->renderTemplate('_components/hero')      // templates/_components/hero.twig
+    $this->renderTemplate('_partials/nav')         // templates/_partials/nav.twig
+    ```
+
+## Factories
+
+See **[Factories Documentation](factories.md)** for comprehensive information on creating test data with factories, including:
+
+- Basic entry creation with `Entry::factory()`
+- Setting field values and working with different field types
+- Advanced techniques like sequences and custom authors
+- Complete examples combining multiple field types
 
 ## Test Organization
 
