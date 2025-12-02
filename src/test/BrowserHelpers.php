@@ -2,6 +2,7 @@
 
 namespace markhuot\craftpest\test;
 
+use craft\base\ElementInterface;
 use markhuot\craftpest\browser\CraftHttpServer;
 use markhuot\craftpest\browser\VisitTemplateConfig;
 use Pest\Browser\Api\PendingAwaitablePage;
@@ -251,10 +252,20 @@ trait BrowserHelpers
      * This method builds a URL with the template path and variables as query
      * parameters, which CraftHttpServer intercepts to render the template.
      *
+     * Element parameters are automatically detected and converted to their IDs
+     * for transmission to the browser, then resolved back to element objects
+     * during rendering.
+     *
      * ```php
      * // Simple usage
      * $page = $this->visitTemplate('_components/hero', [
      *     'title' => 'Hello World',
+     * ]);
+     *
+     * // With elements (automatically converted)
+     * $entry = Entry::factory()->create();
+     * $page = $this->visitTemplate('_components/entry-card', [
+     *     'entry' => $entry,
      * ]);
      *
      * // With a layout (template is included in the specified block)
@@ -280,9 +291,19 @@ trait BrowserHelpers
         $layout ??= VisitTemplateConfig::getDefaultLayout();
         $block ??= VisitTemplateConfig::getDefaultBlock();
 
+        // Convert element parameters to element:{key} => id format
+        $processedParams = [];
+        foreach ($params as $key => $value) {
+            if ($value instanceof ElementInterface) {
+                $processedParams["element:{$key}"] = $value->id;
+            } else {
+                $processedParams[$key] = $value;
+            }
+        }
+
         $queryParams = [
             'template' => $template,
-            'params' => json_encode($params),
+            'params' => json_encode($processedParams),
         ];
 
         if ($layout !== null) {
