@@ -51,6 +51,7 @@ jobs:
           php src/bin/generate-docs.php src/test/ActingAs.php docs/logging-in.md
           php src/bin/generate-docs.php src/test/Queues.php docs/queue.md
           php src/bin/generate-docs.php src/test/SnapshotAssertions.php docs/snapshots.md
+          php src/bin/generate-docs.php src/test/BrowserHelpers.php docs/browser-testing.md
           php src/bin/generate-docs.php src/console/PestController.php docs/cli.md
 
       - name: Add files
