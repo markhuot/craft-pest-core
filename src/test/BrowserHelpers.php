@@ -2,7 +2,7 @@
 
 namespace markhuot\craftpest\test;
 
-use markhuot\craftpest\browser\TemplateRenderRegistry;
+use markhuot\craftpest\browser\CraftHttpServer;
 use Pest\Browser\Api\PendingAwaitablePage;
 
 /**
@@ -21,9 +21,8 @@ trait BrowserHelpers
     /**
      * Visit a template in the browser with optional variables.
      *
-     * This method registers the template and variables in a registry,
-     * then visits a special URL that CraftHttpServer intercepts to
-     * render the template.
+     * This method builds a URL with the template path and variables as query
+     * parameters, which CraftHttpServer intercepts to render the template.
      *
      * ```php
      * it('renders my template', function () {
@@ -42,12 +41,14 @@ trait BrowserHelpers
      */
     public function visitTemplate(string $template, array $params = []): PendingAwaitablePage
     {
-        // Ensure browser testing infrastructure is bootstrapped
         $this->bootstrapBrowserTestingIfNeeded();
 
-        $token = TemplateRenderRegistry::register($template, $params);
+        $query = http_build_query([
+            'template' => $template,
+            'params' => json_encode($params),
+        ]);
 
-        return $this->visit(TemplateRenderRegistry::URL_PREFIX.$token);
+        return $this->visit(CraftHttpServer::TEMPLATE_RENDER_PATH.'?'.$query);
     }
 
     /**
@@ -63,7 +64,6 @@ trait BrowserHelpers
             return;
         }
 
-        // Check if the browser plugin's __markAsBrowserTest method exists
         if (method_exists($this, '__markAsBrowserTest')) {
             $this->__markAsBrowserTest();
         }

@@ -23,6 +23,11 @@ use Throwable;
 class CraftHttpServer implements \Pest\Browser\Contracts\HttpServer
 {
     /**
+     * The URL path used for visitTemplate() requests.
+     */
+    public const TEMPLATE_RENDER_PATH = '/__craftpest_template';
+
+    /**
      * The underlying socket server instance, if any.
      */
     private ?AmpHttpServer $socket = null;
@@ -206,10 +211,13 @@ class CraftHttpServer implements \Pest\Browser\Contracts\HttpServer
         $absoluteUrl = mb_rtrim($this->url(), '/').$fullPath;
 
         // Check if this is a template render request from visitTemplate()
-        if (str_starts_with($path, TemplateRenderRegistry::URL_PREFIX)) {
-            $token = substr($path, strlen(TemplateRenderRegistry::URL_PREFIX));
+        if ($path === self::TEMPLATE_RENDER_PATH) {
+            parse_str($query, $queryParams);
 
-            return $this->renderTemplate($token);
+            return $this->renderTemplate(
+                $queryParams['template'] ?? '',
+                json_decode($queryParams['params'] ?? '[]', true) ?? [],
+            );
         }
 
         // Check if this is a static asset request
@@ -313,21 +321,18 @@ class CraftHttpServer implements \Pest\Browser\Contracts\HttpServer
     }
 
     /**
-     * Render a template from the registry and return the response.
+     * Render a template and return the response.
+     *
+     * @param  array<string, mixed>  $params
      */
-    private function renderTemplate(string $token): Response
+    private function renderTemplate(string $template, array $params): Response
     {
-        $request = TemplateRenderRegistry::retrieve($token);
-
-        if ($request === null) {
-            return new Response(404, [], 'Template render request not found or already consumed.');
+        if ($template === '') {
+            return new Response(400, [], 'Template path is required.');
         }
 
         try {
-            $content = Craft::$app->getView()->renderTemplate(
-                $request['template'],
-                $request['params'],
-            );
+            $content = Craft::$app->getView()->renderTemplate($template, $params);
 
             return new Response(200, [
                 'Content-Type' => 'text/html; charset=utf-8',
