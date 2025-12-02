@@ -48,3 +48,18 @@ it('can take and verify screenshots', function () {
     // On subsequent runs, it will compare against the baseline
     $page->assertScreenshotMatches();
 });
+
+it('can visit a template directly with visitTemplate()', function () {
+    $page = $this->visitTemplate('selectors');
+
+    // Verify the template was rendered
+    expect($page->content())->toContain('<h1>heading text</h1>');
+    expect($page->content())->toContain('paragraph-element');
+});
+
+it('can pass variables to visitTemplate()', function () {
+    $page = $this->visitTemplate('variable', ['foo' => 'test-value-123']);
+
+    // Verify the variable was passed and rendered
+    expect($page->content())->toContain('test-value-123');
+});

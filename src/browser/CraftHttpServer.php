@@ -10,6 +10,7 @@ use Amp\Http\Server\Request as AmpRequest;
 use Amp\Http\Server\RequestHandler\ClosureRequestHandler;
 use Amp\Http\Server\Response;
 use Amp\Http\Server\SocketHttpServer;
+use Craft;
 use markhuot\craftpest\http\RequestHandler;
 use markhuot\craftpest\http\requests\GetRequest;
 use Pest\Browser\Exceptions\ServerNotFoundException;
@@ -204,6 +205,13 @@ class CraftHttpServer implements \Pest\Browser\Contracts\HttpServer
         $fullPath = $path.($query !== '' && $query !== null ? '?'.$query : '');
         $absoluteUrl = mb_rtrim($this->url(), '/').$fullPath;
 
+        // Check if this is a template render request from visitTemplate()
+        if (str_starts_with($path, TemplateRenderRegistry::URL_PREFIX)) {
+            $token = substr($path, strlen(TemplateRenderRegistry::URL_PREFIX));
+
+            return $this->renderTemplate($token);
+        }
+
         // Check if this is a static asset request
         $filepath = $this->getBasePath().$path;
         if (file_exists($filepath) && ! is_dir($filepath)) {
@@ -302,5 +310,37 @@ class CraftHttpServer implements \Pest\Browser\Contracts\HttpServer
         return new Response(200, [
             'Content-Type' => $contentType,
         ], new ReadableResourceStream($file));
+    }
+
+    /**
+     * Render a template from the registry and return the response.
+     */
+    private function renderTemplate(string $token): Response
+    {
+        $request = TemplateRenderRegistry::retrieve($token);
+
+        if ($request === null) {
+            return new Response(404, [], 'Template render request not found or already consumed.');
+        }
+
+        try {
+            $content = Craft::$app->getView()->renderTemplate(
+                $request['template'],
+                $request['params'],
+            );
+
+            return new Response(200, [
+                'Content-Type' => 'text/html; charset=utf-8',
+            ], $content);
+        } catch (Throwable $e) {
+            $this->lastThrowable = $e;
+
+            return new Response(500, [
+                'Content-Type' => 'text/html; charset=utf-8',
+            ], sprintf(
+                '<html><body><h1>Template Render Error</h1><pre>%s</pre></body></html>',
+                htmlspecialchars($e->getMessage()),
+            ));
+        }
     }
 }
