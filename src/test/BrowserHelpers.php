@@ -22,6 +22,27 @@ trait BrowserHelpers
     private bool $browserTestingBootstrapped = false;
 
     /**
+     * Set the default layout for visitTemplate() calls.
+     *
+     * Call this in a beforeEach() hook to wrap all visitTemplate() renders
+     * in a layout template:
+     *
+     * ```php
+     * beforeEach(fn () => $this->setDefaultVisitTemplateLayout('_layouts/base', 'content'));
+     * ```
+     *
+     * @param  string  $layout  The layout template path
+     * @param  string  $block  The block name where template content will be rendered
+     * @return $this
+     */
+    public function setDefaultVisitTemplateLayout(string $layout, string $block = 'content'): static
+    {
+        VisitTemplateConfig::setDefaultLayout($layout, $block);
+
+        return $this;
+    }
+
+    /**
      * Visit a template in the browser with optional variables.
      *
      * This method builds a URL with the template path and variables as query

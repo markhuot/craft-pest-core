@@ -85,8 +85,8 @@ it('can render a template within a layout', function () {
     expect($page->content())->toContain('Layout Footer');
 });
 
-it('uses default layout when set globally', function () {
-    \markhuot\craftpest\browser\VisitTemplateConfig::setDefaultLayout('_layouts/base', 'content');
+it('uses default layout when set via setDefaultVisitTemplateLayout()', function () {
+    $this->setDefaultVisitTemplateLayout('_layouts/base', 'content');
 
     $page = $this->visitTemplate('variable', ['foo' => 'Default Layout Test']);
 
