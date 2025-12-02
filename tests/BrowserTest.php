@@ -48,3 +48,53 @@ it('can take and verify screenshots', function () {
     // On subsequent runs, it will compare against the baseline
     $page->assertScreenshotMatches();
 });
+
+it('can visit a template directly with visitTemplate()', function () {
+    $page = $this->visitTemplate('selectors');
+
+    // Verify the template was rendered
+    expect($page->content())->toContain('<h1>heading text</h1>');
+    expect($page->content())->toContain('paragraph-element');
+});
+
+it('can pass variables to visitTemplate()', function () {
+    $page = $this->visitTemplate('variable', ['foo' => 'test-value-123']);
+
+    // Verify the variable was passed and rendered
+    expect($page->content())->toContain('test-value-123');
+});
+
+it('can resolve element IDs to objects with element: prefix', function () {
+    $entry = \markhuot\craftpest\factories\Entry::factory()
+        ->section('posts')
+        ->title('Browser Test Entry')
+        ->create();
+
+    $page = $this->visitTemplate('entry', ['element:entry' => $entry->id]);
+
+    // Verify the element was resolved and rendered
+    expect($page->content())->toContain('Browser Test Entry');
+});
+
+it('can render a template within a layout', function () {
+    $page = $this->visitTemplate('variable', ['foo' => 'Layout Test Content'], '_layouts/base', 'content');
+
+    // Verify the layout wraps the template
+    expect($page->content())->toContain('Layout Header');
+    expect($page->content())->toContain('Layout Test Content');
+    expect($page->content())->toContain('Layout Footer');
+});
+
+it('uses default layout when set via setDefaultVisitTemplateLayout()', function () {
+    $this->setDefaultVisitTemplateLayout('_layouts/base', 'content');
+
+    $page = $this->visitTemplate('variable', ['foo' => 'Default Layout Test']);
+
+    // Verify the default layout is used
+    expect($page->content())->toContain('Layout Header');
+    expect($page->content())->toContain('Default Layout Test');
+    expect($page->content())->toContain('Layout Footer');
+
+    // Reset for other tests
+    \markhuot\craftpest\browser\VisitTemplateConfig::reset();
+});

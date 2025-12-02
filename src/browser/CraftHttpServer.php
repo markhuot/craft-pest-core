@@ -10,6 +10,7 @@ use Amp\Http\Server\Request as AmpRequest;
 use Amp\Http\Server\RequestHandler\ClosureRequestHandler;
 use Amp\Http\Server\Response;
 use Amp\Http\Server\SocketHttpServer;
+use Craft;
 use markhuot\craftpest\http\RequestHandler;
 use markhuot\craftpest\http\requests\GetRequest;
 use Pest\Browser\Exceptions\ServerNotFoundException;
@@ -21,6 +22,11 @@ use Throwable;
 
 class CraftHttpServer implements \Pest\Browser\Contracts\HttpServer
 {
+    /**
+     * The URL path used for visitTemplate() requests.
+     */
+    public const TEMPLATE_RENDER_PATH = '/__craftpest_template';
+
     /**
      * The underlying socket server instance, if any.
      */
@@ -204,6 +210,18 @@ class CraftHttpServer implements \Pest\Browser\Contracts\HttpServer
         $fullPath = $path.($query !== '' && $query !== null ? '?'.$query : '');
         $absoluteUrl = mb_rtrim($this->url(), '/').$fullPath;
 
+        // Check if this is a template render request from visitTemplate()
+        if ($path === self::TEMPLATE_RENDER_PATH) {
+            parse_str($query, $queryParams);
+
+            return $this->renderTemplate(
+                $queryParams['template'] ?? '',
+                json_decode($queryParams['params'] ?? '[]', true) ?? [],
+                $queryParams['layout'] ?? null,
+                $queryParams['block'] ?? 'content',
+            );
+        }
+
         // Check if this is a static asset request
         $filepath = $this->getBasePath().$path;
         if (file_exists($filepath) && ! is_dir($filepath)) {
@@ -302,5 +320,76 @@ class CraftHttpServer implements \Pest\Browser\Contracts\HttpServer
         return new Response(200, [
             'Content-Type' => $contentType,
         ], new ReadableResourceStream($file));
+    }
+
+    /**
+     * Render a template and return the response.
+     *
+     * @param  array<string, mixed>  $params
+     */
+    private function renderTemplate(string $template, array $params, ?string $layout = null, string $block = 'content'): Response
+    {
+        if ($template === '') {
+            return new Response(400, [], 'Template path is required.');
+        }
+
+        try {
+            $params = $this->resolveElementParams($params);
+
+            if ($layout !== null) {
+                // Render the template within a layout by dynamically creating
+                // a wrapper template that extends the layout and includes the
+                // content template in the specified block
+                $wrapperTemplate = sprintf(
+                    "{%% extends '%s' %%}\n{%% block %s %%}\n{%% include '%s' %%}\n{%% endblock %%}",
+                    $layout,
+                    $block,
+                    $template,
+                );
+                $content = Craft::$app->getView()->renderString($wrapperTemplate, $params);
+            } else {
+                $content = Craft::$app->getView()->renderTemplate($template, $params);
+            }
+
+            return new Response(200, [
+                'Content-Type' => 'text/html; charset=utf-8',
+            ], $content);
+        } catch (Throwable $e) {
+            $this->lastThrowable = $e;
+
+            return new Response(500, [
+                'Content-Type' => 'text/html; charset=utf-8',
+            ], sprintf(
+                '<html><body><h1>Template Render Error</h1><pre>%s</pre></body></html>',
+                htmlspecialchars($e->getMessage()),
+            ));
+        }
+    }
+
+    /**
+     * Resolve element params by looking up element IDs.
+     *
+     * Params with keys prefixed with "element:" will have their values
+     * resolved to full element objects via getElementById().
+     *
+     * For example: ['element:entry' => 123] becomes ['entry' => <Entry>]
+     *
+     * @param  array<string, mixed>  $params
+     * @return array<string, mixed>
+     */
+    private function resolveElementParams(array $params): array
+    {
+        $resolved = [];
+
+        foreach ($params as $key => $value) {
+            if (str_starts_with($key, 'element:')) {
+                $actualKey = substr($key, strlen('element:'));
+                $resolved[$actualKey] = Craft::$app->getElements()->getElementById((int) $value);
+            } else {
+                $resolved[$key] = $value;
+            }
+        }
+
+        return $resolved;
     }
 }
