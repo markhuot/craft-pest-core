@@ -1,6 +1,7 @@
 ---
 name: Pest Testing Framework
 description: Integration with the Pest PHP testing framework for writing and running tests
+color: pink
 ---
 
 - Running tests: `php ./vendor/bin/pest`
