@@ -48,20 +48,8 @@ Available as a method or a magic property of `->text`. Gets the text content of 
 will only return the text content of the node as well as any child nodes. Any non-text content such as
 HTML tags will be removed.
 
-Returns a string for single nodes or an array of strings for multiple nodes.
-
 ## getTextContent()
-Get the text content of the node list, flattening all nodes to a single string. Unlike `getText()`, this
-method always returns a string, even when multiple nodes are matched. All text from all matched nodes
-is concatenated together.
-
-```php
-// Single node returns text
-$text = $response->querySelector('h1')->getTextContent(); // "Hello"
-
-// Multiple nodes returns concatenated text
-$text = $response->querySelector('li')->getTextContent(); // "onetwothree"
-```
+Get the text content of the node list, flatting all nodes to a single string, if multiple nodes are returned.
 
 ## getInnerHTML()
 Available as a method or a magic property of `->innerHTML`. Gets the inner HTML of the node or nodes.
@@ -92,8 +80,7 @@ Caution: if the node list contains multiple nodes then the assertion
 would expect an array of strings to match.
 
 ```php
-$nodeList->assertText('Hello World'); // single node
-$nodeList->assertText(['one', 'two', 'three']); // multiple nodes
+$nodeList->assertText('Hello World');
 ```
 
 ## assertTextContent(string $expected)
@@ -102,28 +89,14 @@ Unlike `assertText()` which expects an array for multiple nodes, this method alw
 compares against the concatenated string of all nodes.
 
 ```php
-// Single node
-$response->querySelector('h1')->assertTextContent('Hello World');
-
-// Multiple nodes - compares against flattened string
-$response->querySelector('li')->assertTextContent('onetwothree');
+$nodeList->assertTextContent('onetwothree');
 ```
 
 ## assertContainsString($expected)
-Asserts that the given string is a part of the node list text content. When multiple nodes are matched,
-the text content is flattened into a single string before checking.
+Asserts that the given string is a part of the node list text content
 
 ```php
 $nodeList->assertContainsString('Hello');
-```
-
-## assertSee(string $expected)
-Asserts that the node list contains the given string in its text content. This is an alias for
-`assertContainsString()`. When multiple nodes are matched, the text content is flattened into a single
-string before checking.
-
-```php
-$response->querySelector('li')->assertSee('two'); // passes for ["one", "two", "three"]
 ```
 
 ## assertCount($expected)
@@ -131,4 +104,11 @@ Asserts that the given count matches the count of nodes in the node list.
 
 ```php
 $nodeList->assertCount(2);
+```
+
+## assertSee(string $expected)
+Asserts that the node list contains the given string in its text content.
+
+```php
+$nodeList->assertSee('Welcome');
 ```
