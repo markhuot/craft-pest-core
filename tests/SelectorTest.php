@@ -66,3 +66,49 @@ it('asserts attributes')
     ->assertOk()
     ->querySelector('#first')
     ->assertAttribute('id', 'first');
+
+it('gets text content as flattened string for single node', function () {
+    $textContent = get('/selectors')
+        ->querySelector('h1')
+        ->getTextContent();
+
+    expect($textContent)->toBe('heading text');
+});
+
+it('gets text content as flattened string for multiple nodes', function () {
+    $textContent = get('/selectors')
+        ->querySelector('#first ul li')
+        ->getTextContent();
+
+    expect($textContent)->toBe('onetwothree');
+});
+
+it('asserts see on single node', function () {
+    get('/selectors')
+        ->querySelector('h1')
+        ->assertSee('heading');
+});
+
+it('asserts see on multiple nodes flattened', function () {
+    get('/selectors')
+        ->querySelector('#first ul li')
+        ->assertSee('two');
+});
+
+it('asserts contains string on multiple nodes', function () {
+    get('/selectors')
+        ->querySelector('#first ul li')
+        ->assertContainsString('two');
+});
+
+it('asserts text content on single node', function () {
+    get('/selectors')
+        ->querySelector('h1')
+        ->assertTextContent('heading text');
+});
+
+it('asserts text content on multiple nodes as flattened string', function () {
+    get('/selectors')
+        ->querySelector('#first ul li')
+        ->assertTextContent('onetwothree');
+});
