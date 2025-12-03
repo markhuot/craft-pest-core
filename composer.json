@@ -40,7 +40,8 @@
         "pest": {
             "plugins": [
                 "markhuot\\craftpest\\pest\\Coverage",
-                "markhuot\\craftpest\\pest\\MonkeyPatches"
+                "markhuot\\craftpest\\pest\\MonkeyPatches",
+                "markhuot\\craftpest\\pest\\VisitTemplate"
             ]
         }
     },

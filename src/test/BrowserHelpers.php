@@ -6,7 +6,6 @@ use craft\base\ElementInterface;
 use markhuot\craftpest\browser\CraftHttpServer;
 use markhuot\craftpest\browser\VisitTemplateConfig;
 use Pest\Browser\Api\PendingAwaitablePage;
-use Pest\Browser\ServerManager;
 use Pest\Browser\Support\Screenshot;
 
 /**
@@ -285,8 +284,6 @@ trait BrowserHelpers
         ?string $layout = null,
         ?string $block = null,
     ): PendingAwaitablePage {
-        $this->bootstrapBrowserTestingIfNeeded();
-
         // Use provided layout/block or fall back to defaults
         $layout ??= VisitTemplateConfig::getDefaultLayout();
         $block ??= VisitTemplateConfig::getDefaultBlock();
@@ -312,28 +309,5 @@ trait BrowserHelpers
         }
 
         return $this->visit(CraftHttpServer::TEMPLATE_RENDER_PATH.'?'.http_build_query($queryParams));
-    }
-
-    /**
-     * Bootstrap the browser testing infrastructure if it hasn't been done yet.
-     *
-     * This is normally handled automatically by Pest's browser plugin when
-     * it detects a `visit()` call in the test code. However, since `visitTemplate()`
-     * uses `$this->visit()` internally, the plugin doesn't detect it as a browser test.
-     */
-    private function bootstrapBrowserTestingIfNeeded(): void
-    {
-        if ($this->browserTestingBootstrapped) {
-            return;
-        }
-
-        ServerManager::instance()->playwright()->start();
-        Screenshot::cleanup();
-
-        if (method_exists($this, '__markAsBrowserTest')) {
-            $this->__markAsBrowserTest();
-        }
-
-        $this->browserTestingBootstrapped = true;
     }
 }
