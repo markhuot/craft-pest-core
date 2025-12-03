@@ -227,7 +227,7 @@ class NodeList implements \Countable
      * $nodeList->assertContainsString('Hello');
      * ```
      */
-    public function assertContainsString($expected)
+    public function assertContainsString($expected): self
     {
         Assert::assertStringContainsString($expected, $this->getText());
 
@@ -241,9 +241,23 @@ class NodeList implements \Countable
      * $nodeList->assertCount(2);
      * ```
      */
-    public function assertCount($expected)
+    public function assertCount($expected): self
     {
         Assert::assertCount($expected, $this);
+
+        return $this;
+    }
+
+    /**
+     * Asserts that the node list contains the given string in its text content.
+     *
+     * ```php
+     * $nodeList->assertSee('Welcome');
+     * ```
+     */
+    public function assertSee(string $expected): self
+    {
+        Assert::assertStringContainsString($expected, $this->getText());
 
         return $this;
     }
