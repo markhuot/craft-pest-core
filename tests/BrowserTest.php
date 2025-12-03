@@ -76,6 +76,18 @@ it('can resolve element IDs to objects with element: prefix', function () {
     expect($page->content())->toContain('Browser Test Entry');
 });
 
+it('can automatically convert element objects to IDs', function () {
+    $entry = \markhuot\craftpest\factories\Entry::factory()
+        ->section('posts')
+        ->title('Auto Convert Entry')
+        ->create();
+
+    $page = $this->visitTemplate('entry', ['entry' => $entry]);
+
+    // Verify the element was automatically converted and resolved
+    expect($page->content())->toContain('Auto Convert Entry');
+});
+
 it('can render a template within a layout', function () {
     $page = $this->visitTemplate('variable', ['foo' => 'Layout Test Content'], '_layouts/base', 'content');
 
