@@ -30,7 +30,7 @@ trait AddsMatrixBlocks
             return $this->addBlockTo($fieldName, $blockType, ...$args);
         }
 
-        throw new \Exception('Could not determine a matrix field based on ['.$key.']');
+        throw new \Exception('Could not determine a matrix field based on ['.$key.']. If the matrix block has `To` in the handle then you must use the more explicit `->matrixBlock(Entry::factory()->type("matrixBlockType")->fieldInMatrixBlock("value"))`');
     }
 
     /**

@@ -12,6 +12,7 @@ use Illuminate\Support\Collection;
 use markhuot\craftpest\actions\CallSeeders;
 use markhuot\craftpest\http\TestController;
 use markhuot\craftpest\interfaces\RenderCompiledClassesInterface;
+use markhuot\craftpest\web\TestableResponse;
 
 class TestCase extends \PHPUnit\Framework\TestCase
 {
@@ -206,7 +207,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
         return $this;
     }
 
-    public function renderTemplate(...$args)
+    public function renderTemplate(...$args): TestableResponse
     {
         $content = Craft::$app->getView()->renderTemplate(...$args);
 
