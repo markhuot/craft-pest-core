@@ -18,7 +18,6 @@ use ReflectionFunction;
 
 class UsesVisitTemplateMethodFilter implements TestCaseMethodFilter
 {
-
     public function accept(TestCaseMethodFactory $factory): bool
     {
         $usesBrowser = $this->isBrowserTest($factory->closure ?? fn (): null => null);

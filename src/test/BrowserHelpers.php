@@ -5,7 +5,6 @@ namespace markhuot\craftpest\test;
 use markhuot\craftpest\browser\CraftHttpServer;
 use markhuot\craftpest\browser\VisitTemplateConfig;
 use Pest\Browser\Api\PendingAwaitablePage;
-use Pest\Browser\ServerManager;
 use Pest\Browser\Support\Screenshot;
 
 /**

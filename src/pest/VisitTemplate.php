@@ -11,6 +11,6 @@ class VisitTemplate implements Bootable
     {
         TestSuite::getInstance()
             ->tests
-            ->addTestCaseMethodFilter(new UsesVisitTemplateMethodFilter());
+            ->addTestCaseMethodFilter(new UsesVisitTemplateMethodFilter);
     }
 }
