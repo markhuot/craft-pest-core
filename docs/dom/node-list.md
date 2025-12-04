@@ -48,6 +48,9 @@ Available as a method or a magic property of `->text`. Gets the text content of 
 will only return the text content of the node as well as any child nodes. Any non-text content such as
 HTML tags will be removed.
 
+## getTextContent()
+Get the text content of the node list, flatting all nodes to a single string, if multiple nodes are returned.
+
 ## getInnerHTML()
 Available as a method or a magic property of `->innerHTML`. Gets the inner HTML of the node or nodes.
 
@@ -80,6 +83,15 @@ would expect an array of strings to match.
 $nodeList->assertText('Hello World');
 ```
 
+## assertTextContent(string $expected)
+Asserts that the given string exactly matches the flattened text content of all nodes.
+Unlike `assertText()` which expects an array for multiple nodes, this method always
+compares against the concatenated string of all nodes.
+
+```php
+$nodeList->assertTextContent('onetwothree');
+```
+
 ## assertContainsString($expected)
 Asserts that the given string is a part of the node list text content
 
@@ -92,4 +104,11 @@ Asserts that the given count matches the count of nodes in the node list.
 
 ```php
 $nodeList->assertCount(2);
+```
+
+## assertSee(string $expected)
+Asserts that the node list contains the given string in its text content.
+
+```php
+$nodeList->assertSee('Welcome');
 ```

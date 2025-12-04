@@ -129,6 +129,21 @@ class NodeList implements \Countable
     }
 
     /**
+     * Get the text content of the node list, flatting all nodes to a single string, if multiple nodes are returned.
+     */
+    public function getTextContent(): string
+    {
+        $result = [];
+
+        for ($i = 0; $i < $this->crawler->count(); $i++) {
+            $node = $this->crawler->eq($i);
+            $result[] = $node->text();
+        }
+
+        return implode('', $result);
+    }
+
+    /**
      * Available as a method or a magic property of `->innerHTML`. Gets the inner HTML of the node or nodes.
      */
     public function getInnerHTML(): array|string
@@ -221,15 +236,31 @@ class NodeList implements \Countable
     }
 
     /**
+     * Asserts that the given string exactly matches the flattened text content of all nodes.
+     * Unlike `assertText()` which expects an array for multiple nodes, this method always
+     * compares against the concatenated string of all nodes.
+     *
+     * ```php
+     * $nodeList->assertTextContent('onetwothree');
+     * ```
+     */
+    public function assertTextContent(string $expected): self
+    {
+        Assert::assertSame($expected, $this->getTextContent());
+
+        return $this;
+    }
+
+    /**
      * Asserts that the given string is a part of the node list text content
      *
      * ```php
      * $nodeList->assertContainsString('Hello');
      * ```
      */
-    public function assertContainsString($expected)
+    public function assertContainsString($expected): self
     {
-        Assert::assertStringContainsString($expected, $this->getText());
+        Assert::assertStringContainsString($expected, $this->getTextContent());
 
         return $this;
     }
@@ -241,9 +272,23 @@ class NodeList implements \Countable
      * $nodeList->assertCount(2);
      * ```
      */
-    public function assertCount($expected)
+    public function assertCount($expected): self
     {
         Assert::assertCount($expected, $this);
+
+        return $this;
+    }
+
+    /**
+     * Asserts that the node list contains the given string in its text content.
+     *
+     * ```php
+     * $nodeList->assertSee('Welcome');
+     * ```
+     */
+    public function assertSee(string $expected): self
+    {
+        Assert::assertStringContainsString($expected, $this->getTextContent());
 
         return $this;
     }
