@@ -12,6 +12,7 @@ use Illuminate\Support\Collection;
 use markhuot\craftpest\actions\CallSeeders;
 use markhuot\craftpest\http\TestController;
 use markhuot\craftpest\interfaces\RenderCompiledClassesInterface;
+use markhuot\craftpest\pest\SkipInstall;
 use markhuot\craftpest\web\TestableResponse;
 
 class TestCase extends \PHPUnit\Framework\TestCase
@@ -73,6 +74,10 @@ class TestCase extends \PHPUnit\Framework\TestCase
         }
 
         $this->requireCraft();
+
+        if (SkipInstall::$skipInstall) {
+            return Craft::$app;
+        }
 
         if (! Craft::$app->getIsInstalled(true)) {
             $this->craftInstall();
