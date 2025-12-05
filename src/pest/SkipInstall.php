@@ -6,7 +6,7 @@ use Pest\Contracts\Plugins\HandlesArguments;
 
 class SkipInstall implements HandlesArguments
 {
-    public static bool $skipInstall = false;
+    public static bool $shouldSkip = false;
 
     public function handleArguments(array $originals): array
     {
@@ -14,7 +14,7 @@ class SkipInstall implements HandlesArguments
             return $originals;
         }
 
-        self::$skipInstall = true;
+        self::$shouldSkip = true;
 
         return array_values(array_filter($originals, fn ($arg) => $arg !== '--skip-install'));
     }

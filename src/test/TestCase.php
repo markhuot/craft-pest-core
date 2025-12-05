@@ -97,7 +97,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
         $this->requireCraft();
 
-        if (SkipInstall::$skipInstall) {
+        if (SkipInstall::$shouldSkip) {
             return Craft::$app;
         }
 
