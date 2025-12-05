@@ -2,6 +2,27 @@
 
 Factories in Craft Pest provide a powerful way to create test data for your Craft CMS projects. They allow you to quickly generate entries, fields, sections, assets, and other elements with realistic test data.
 
+## Important: Section Types
+
+**Factories should only be used with Channel and Structure section types.** Singles cannot be created via factories because there can only be one instance of each Single section.
+
+For Single sections, retrieve the existing entry using Craft's standard query syntax:
+
+```php
+use craft\elements\Entry;
+
+// Get a Single entry
+$homepage = Entry::find()
+    ->section('homepage')
+    ->one();
+
+// Modify and test it
+$homepage->setFieldValue('heroHeading', 'New Heading');
+Craft::$app->elements->saveElement($homepage);
+
+expect($homepage->heroHeading)->toBe('New Heading');
+```
+
 ## Basic Entry Creation
 
 The simplest way to create an entry is using the `Entry::factory()` method:
