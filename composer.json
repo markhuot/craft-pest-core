@@ -35,9 +35,6 @@
             "src/helpers/Test.php"
         ]
     },
-    "scripts": {
-        "pre-autoload-dump": "markhuot\\craftpest\\actions\\PatchPestBinary::handle"
-    },
     "extra": {
         "bootstrap": "markhuot\\craftpest\\Pest",
         "pest": {

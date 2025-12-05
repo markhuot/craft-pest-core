@@ -2,16 +2,21 @@
 
 namespace markhuot\craftpest\actions;
 
-use Composer\Script\Event;
-
 class PatchPestBinary
 {
-    public static function handle(Event $event): void
+    public function __invoke(): void
     {
-        $vendorDir = $event->getComposer()->getConfig()->get('vendor-dir');
-        $pestBin = $vendorDir.'/pestphp/pest/bin/pest';
+        $pestBin = CRAFT_VENDOR_PATH.'/pestphp/pest/bin/pest';
+        $pestBinBackup = $pestBin.'.backup';
 
         if (! file_exists($pestBin)) {
+            return;
+        }
+
+        // Resolve to real path and verify it's within vendor directory
+        $realPath = realpath($pestBin);
+        $vendorPath = realpath(CRAFT_VENDOR_PATH);
+        if ($realPath === false || $vendorPath === false || ! str_starts_with($realPath, $vendorPath.DIRECTORY_SEPARATOR)) {
             return;
         }
 
@@ -30,8 +35,24 @@ class PatchPestBinary
         $patched = str_replace($search, $replace, $content);
 
         if ($patched !== $content) {
+            // Create backup before patching
+            copy($pestBin, $pestBinBackup);
+
             file_put_contents($pestBin, $patched);
-            $event->getIO()->write('<info>Patched vendor/pestphp/pest/bin/pest to suppress deprecation warnings</info>');
+
+            // Verify syntax is valid using the resolved real path
+            exec('php -l '.escapeshellarg($realPath).' 2>&1', $output, $exitCode);
+
+            if ($exitCode !== 0) {
+                // Syntax error - restore from backup
+                unlink($pestBin);
+                rename($pestBinBackup, $pestBin);
+
+                return;
+            }
+
+            // Patch successful, remove backup
+            unlink($pestBinBackup);
         }
     }
 }

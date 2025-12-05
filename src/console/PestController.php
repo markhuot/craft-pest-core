@@ -6,6 +6,7 @@ use Craft;
 use craft\console\Controller;
 use craft\helpers\FileHelper;
 use markhuot\craftpest\actions\CopyInitialStubs;
+use markhuot\craftpest\actions\PatchPestBinary;
 use markhuot\craftpest\interfaces\RenderCompiledClassesInterface;
 use markhuot\craftpest\Pest;
 use Symfony\Component\Process\Process;
@@ -75,6 +76,7 @@ class PestController extends Controller
     protected function runInit()
     {
         service(CopyInitialStubs::class)();
+        service(PatchPestBinary::class)();
     }
 
     protected function runTests(): int
