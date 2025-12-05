@@ -67,6 +67,28 @@ class TestCase extends \PHPUnit\Framework\TestCase
         }
     }
 
+    protected function logStart(string $message): float
+    {
+        try {
+            $output = \Pest\Support\Container::getInstance()->get(\Symfony\Component\Console\Output\OutputInterface::class);
+            $output->writeln("  <fg=gray>{$message}</>");
+        } catch (\Throwable) {
+            fwrite(STDOUT, $message . "\n");
+        }
+        return microtime(true);
+    }
+
+    protected function logEnd(string $message, float $start): void
+    {
+        $duration = round(microtime(true) - $start, 2);
+        try {
+            $output = \Pest\Support\Container::getInstance()->get(\Symfony\Component\Console\Output\OutputInterface::class);
+            $output->writeln("  <fg=green>{$message}</> <fg=gray>({$duration}s)</>");
+        } catch (\Throwable) {
+            fwrite(STDOUT, "{$message} ({$duration}s).\n");
+        }
+    }
+
     public function createApplication()
     {
         if (! $this->needsRequireStatements()) {
@@ -80,14 +102,17 @@ class TestCase extends \PHPUnit\Framework\TestCase
         }
 
         if (! Craft::$app->getIsInstalled(true)) {
+            $start = $this->logStart('Installing Craft CMS...');
             $this->craftInstall();
+            $this->logEnd('Craft CMS installed', $start);
         }
 
         if (
-            Craft::$app->getMigrator()->getNewMigrations() ||
             Craft::$app->getContentMigrator()->getNewMigrations()
         ) {
+            $start = $this->logStart('Running migrations...');
             $this->craftMigrateAll();
+            $this->logEnd('Migrations complete', $start);
         }
 
         // We have to flush the data cache to make sure we're getting an accurate look at whether or not there
@@ -100,7 +125,9 @@ class TestCase extends \PHPUnit\Framework\TestCase
         // and test.
         Craft::$app->getCache()->flush();
         if (Craft::$app->getProjectConfig()->areChangesPending(null, true)) {
+            $start = $this->logStart('Applying project config changes...');
             $this->craftProjectConfigApply();
+            $this->logEnd('Project config applied', $start);
         }
 
         return Craft::$app;
