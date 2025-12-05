@@ -557,7 +557,8 @@ See **[Browser Testing Documentation](browser-testing.md)** for comprehensive in
 
 See **[Factories Documentation](factories.md)** for comprehensive information on creating test data with factories, including:
 
-- Basic entry creation with `Entry::factory()`
+- Basic entry creation for channels and structures with `Entry::factory()`
+- Avoiding factories for sections with a Single type because Craft creates the single entry automatically
 - Setting field values and working with different field types
 - Advanced techniques like sequences and custom authors
 - Complete examples combining multiple field types
@@ -646,7 +647,7 @@ php ./vendor/bin/pest --coverage --min=80
 
 1. **Focus on User Logic, Not Framework Functionality**: Do not write tests that only verify core Craft CMS or Pest functionality. Tests should focus on your custom logic, business rules, or validation.
 
-    **❌ Bad - Testing framework functionality:**
+   **❌ Bad - Testing framework functionality:**
 
     ```php
     it('can create a hero component entry', function () {
@@ -664,7 +665,7 @@ php ./vendor/bin/pest --coverage --min=80
     });
     ```
 
-    **✅ Good - Testing custom validation or business logic:**
+   **✅ Good - Testing custom validation or business logic:**
 
     ```php
     it('validates that heading cannot exceed 100 characters', function () {
@@ -689,7 +690,7 @@ php ./vendor/bin/pest --coverage --min=80
     });
     ```
 
-    Only create entries with factories as setup for testing your actual logic. If you're not testing custom validation, rendering logic, or business rules, you probably don't need the test.
+   Only create entries with factories as setup for testing your actual logic. If you're not testing custom validation, rendering logic, or business rules, you probably don't need the test.
 
 2. **Test Naming**: Use descriptive test names that explain what is being tested
 
