@@ -17,6 +17,11 @@ class InstallsCraft implements HandlesArguments
 {
     public function handleArguments(array $originals): array
     {
+        // Load phpunit.xml environment variables early to ensure they're available
+        // before Craft is bootstrapped and installed. This fixes the issue where
+        // HandlesArguments plugins run before PHPUnit processes phpunit.xml env vars.
+        $this->loadPhpunitXmlEnvironmentVariables();
+
         if (! defined('CRAFT_BASE_PATH')) {
             $this->requireCraft();
         }
@@ -163,6 +168,63 @@ class InstallsCraft implements HandlesArguments
 
         // Set a bogus controller so plugins can interact with Craft:$app->controller without erroring
         Craft::$app->controller = new TestController('test-controller', Craft::$app);
+    }
+
+    /**
+     * Load environment variables from phpunit.xml configuration file.
+     *
+     * This method reads the phpunit.xml file and manually sets environment variables
+     * defined in the <php><env> section. This is necessary because Pest plugins
+     * implementing HandlesArguments may be called before PHPUnit has a chance to
+     * process the XML configuration and set these variables.
+     *
+     * Without this, environment variable overrides in phpunit.xml (such as
+     * CRAFT_DB_DATABASE for test isolation) would not be available when
+     * InstallsCraft attempts to install Craft CMS.
+     */
+    protected function loadPhpunitXmlEnvironmentVariables(): void
+    {
+        // Try to find phpunit.xml or phpunit.xml.dist in the current working directory
+        $phpunitXmlPath = null;
+        $possiblePaths = [
+            getcwd().'/phpunit.xml',
+            getcwd().'/phpunit.xml.dist',
+        ];
+
+        foreach ($possiblePaths as $path) {
+            if (file_exists($path)) {
+                $phpunitXmlPath = $path;
+                break;
+            }
+        }
+
+        // If no phpunit.xml found, nothing to load
+        if ($phpunitXmlPath === null) {
+            return;
+        }
+
+        // Parse the XML file
+        $xml = @simplexml_load_file($phpunitXmlPath);
+        if ($xml === false) {
+            return;
+        }
+
+        // Look for <php><env> elements and set them as environment variables
+        if (isset($xml->php)) {
+            foreach ($xml->php->children() as $element) {
+                if ($element->getName() === 'env') {
+                    $name = (string) $element['name'];
+                    $value = (string) $element['value'];
+
+                    // Only set if not already set (allow actual env vars to take precedence)
+                    if (getenv($name) === false) {
+                        putenv("{$name}={$value}");
+                        $_ENV[$name] = $value;
+                        $_SERVER[$name] = $value;
+                    }
+                }
+            }
+        }
     }
 
     public function renderCompiledClasses()
