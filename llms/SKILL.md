@@ -416,7 +416,25 @@ it('uses various assertions on rendered templates', function () {
 
 ### DOM Selection and Testing
 
-Use `->querySelector()` to select and test specific elements:
+Use `->querySelector()` to select and test specific elements. Because Pest's browser testing uses Playwright under the hood we should use `data-testid` attributes for reliable selection in complex templates. This also allows Playwright to find the same elements during browser tests. For example, in your Twig template:
+
+```twig
+<button data-testid="submit-button" class="btn-primary">Submit</button>
+```
+
+Then in your Pest test:
+
+```php
+<?php
+it('selects and tests specific elements using data-testid', function () {
+    $this->renderTemplate('_components/button', ['type' => 'primary'])
+        ->querySelector('[data-testid="submit-button"]')
+        ->assertSee('Submit')
+        ->assertAttribute('class', 'btn-primary');
+});
+````
+
+You can also query any standard CSS selector, but be cautious with this because CSS classes may change as the site evolves or dynamically as JavaScript modifies the DOM. Using `data-testid` attributes provides a stable way to select elements specifically for testing purposes.
 
 ```php
 <?php
@@ -557,8 +575,7 @@ See **[Browser Testing Documentation](browser-testing.md)** for comprehensive in
 
 See **[Factories Documentation](factories.md)** for comprehensive information on creating test data with factories, including:
 
-- Basic entry creation for channels and structures with `Entry::factory()`
-- Avoiding factories for sections with a Single type because Craft creates the single entry automatically
+- Basic entry creation with `Entry::factory()`
 - Setting field values and working with different field types
 - Advanced techniques like sequences and custom authors
 - Complete examples combining multiple field types
