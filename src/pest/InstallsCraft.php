@@ -11,6 +11,7 @@ use craft\services\ProjectConfig;
 use markhuot\craftpest\http\TestController;
 use markhuot\craftpest\interfaces\RenderCompiledClassesInterface;
 use Pest\Contracts\Plugins\HandlesArguments;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class InstallsCraft implements HandlesArguments
 {
@@ -35,6 +36,9 @@ class InstallsCraft implements HandlesArguments
     {
         try {
             $output = \Pest\Support\Container::getInstance()->get(\Symfony\Component\Console\Output\OutputInterface::class);
+            if (! $output instanceof OutputInterface) {
+                throw new \RuntimeException('No defined output');
+            }
             $output->writeln("  <fg=gray>{$message}</>");
         } catch (\Throwable) {
             fwrite(STDOUT, $message."\n");
@@ -48,6 +52,9 @@ class InstallsCraft implements HandlesArguments
         $duration = round(microtime(true) - $start, 2);
         try {
             $output = \Pest\Support\Container::getInstance()->get(\Symfony\Component\Console\Output\OutputInterface::class);
+            if (! $output instanceof OutputInterface) {
+                throw new \RuntimeException('No defined output');
+            }
             $output->writeln("  <fg=green>{$message}</> <fg=gray>({$duration}s)</>");
         } catch (\Throwable) {
             fwrite(STDOUT, "{$message} ({$duration}s).\n");
