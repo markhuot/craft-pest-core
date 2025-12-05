@@ -105,7 +105,9 @@ XML;
         chdir($originalCwd);
         unlink($tempDir.'/phpunit.xml');
         rmdir($tempDir);
-        putenv('TEST_PRECEDENCE_VAR');
+        putenv('TEST_PRECEDENCE_VAR=');
+        unset($_ENV['TEST_PRECEDENCE_VAR']);
+        unset($_SERVER['TEST_PRECEDENCE_VAR']);
     }
 });
 

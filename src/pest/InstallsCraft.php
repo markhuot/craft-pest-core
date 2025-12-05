@@ -204,10 +204,14 @@ class InstallsCraft implements HandlesArguments
         }
 
         // Parse the XML file
-        $xml = @simplexml_load_file($phpunitXmlPath);
+        libxml_use_internal_errors(true);
+        $xml = simplexml_load_file($phpunitXmlPath);
         if ($xml === false) {
+            libxml_clear_errors();
+
             return;
         }
+        libxml_clear_errors();
 
         // Look for <php><env> elements and set them as environment variables
         if (isset($xml->php)) {
