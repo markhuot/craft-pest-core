@@ -37,8 +37,9 @@ class InstallsCraft implements HandlesArguments
             $output = \Pest\Support\Container::getInstance()->get(\Symfony\Component\Console\Output\OutputInterface::class);
             $output->writeln("  <fg=gray>{$message}</>");
         } catch (\Throwable) {
-            fwrite(STDOUT, $message . "\n");
+            fwrite(STDOUT, $message."\n");
         }
+
         return microtime(true);
     }
 
