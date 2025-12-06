@@ -56,7 +56,7 @@ A new protected method `loadPhpunitXmlEnvironmentVariables()` was added that:
 2. Parses the XML file using `simplexml_load_file()`
 3. Extracts all `<php><env>` elements
 4. Sets them as environment variables using `putenv()`, `$_ENV`, and `$_SERVER`
-5. Respects existing environment variables (doesn't override actual env vars)
+5. **Overrides existing environment variables** (phpunit.xml values take precedence for test configuration)
 
 ### Code Changes
 
@@ -106,7 +106,7 @@ protected function loadPhpunitXmlEnvironmentVariables(): void
    </php>
    ```
 
-3. **Environment Precedence**: Actual environment variables still take precedence over `phpunit.xml` values, maintaining expected behavior.
+3. **Environment Override**: Environment variables from `phpunit.xml` override existing environment variables, allowing test-specific configuration to take precedence during test execution.
 
 4. **No Breaking Changes**: The fix is backward compatible. Projects without `<php><env>` tags in `phpunit.xml` continue to work as before.
 
@@ -116,7 +116,7 @@ New tests were added to verify the fix:
 
 - **tests/InstallsCraftEnvTest.php**: Unit tests for `loadPhpunitXmlEnvironmentVariables()` method
   - Verifies environment variables are loaded from phpunit.xml
-  - Ensures existing env vars take precedence
+  - Ensures phpunit.xml env vars override existing environment variables
   - Confirms graceful handling of missing phpunit.xml
   
 - **tests/PhpunitEnvVarTest.php**: Integration tests

@@ -66,9 +66,9 @@ XML;
     }
 });
 
-test('InstallsCraft respects existing environment variables over phpunit.xml', function () {
-    // This test ensures that actual environment variables take precedence
-    // over phpunit.xml values (as they should)
+test('InstallsCraft phpunit.xml env vars override existing environment variables', function () {
+    // This test ensures that phpunit.xml values take precedence
+    // over existing environment variables (as they should for test configuration)
 
     $tempDir = sys_get_temp_dir().'/craft-pest-test-'.uniqid();
     mkdir($tempDir, 0777, true);
@@ -78,7 +78,7 @@ test('InstallsCraft respects existing environment variables over phpunit.xml', f
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit>
     <php>
-        <env name="TEST_PRECEDENCE_VAR" value="from_phpunit_xml" />
+        <env name="TEST_OVERRIDE_VAR" value="from_phpunit_xml" />
     </php>
 </phpunit>
 XML;
@@ -87,27 +87,29 @@ XML;
     chdir($tempDir);
 
     try {
-        // Set an actual environment variable
-        putenv('TEST_PRECEDENCE_VAR=from_actual_env');
-        $_ENV['TEST_PRECEDENCE_VAR'] = 'from_actual_env';
-        $_SERVER['TEST_PRECEDENCE_VAR'] = 'from_actual_env';
+        // Set an actual environment variable first
+        putenv('TEST_OVERRIDE_VAR=from_actual_env');
+        $_ENV['TEST_OVERRIDE_VAR'] = 'from_actual_env';
+        $_SERVER['TEST_OVERRIDE_VAR'] = 'from_actual_env';
 
-        // Load phpunit.xml vars
+        // Load phpunit.xml vars - they should override the existing value
         $installsCraft = new InstallsCraft();
         $reflection = new ReflectionClass($installsCraft);
         $method = $reflection->getMethod('loadPhpunitXmlEnvironmentVariables');
         $method->setAccessible(true);
         $method->invoke($installsCraft);
 
-        // Verify the actual env var was NOT overwritten
-        expect(getenv('TEST_PRECEDENCE_VAR'))->toBe('from_actual_env');
+        // Verify the phpunit.xml value OVERRODE the existing env var
+        expect(getenv('TEST_OVERRIDE_VAR'))->toBe('from_phpunit_xml');
+        expect($_ENV['TEST_OVERRIDE_VAR'] ?? null)->toBe('from_phpunit_xml');
+        expect($_SERVER['TEST_OVERRIDE_VAR'] ?? null)->toBe('from_phpunit_xml');
     } finally {
         chdir($originalCwd);
         unlink($tempDir.'/phpunit.xml');
         rmdir($tempDir);
-        putenv('TEST_PRECEDENCE_VAR=');
-        unset($_ENV['TEST_PRECEDENCE_VAR']);
-        unset($_SERVER['TEST_PRECEDENCE_VAR']);
+        putenv('TEST_OVERRIDE_VAR=');
+        unset($_ENV['TEST_OVERRIDE_VAR']);
+        unset($_SERVER['TEST_OVERRIDE_VAR']);
     }
 });
 

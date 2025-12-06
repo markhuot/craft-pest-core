@@ -178,9 +178,9 @@ class InstallsCraft implements HandlesArguments
      * implementing HandlesArguments may be called before PHPUnit has a chance to
      * process the XML configuration and set these variables.
      *
-     * Without this, environment variable overrides in phpunit.xml (such as
-     * CRAFT_DB_DATABASE for test isolation) would not be available when
-     * InstallsCraft attempts to install Craft CMS.
+     * Environment variables from phpunit.xml will override any existing environment
+     * variables, allowing test-specific configuration (such as CRAFT_DB_DATABASE 
+     * for test isolation) to take precedence.
      */
     protected function loadPhpunitXmlEnvironmentVariables(): void
     {
@@ -220,12 +220,10 @@ class InstallsCraft implements HandlesArguments
                     $name = (string) $element['name'];
                     $value = (string) $element['value'];
 
-                    // Only set if not already set (allow actual env vars to take precedence)
-                    if (getenv($name) === false) {
-                        putenv("{$name}={$value}");
-                        $_ENV[$name] = $value;
-                        $_SERVER[$name] = $value;
-                    }
+                    // phpunit.xml env vars should override existing env vars
+                    putenv("{$name}={$value}");
+                    $_ENV[$name] = $value;
+                    $_SERVER[$name] = $value;
                 }
             }
         }
