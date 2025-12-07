@@ -42,7 +42,7 @@ XML;
         unset($_SERVER['CRAFT_DB_DATABASE']);
 
         // Create InstallsCraft instance and use reflection to call the protected method
-        $installsCraft = new InstallsCraft();
+        $installsCraft = new InstallsCraft;
         $reflection = new ReflectionClass($installsCraft);
         $method = $reflection->getMethod('loadPhpunitXmlEnvironmentVariables');
         $method->setAccessible(true);
@@ -93,7 +93,7 @@ XML;
         $_SERVER['TEST_OVERRIDE_VAR'] = 'from_actual_env';
 
         // Load phpunit.xml vars - they should override the existing value
-        $installsCraft = new InstallsCraft();
+        $installsCraft = new InstallsCraft;
         $reflection = new ReflectionClass($installsCraft);
         $method = $reflection->getMethod('loadPhpunitXmlEnvironmentVariables');
         $method->setAccessible(true);
@@ -123,7 +123,7 @@ test('InstallsCraft handles missing phpunit.xml gracefully', function () {
 
     try {
         // No phpunit.xml file exists in this directory
-        $installsCraft = new InstallsCraft();
+        $installsCraft = new InstallsCraft;
         $reflection = new ReflectionClass($installsCraft);
         $method = $reflection->getMethod('loadPhpunitXmlEnvironmentVariables');
         $method->setAccessible(true);

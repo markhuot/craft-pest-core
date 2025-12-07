@@ -179,7 +179,7 @@ class InstallsCraft implements HandlesArguments
      * process the XML configuration and set these variables.
      *
      * Environment variables from phpunit.xml will override any existing environment
-     * variables, allowing test-specific configuration (such as CRAFT_DB_DATABASE 
+     * variables, allowing test-specific configuration (such as CRAFT_DB_DATABASE
      * for test isolation) to take precedence.
      */
     protected function loadPhpunitXmlEnvironmentVariables(): void
