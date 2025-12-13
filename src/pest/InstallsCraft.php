@@ -91,20 +91,27 @@ class InstallsCraft implements HandlesArguments
         Craft::$app->getCache()->flush();
         if (Craft::$app->getProjectConfig()->areChangesPending(null, true)) {
             $start = $this->logStart('Applying project config changes...');
-            $this->craftProjectConfigApply();
+            $this->craftApplyProjectConfig();
             $this->logEnd('Project config applied', $start);
         }
     }
 
     protected function craftInstall()
     {
+        // Check if there is a project config value for the default site name, url, and language before falling back
+        // to user defined settings. This only happens in a clean test environment when you're trying to install an
+        // existing site from a project config. Otherwise, the project will organically grow, the site will be created
+        // via the UI and the project config will, in turn, update.
+        $sites = Craft::$app->getProjectConfig()->get('sites', true);
+        $primarySite = collect($sites ?? [])->first(fn ($site) => $site['primary'] === true);
+
         $args = [
             'username' => (App::env('CRAFT_INSTALL_USERNAME') ?? 'user@example.com'),
             'email' => (App::env('CRAFT_INSTALL_EMAIL') ?? 'user@example.com'),
             'password' => (App::env('CRAFT_INSTALL_PASSWORD') ?? 'secret'),
-            'siteName' => (App::env('CRAFT_INSTALL_SITENAME') ?? '"Craft CMS"'),
-            'siteUrl' => (App::env('CRAFT_INSTALL_SITEURL') ?? 'http://localhost:8080'),
-            'language' => (App::env('CRAFT_INSTALL_LANGUAGE') ?? 'en-US'),
+            'siteName' => $primarySite['name'] ?? (App::env('CRAFT_INSTALL_SITENAME') ?? '"Craft CMS"'),
+            'siteUrl' => $primarySite['baseUrl'] ?? (App::env('CRAFT_INSTALL_SITEURL') ?? 'http://localhost:8080'),
+            'language' => $primarySite['language'] ?? (App::env('CRAFT_INSTALL_LANGUAGE') ?? 'en-US'),
         ];
 
         $siteConfig = [
@@ -129,8 +136,12 @@ class InstallsCraft implements HandlesArguments
         $migrator = Craft::$app->getMigrator();
         $migrator->migrateUp($migration);
 
-        Craft::$app->getProjectConfig()->reset();
-        Craft::$app->getProjectConfig()->applyExternalChanges();
+        foreach ($migrator->getNewMigrations() as $name) {
+            $migrator->addMigrationHistory($name);
+        }
+
+        // Make sure we save the project config data back to the database after installation, otherwise the config
+        // will be empty in the DB and Craft will think it needs to re-apply everything on the next request.
         Craft::$app->getProjectConfig()->saveModifiedConfigData();
 
         $edition = Craft::$app->getProjectConfig()->get('system.edition');
@@ -148,10 +159,10 @@ class InstallsCraft implements HandlesArguments
         Craft::$app->getContentMigrator()->up();
     }
 
-    protected function craftProjectConfigApply()
+    protected function craftApplyProjectConfig(): void
     {
         // applyExternalChanges is going to add event listeners automatically (because internally it makes calls to
-        // ->reset() which calls ->int() which adds event listeners). Normally, this is fine because it gets called
+        // ->reset() which calls ->init() which adds event listeners). Normally, this is fine because it gets called
         // at the _end_ of a request lifecycle. But in our case we're calling it early in the lifecycle and that's
         // adding duplicate listeners. So we'll remove the listeners here so they can be re-added without duplication.
         $projectConfig = Craft::$app->getProjectConfig();
