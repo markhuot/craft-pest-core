@@ -207,8 +207,12 @@ class Entry extends Element
         $sectionId = $this->inferSectionId();
         $typeId = $this->inferTypeId($sectionId);
 
-        // If you couldn't infer anything, then create a new section/type
-        if (empty($sectionId) && empty($typeId)) {
+        // If a section or type was passed in but didn't resolve, throw an error
+        throw_if(! empty($this->sectionIdentifier) && empty($sectionId), "Could not resolve section identifier `{$this->sectionIdentifier}`");
+        throw_if(! empty($this->entryTypeIdentifier) && empty($typeId), "Could not resolve entry type identifier `{$this->entryTypeIdentifier}`");
+
+        // If nothing was passed in, and we couldn't infer a section, create a new section
+        if (empty($this->sectionIdentifier) && empty($this->entryTypeIdentifier) && empty($sectionId)) {
             $sectionId = ($section = Section::factory()->create())->id;
             $typeId = collect($section->getEntryTypes())->first()?->id;
         }
