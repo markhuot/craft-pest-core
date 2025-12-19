@@ -90,6 +90,8 @@ jobs:
         key: ${{ runner.os }}-craft-${{ matrix.version.constraint }}-vendor-${{ hashFiles('composer.json') }}
 
     - name: Install dependencies
+      env:
+        COMPOSER_ALLOW_SUPERUSER: 1
       run: |
         composer require "craftcms/cms:${{ matrix.version.constraint }}" --prefer-dist --no-progress
         composer require pestphp/pest-plugin-browser
