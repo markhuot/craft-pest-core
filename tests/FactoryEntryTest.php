@@ -1,6 +1,7 @@
 <?php
 
 use markhuot\craftpest\factories\Entry;
+use markhuot\craftpest\factories\Section;
 
 use function markhuot\craftpest\helpers\model\entry;
 use function markhuot\craftpest\helpers\model\user;
@@ -76,4 +77,16 @@ it('creates entries in a sequence', function () {
     expect($entries[0]->title)->toBe('the title is 0');
     expect($entries[1]->title)->toBe('the title is 1');
     expect($entries[2]->title)->toBe('the title is 2');
+});
+
+it('retains singles when you try to recreate them with a factory', function () {
+    $section = Section::factory()
+        ->type('single')
+        ->name('My Great Single')
+        ->create();
+
+    $existingSingleId = \craft\elements\Entry::find()->section($section->handle)->one()->id;
+    $factorySingleId = Entry::factory()->section($section->handle)->create()->id;
+
+    expect($existingSingleId)->toBe($factorySingleId);
 });

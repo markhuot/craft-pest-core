@@ -196,6 +196,11 @@ class Entry extends Element
      */
     public function newElement()
     {
+        $sectionId = $this->inferSectionId();
+        if ($sectionId && service(SectionsServiceInterface::class)->getSectionById($sectionId)->type === 'single') {
+            return \craft\elements\Entry::find()->sectionId($sectionId)->status(null)->one();
+        }
+
         return new \craft\elements\Entry;
     }
 
