@@ -138,3 +138,7 @@ jobs:
     - name: Run test suite
       run: ./vendor/bin/pest -vvv --diff
       if: always()
+
+    - name: Confirm parallel test suite runs
+      run: ./vendor/bin/pest -vvv --parallel tests/BootstrapTest.php
+      if: always()
