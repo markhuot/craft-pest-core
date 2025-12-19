@@ -144,6 +144,15 @@ class InstallsCraft implements HandlesArguments
         // will be empty in the DB and Craft will think it needs to re-apply everything on the next request.
         Craft::$app->getProjectConfig()->saveModifiedConfigData();
 
+        // Make sure plugins get a chance to register themselves after installation. Normally this would happen
+        // automatically because the install happens in one request and the subsequent request would boot Craft
+        // with the plugins fully installed. But in our case we're still in the same process/request so we need
+        // to give plugins a chance to register themselves like they normally would.
+        $plugins = Craft::$app->getPlugins();
+        $reflect = new \ReflectionClass($plugins);
+        $reflect->getProperty('_pluginsLoaded')->setValue($plugins, false);
+        $plugins->loadPlugins();
+
         $edition = Craft::$app->getProjectConfig()->get('system.edition');
         if (method_exists(App::class, 'editionIdByHandle')) {
             Craft::$app->setEdition(App::editionIdByHandle($edition));
