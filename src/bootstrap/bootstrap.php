@@ -94,7 +94,6 @@ if (! function_exists('replace_class')) {
 }
 
 replace_class('services\\Config');
-// replace_class('services\\ProjectConfig');
 
 /** @var \craft\web\Application $app */
 $app = require CRAFT_VENDOR_PATH.'/craftcms/cms/bootstrap/web.php';
