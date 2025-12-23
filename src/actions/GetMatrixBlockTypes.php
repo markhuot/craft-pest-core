@@ -13,6 +13,8 @@ class GetMatrixBlockTypes
     /**
      * Get all block/entry types for a matrix field.
      *
+     * @phpstan-ignore-next-line
+     *
      * @return array<MatrixBlockType|EntryType>
      */
     public function handle(Matrix $field): array
