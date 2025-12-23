@@ -2,8 +2,10 @@
 
 namespace markhuot\craftpest\factories;
 
+use Craft;
 use craft\fields\Matrix;
 use craft\models\MatrixBlockType;
+use markhuot\craftpest\actions\GetMatrixBlockTypes;
 
 trait AddsMatrixBlocks
 {
@@ -49,14 +51,19 @@ trait AddsMatrixBlocks
             throw new \Exception('Could not determine a field to add to from key ['.$fieldOrHandle.']');
         }
 
+        $blockTypes = Craft::$container->get(GetMatrixBlockTypes::class)->handle($field);
+
         if (! empty($args[0]) && is_string($args[0])) {
-            $blockType = collect($field->getBlockTypes())->where('handle', '=', $args[0])->first();
+            $blockType = collect($blockTypes)->where('handle', '=', $args[0])->first();
             array_shift($args);
         } elseif (! empty($args[0]) && is_a($args[0], MatrixBlockType::class)) {
             $blockType = $args[0];
             array_shift($args);
+        } elseif (! empty($args[0]) && is_a($args[0], \craft\models\EntryType::class)) {
+            $blockType = $args[0];
+            array_shift($args);
         } else {
-            $blockType = $field->getBlockTypes()[0];
+            $blockType = $blockTypes[0];
         }
 
         if (! empty($args[0]) && is_array($args[0])) {

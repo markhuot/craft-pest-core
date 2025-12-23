@@ -129,7 +129,31 @@ it('tests matrix blocks in craft 4', function () {
     expect($firstBlock->{$plainTextTwoHandle})->toBe('bar');
 })->todo();
 
-it('can fill matrix blocks with a shorthand', function () {
+it('can fill matrix blocks with a shorthand in Craft 5', function () {
+    $plainTextOne = FieldFactory::factory()->type(PlainTextField::class);
+    $plainTextTwo = FieldFactory::factory()->type(PlainTextField::class);
+    $blockType = EntryType::factory()->hasTitleField(false)->fields($plainTextOne, $plainTextTwo);
+    $matrix = MatrixFieldFactory::factory()->entryTypes($blockType)->create();
+    $section = SectionFactory::factory()->fields($matrix)->create();
+
+    $blockTypeHandle = $blockType->getMadeModels()->first()->handle;
+    $plainTextOneHandle = $plainTextOne->getMadeModels()->first()->handle;
+    $plainTextTwoHandle = $plainTextTwo->getMadeModels()->first()->handle;
+
+    $entry = EntryFactory::factory()
+        ->section($section)
+        ->addBlockTo($matrix, [
+            $plainTextOneHandle => 'foo',
+            $plainTextTwoHandle => 'bar',
+        ])
+        ->create();
+
+    $block = $entry->{$matrix->handle}->all()[0];
+    expect($block->{$plainTextOneHandle})->toBe('foo');
+    expect($block->{$plainTextTwoHandle})->toBe('bar');
+})->skip(InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '<5.0.0'));
+
+it('can fill matrix blocks with a shorthand in Craft 4', function () {
     $plainTextOne = FieldFactory::factory()->type(PlainTextField::class);
     $plainTextTwo = FieldFactory::factory()->type(PlainTextField::class);
     $blockType = BlockTypeFactory::factory()->fields($plainTextOne, $plainTextTwo);
@@ -151,7 +175,7 @@ it('can fill matrix blocks with a shorthand', function () {
     $block = $entry->{$matrix->handle}->all()[0];
     expect($block->{$plainTextOneHandle})->toBe('foo');
     expect($block->{$plainTextTwoHandle})->toBe('bar');
-})->skip();
+})->skip(InstalledVersions::satisfies(new VersionParser, 'craftcms/cms', '>=5.0.0'));
 
 it('can fill matrix blocks with a magic shorthand', function () {
     $plainTextOne = FieldFactory::factory()->type(PlainTextField::class)->name('Plain Text One');
