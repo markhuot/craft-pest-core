@@ -68,11 +68,8 @@ class Coverage implements AddsOutput, HandlesArguments
             return false;
         })));
 
-        $arguments = array_flip($arguments);
-        foreach ($arguments as $argument) {
-            unset($arguments[$argument]);
-        }
-        $arguments = array_flip($arguments);
+        // Remove duplicates
+        $arguments = array_values(array_unique($arguments));
 
         $inputs = [];
         $inputs[] = new InputOption(self::COVERAGE_OPTION, null, InputOption::VALUE_NONE);
