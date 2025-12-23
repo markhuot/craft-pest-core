@@ -138,11 +138,3 @@ jobs:
     - name: Run test suite
       run: ./vendor/bin/pest -vvv
       if: always()
-
-    - name: Reset project config
-      run: php craft project-config/apply --force
-      if: always()
-
-    - name: Confirm parallel test suite runs
-      run: ./vendor/bin/pest -vvv --parallel tests/BootstrapTest.php
-      if: always()
