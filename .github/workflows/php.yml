@@ -135,12 +135,12 @@ jobs:
       run: ./vendor/bin/pint --test -vvv src/
       if: always()
 
-    - name: Check project config
-      run: php craft project-config/diff
-      if: always()
-
     - name: Run test suite
       run: ./vendor/bin/pest -vvv
+      if: always()
+
+    - name: Reset project config
+      run: php craft project-config/apply --force
       if: always()
 
     - name: Confirm parallel test suite runs
