@@ -1,35 +1,22 @@
-dateModified: 1701424969
+dateModified: 1766464814
 email:
   fromEmail: michael@bluth.com
   fromName: Pest
   transportType: craft\mail\transportadapters\Sendmail
-graphql:
-  publicToken:
-    enabled: false
-    expiryDate: null
 meta:
   __names__:
     7d1a7bf3-c346-48bc-bb77-f7d76fcacf2e: 'Text Field' # Text Field
-    7ed72c1d-c76d-4181-9858-8114222e705e: Default # Default
-    9d7204cd-5e72-47f8-a568-8d6559268700: Default # Default
-    18e5170c-cf87-4416-813d-1fd58bb97c58: Default # Default
-    53f48c8f-7220-4fcc-9c41-301b2ff55ee2: Default # Default
-    67bda5c8-003a-49fb-b758-845cca6168fb: 'qui perspiciatis' # qui perspiciatis
-    78d80bcf-9eea-446c-9419-58c033535a41: 'corrupti aspernatur' # corrupti aspernatur
+    8c52290b-5521-4c12-bbee-54097cfdfb5e: 'Public Schema' # Public Schema
     99c2747f-1049-46bc-93e0-424bad0544e5: Pest # Pest
     0193fbbc-6912-4ff6-a3d5-e60ea03c8590: Default # Default
-    2799f7a5-01a0-47f6-94a2-9c1903121927: 'est aut' # est aut
     10199d0e-57f0-4724-aefb-1ef4ed73b408: 'Field Two' # Field Two
     17685ada-d64c-459c-b9fc-678d43e4bee8: 'Dropdown Field' # Dropdown Field
     ae919370-04f6-4e2d-8d42-f255cc1b6a75: Posts # Posts
-    b1b90586-4fe0-4dd7-b429-948dd41ee59f: 'facere nemo' # facere nemo
     b5c238dd-588f-4f0a-b9e4-8a988f0e7468: 'Block Type One' # Block Type One
     b11e9b16-d6b0-4771-86bb-3fe962b4596d: Pest # Pest
-    b66aa948-28a4-424e-93b7-865037bb2359: 'animi ut' # animi ut
     bda4d299-4f91-43c1-91d1-48abd1dd5fb4: Pest # Pest
     bdde35b2-daab-45e7-aef7-43fd8b221aa2: Pest # Pest
     c05f8773-60a8-4f5e-9925-3cc36a064793: 'Field One' # Field One
-    c095d402-5375-4d48-93bf-25af24666dda: Default # Default
     c148dfb3-a122-49ed-8538-de26d0482663: 'Entries Field' # Entries Field
     c7529b61-60cd-4e18-a272-3084aee7fa89: 'Matrix Field' # Matrix Field
     f948b9a4-6a4e-43da-84aa-65b91c0cd202: Common # Common

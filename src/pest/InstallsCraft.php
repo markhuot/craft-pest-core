@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class InstallsCraft implements HandlesArguments
 {
-    public function handleArguments(array $originals): array
+    public function handleArguments(array $arguments): array
     {
         // Load phpunit.xml environment variables early to ensure they're available
         // before Craft is bootstrapped and installed. This fixes the issue where
@@ -26,15 +26,15 @@ class InstallsCraft implements HandlesArguments
             $this->requireCraft();
         }
 
-        if (in_array('--skip-install', $originals)) {
-            $originals = array_values(array_filter($originals, fn ($arg) => $arg !== '--skip-install'));
+        if (in_array('--skip-install', $arguments)) {
+            $arguments = array_values(array_filter($arguments, fn ($arg) => $arg !== '--skip-install'));
         } else {
             $this->install();
         }
 
         $this->renderCompiledClasses();
 
-        return $originals;
+        return $arguments;
     }
 
     protected function logStart(string $message): float

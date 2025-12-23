@@ -52,13 +52,13 @@ class Coverage implements AddsOutput, HandlesArguments
      * This method is called every time pest is executed
      * but we are only interested in the --twig-coverage option
      */
-    public function handleArguments(array $originals): array
+    public function handleArguments(array $arguments): array
     {
-        if (! in_array('--'.self::COVERAGE_OPTION, $originals)) {
-            return $originals;
+        if (! in_array('--'.self::COVERAGE_OPTION, $arguments)) {
+            return $arguments;
         }
 
-        $arguments = array_merge([''], array_values(array_filter($originals, function ($original): bool {
+        $arguments = array_merge([''], array_values(array_filter($arguments, function ($original): bool {
             foreach ([self::COVERAGE_OPTION, self::MIN_OPTION] as $option) {
                 if ($original === sprintf('--%s', $option) || Str::startsWith($original, sprintf('--%s=', $option))) {
                     return true;
@@ -68,11 +68,8 @@ class Coverage implements AddsOutput, HandlesArguments
             return false;
         })));
 
-        $originals = array_flip($originals);
-        foreach ($arguments as $argument) {
-            unset($originals[$argument]);
-        }
-        $originals = array_flip($originals);
+        // Remove duplicates
+        $arguments = array_values(array_unique($arguments));
 
         $inputs = [];
         $inputs[] = new InputOption(self::COVERAGE_OPTION, null, InputOption::VALUE_NONE);
@@ -81,8 +78,8 @@ class Coverage implements AddsOutput, HandlesArguments
         $input = new ArgvInput($arguments, new InputDefinition($inputs));
         if ((bool) $input->getOption(self::COVERAGE_OPTION)) {
             $this->coverage = true;
-            $originals[] = '--coverage-php';
-            $originals[] = getcwd().'/storage/coverage.php';
+            $arguments[] = '--coverage-php';
+            $arguments[] = getcwd().'/storage/coverage.php';
         }
 
         if ($input->getOption(self::MIN_OPTION) !== null) {
@@ -99,7 +96,7 @@ class Coverage implements AddsOutput, HandlesArguments
             $this->output->writeln($data);
         }
 
-        return $originals;
+        return $arguments;
     }
 
     public function addOutput(int $result): int

@@ -51,6 +51,7 @@ $_SERVER['SCRIPT_FILENAME'] = 'index.php';
 
 // Unset argv to prevent Craft from throwing exceptions in later versions
 // when it detects CLI arguments in a web request context
+[$argv, $argc] = [$_SERVER['argv'], $_SERVER['argc']];
 unset($_SERVER['argv'], $_SERVER['argc']);
 
 // Load and run Craft. We have two ways we can do this. The safe way or the flexible way.
@@ -97,5 +98,10 @@ replace_class('services\\Config');
 
 /** @var \craft\web\Application $app */
 $app = require CRAFT_VENDOR_PATH.'/craftcms/cms/bootstrap/web.php';
+
+// Now that the app is loaded, we can restore the original argv and argc so we don't mess up Pest's CLI processing.
+// This is, specifically, to work around this: https://github.com/craftcms/security-patches/blob/9cd40c11a31ba4e4d05649ddab44ecebc9b359d4/src/Extension.php#L42-L43
+$_SERVER['argv'] = $argv;
+$_SERVER['argc'] = $argc;
 
 return $app;
