@@ -2,6 +2,9 @@
 
 # Pest for Craft CMS
 
+[![Run in Smithery](https://smithery.ai/badge/skills/markhuot)](https://smithery.ai/skills?ns=markhuot&utm_source=github&utm_medium=badge)
+
+
 ```shell
 composer require --dev markhuot/craft-pest-core
 ./craft pest # or ./vendor/bin/pest
