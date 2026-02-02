@@ -36,6 +36,8 @@ jobs:
             config: 5.5
           - constraint: ~5.8.0
             config: 5.8
+          - constraint: ~5.9.0
+            config: 5.8
 
     env:
       CRAFT_APP_ID: pest
