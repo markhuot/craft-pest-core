@@ -32,3 +32,19 @@ if (! function_exists('user')) {
         return User::factory();
     }
 }
+
+if (! function_exists('product')) {
+    /**
+     * @deprecated Use the Product::factory() directly
+     */
+    function product(?string $handle = null)
+    {
+        $factory = Product::factory();
+
+        if ($handle !== null) {
+            $factory->productType($handle);
+        }
+
+        return $factory;
+    }
+}
