@@ -166,6 +166,12 @@ class InstallsCraft implements HandlesArguments
     protected function setEditionFromProjectConfig(): void
     {
         $edition = Craft::$app->getProjectConfig()->get('system.edition');
+
+        // If edition is not set in project config, default to 'pro' for testing
+        if ($edition === null) {
+            $edition = 'pro';
+        }
+
         if (method_exists(App::class, 'editionIdByHandle')) {
             Craft::$app->setEdition(App::editionIdByHandle($edition));
         } elseif (class_exists(CmsEdition::class)) {
