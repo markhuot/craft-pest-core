@@ -66,18 +66,45 @@ class InstallsCraft implements HandlesArguments
         }
     }
 
+    protected function logError(string $message, \Throwable $exception): void
+    {
+        try {
+            $output = \Pest\Support\Container::getInstance()->get(\Symfony\Component\Console\Output\OutputInterface::class);
+            if (! $output instanceof OutputInterface) {
+                throw new \RuntimeException('No defined output');
+            }
+            $output->writeln("  <fg=red>ERROR: {$message}</>");
+            $output->writeln("  <fg=red>{$exception->getMessage()}</>");
+            $output->writeln("  <fg=gray>{$exception->getFile()}:{$exception->getLine()}</>");
+        } catch (\Throwable) {
+            fwrite(STDERR, "ERROR: {$message}\n");
+            fwrite(STDERR, "{$exception->getMessage()}\n");
+            fwrite(STDERR, "{$exception->getFile()}:{$exception->getLine()}\n");
+        }
+    }
+
     protected function install(): void
     {
         if (! Craft::$app->getIsInstalled(true)) {
             $start = $this->logStart('Installing Craft CMS...');
-            $this->craftInstall();
-            $this->logEnd('Craft CMS installed', $start);
+            try {
+                $this->craftInstall();
+                $this->logEnd('Craft CMS installed', $start);
+            } catch (\Throwable $e) {
+                $this->logError('Craft installation failed', $e);
+                throw $e;
+            }
         }
 
         if (Craft::$app->getContentMigrator()->getNewMigrations()) {
             $start = $this->logStart('Running migrations...');
-            $this->craftMigrateAll();
-            $this->logEnd('Migrations complete', $start);
+            try {
+                $this->craftMigrateAll();
+                $this->logEnd('Migrations complete', $start);
+            } catch (\Throwable $e) {
+                $this->logError('Migrations failed', $e);
+                throw $e;
+            }
         }
 
         // We have to flush the data cache to make sure we're getting an accurate look at whether or not there
@@ -91,8 +118,13 @@ class InstallsCraft implements HandlesArguments
         Craft::$app->getCache()->flush();
         if (Craft::$app->getProjectConfig()->areChangesPending(null, true)) {
             $start = $this->logStart('Applying project config changes...');
-            $this->craftApplyProjectConfig();
-            $this->logEnd('Project config applied', $start);
+            try {
+                $this->craftApplyProjectConfig();
+                $this->logEnd('Project config applied', $start);
+            } catch (\Throwable $e) {
+                $this->logError('Project config application failed', $e);
+                throw $e;
+            }
         }
     }
 
