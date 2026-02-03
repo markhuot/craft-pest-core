@@ -21,13 +21,13 @@ class ProductType extends Factory
 
     protected $hasUrls = true;
 
-    protected $hasVariants = false;
+    protected $maxVariants = null;
 
     protected $hasDimensions = false;
 
     protected $skuFormat = '';
 
-    protected $titleFormat = '{product.title}';
+    protected $variantTitleFormat = '{product.title}';
 
     public function hasUrls(bool $hasUrls)
     {
@@ -38,7 +38,7 @@ class ProductType extends Factory
 
     public function hasVariants(bool $hasVariants)
     {
-        $this->hasVariants = $hasVariants;
+        $this->maxVariants = $hasVariants ? null : 1;
 
         return $this;
     }
@@ -57,9 +57,9 @@ class ProductType extends Factory
         return $this;
     }
 
-    public function titleFormat(string $titleFormat)
+    public function variantTitleFormat(string $variantTitleFormat)
     {
-        $this->titleFormat = $titleFormat;
+        $this->variantTitleFormat = $variantTitleFormat;
 
         return $this;
     }
@@ -94,22 +94,24 @@ class ProductType extends Factory
             $definition['handle'] = StringHelper::toCamelCase($definition['name']);
         }
 
-        $definition['hasUrls'] = $this->hasUrls;
-        $definition['hasVariants'] = $this->hasVariants;
+        // Set valid ProductType model properties
         $definition['hasDimensions'] = $this->hasDimensions;
+        $definition['maxVariants'] = $this->maxVariants;
         $definition['skuFormat'] = $this->skuFormat;
-        $definition['titleFormat'] = $this->titleFormat;
+        $definition['variantTitleFormat'] = $this->variantTitleFormat;
 
         // Set site settings for product URLs
         if ($this->hasUrls) {
             $definition['siteSettings'] = collect(Craft::$app->sites->getAllSites())
                 ->mapWithKeys(function ($site) use ($definition) {
-                    return [$site->id => [
+                    $siteSettings = new \craft\commerce\models\ProductTypeSite([
                         'siteId' => $site->id,
                         'hasUrls' => true,
                         'uriFormat' => 'shop/'.($definition['handle'] ?? 'products').'/{slug}',
                         'template' => 'shop/_product',
-                    ]];
+                    ]);
+
+                    return [$site->id => $siteSettings];
                 })->toArray();
         }
 

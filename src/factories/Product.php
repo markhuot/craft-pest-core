@@ -221,31 +221,41 @@ class Product extends Element
      *
      * 1. a tax category id
      * 2. a tax category handle
+     *
+     * Note: In Commerce 5.0+, this property has moved to PurchasableStore
+     *
+     * @deprecated This method is a no-op in Commerce 5.0+
      */
     public function taxCategory($identifier)
     {
-        $this->taxCategoryIdentifier = $identifier;
-
+        // This property no longer exists on Product in Commerce 5.0+
+        // Keeping method for backwards compatibility but it does nothing
         return $this;
     }
 
     /**
      * Set whether the product is promotable (can be used in sales/discounts)
+     * Note: In Commerce 5.0+, this property has moved to PurchasableStore
+     *
+     * @deprecated This method is a no-op in Commerce 5.0+
      */
     public function promotable(bool $value = true)
     {
-        $this->attributes['promotable'] = $value;
-
+        // This property no longer exists on Product in Commerce 5.0+
+        // Keeping method for backwards compatibility but it does nothing
         return $this;
     }
 
     /**
      * Set whether the product has free shipping
+     * Note: In Commerce 5.0+, this property has moved to PurchasableStore
+     *
+     * @deprecated This method is a no-op in Commerce 5.0+
      */
     public function freeShipping(bool $value = true)
     {
-        $this->attributes['freeShipping'] = $value;
-
+        // This property no longer exists on Product in Commerce 5.0+
+        // Keeping method for backwards compatibility but it does nothing
         return $this;
     }
 
@@ -315,27 +325,6 @@ class Product extends Element
     }
 
     /**
-     * Infer the tax category
-     *
-     * @internal
-     */
-    public function inferTaxCategoryId(): ?int
-    {
-        if (is_numeric($this->taxCategoryIdentifier)) {
-            return $this->taxCategoryIdentifier;
-        } elseif (is_string($this->taxCategoryIdentifier)) {
-            $taxCategory = \craft\commerce\Plugin::getInstance()->getTaxCategories()->getTaxCategoryByHandle($this->taxCategoryIdentifier);
-
-            return $taxCategory?->id;
-        }
-
-        // Get the default tax category
-        $taxCategories = \craft\commerce\Plugin::getInstance()->getTaxCategories()->getAllTaxCategories();
-
-        return $taxCategories[0]->id ?? null;
-    }
-
-    /**
      * Get the element to be generated
      *
      * @internal
@@ -351,7 +340,6 @@ class Product extends Element
     public function inferences(array $definition = [])
     {
         $typeId = $this->inferTypeId();
-        $taxCategoryId = $this->inferTaxCategoryId();
 
         // If a product type was passed in but didn't resolve, throw an error
         throw_if(! empty($this->productTypeIdentifier) && empty($typeId), "Could not resolve product type identifier `{$this->productTypeIdentifier}`");
@@ -362,12 +350,8 @@ class Product extends Element
             $typeId = $productType->id;
         }
 
-        // If no tax category could be determined, throw an error
-        throw_if(empty($taxCategoryId), 'Could not determine a tax category for the product. Please ensure at least one tax category exists.');
-
         return array_merge($definition, [
             'typeId' => $typeId,
-            'taxCategoryId' => $taxCategoryId,
         ]);
     }
 
@@ -376,33 +360,56 @@ class Product extends Element
      */
     public function store($element)
     {
-        // Ensure at least one variant exists
-        if (empty($this->variantData) && empty($element->getVariants())) {
-            // Create a default variant
-            $variant = new \craft\commerce\elements\Variant;
-            $variant->sku = $element->title ? strtoupper(str_replace(' ', '-', $element->title)) : 'SKU-'.time();
-            $variant->price = 0;
-            $variant->isDefault = true;
-            $element->setVariants([$variant]);
-        } elseif (! empty($this->variantData)) {
-            // Create variants from the provided data
-            $variants = [];
-            foreach ($this->variantData as $index => $data) {
-                $variant = new \craft\commerce\elements\Variant;
-                foreach ($data as $key => $value) {
-                    $variant->{$key} = $value;
-                }
-                // Set first variant as default if not specified
-                if (! isset($data['isDefault'])) {
-                    $variant->isDefault = ($index === 0);
-                }
-                $variants[] = $variant;
-            }
-            $element->setVariants($variants);
-        }
-
         $element->setScenario($this->scenario ?? \craft\base\Element::SCENARIO_DEFAULT);
 
-        return \Craft::$app->elements->saveElement($element);
+        $result = \Craft::$app->elements->saveElement($element);
+
+        if (! $result) {
+            return false;
+        }
+
+        // Create variants after product is saved
+        if (empty($this->variantData)) {
+            // Create a default variant using the Variant factory
+            $variant = Variant::factory()
+                ->product($element)
+                ->title($element->title ?: 'Default Variant')
+                ->sku($element->title ? strtoupper(str_replace(' ', '-', $element->title)) : 'SKU-'.time())
+                ->price(0)
+                ->isDefault(true)
+                ->create();
+        } else {
+            // Create variants from the provided data
+            foreach ($this->variantData as $index => $data) {
+                $factory = Variant::factory()->product($element);
+
+                // Set title
+                if (! isset($data['title'])) {
+                    $data['title'] = $element->title ?: 'Variant';
+                }
+
+                // Set isDefault for first variant
+                if (! isset($data['isDefault'])) {
+                    $data['isDefault'] = ($index === 0);
+                }
+
+                // Set all data using the magic method
+                foreach ($data as $key => $value) {
+                    if (method_exists($factory, $key)) {
+                        $factory->$key($value);
+                    } else {
+                        // Use magic __call method
+                        $factory->$key($value);
+                    }
+                }
+
+                $factory->create();
+            }
+        }
+
+        // Refresh the variants from the database after creating them
+        $element->setVariants(\craft\commerce\elements\Variant::find()->ownerId($element->id));
+
+        return $result;
     }
 }

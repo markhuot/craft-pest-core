@@ -61,10 +61,11 @@ class Variant extends Element
     public function definition(int $index = 0)
     {
         return [
+            'title' => 'Variant '.$this->faker->word(),
             'sku' => 'SKU-'.strtoupper($this->faker->bothify('???-###')),
             'price' => $this->faker->randomFloat(2, 5, 100),
             'isDefault' => false,
-            'unlimitedStock' => true,
+            // unlimitedStock was removed in Commerce 5.0+
         ];
     }
 
