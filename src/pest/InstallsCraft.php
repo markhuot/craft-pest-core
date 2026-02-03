@@ -68,16 +68,10 @@ class InstallsCraft implements HandlesArguments
 
     protected function install(): void
     {
-        $wasInstalled = Craft::$app->getIsInstalled(true);
-
-        if (! $wasInstalled) {
+        if (! Craft::$app->getIsInstalled(true)) {
             $start = $this->logStart('Installing Craft CMS...');
             $this->craftInstall();
             $this->logEnd('Craft CMS installed', $start);
-
-            // Set the Craft edition from project config immediately after a fresh install
-            // because the project config YAML files are loaded during install
-            $this->setEditionFromProjectConfig();
         }
 
         if (Craft::$app->getContentMigrator()->getNewMigrations()) {
@@ -99,9 +93,6 @@ class InstallsCraft implements HandlesArguments
             $start = $this->logStart('Applying project config changes...');
             $this->craftApplyProjectConfig();
             $this->logEnd('Project config applied', $start);
-
-            // Set the Craft edition from project config after applying external changes
-            $this->setEditionFromProjectConfig();
         }
     }
 
@@ -161,17 +152,8 @@ class InstallsCraft implements HandlesArguments
         $reflect = new \ReflectionClass($plugins);
         $reflect->getProperty('_pluginsLoaded')->setValue($plugins, false);
         $plugins->loadPlugins();
-    }
 
-    protected function setEditionFromProjectConfig(): void
-    {
         $edition = Craft::$app->getProjectConfig()->get('system.edition');
-
-        // If edition is not set in project config, default to 'pro' for testing
-        if ($edition === null) {
-            $edition = 'pro';
-        }
-
         if (method_exists(App::class, 'editionIdByHandle')) {
             Craft::$app->setEdition(App::editionIdByHandle($edition));
         } elseif (class_exists(CmsEdition::class)) {
@@ -179,10 +161,6 @@ class InstallsCraft implements HandlesArguments
         } else {
             throw new \RuntimeException('Could not determine a [system.edition] based on the project config.');
         }
-
-        // Make sure the edition is saved to the project config
-        Craft::$app->getProjectConfig()->set('system.edition', $edition);
-        Craft::$app->getProjectConfig()->saveModifiedConfigData();
     }
 
     protected function craftMigrateAll()
