@@ -29,7 +29,12 @@ class InstallsCraft implements HandlesArguments
         if (in_array('--skip-install', $arguments)) {
             $arguments = array_values(array_filter($arguments, fn ($arg) => $arg !== '--skip-install'));
         } else {
-            $this->install();
+            try {
+                $this->install();
+            } catch (\Throwable $e) {
+                $this->logError('Installation failed', $e);
+                throw $e;
+            }
         }
 
         $this->renderCompiledClasses();
@@ -63,6 +68,23 @@ class InstallsCraft implements HandlesArguments
             $output->writeln("  <fg=green>{$message}</> <fg=gray>({$duration}s)</>");
         } catch (\Throwable) {
             fwrite(STDOUT, "{$message} ({$duration}s).\n");
+        }
+    }
+
+    protected function logError(string $message, \Throwable $exception): void
+    {
+        try {
+            $output = \Pest\Support\Container::getInstance()->get(\Symfony\Component\Console\Output\OutputInterface::class);
+            if (! $output instanceof OutputInterface) {
+                throw new \RuntimeException('No defined output');
+            }
+            $output->writeln("  <fg=red>ERROR: {$message}</>");
+            $output->writeln("  <fg=red>{$exception->getMessage()}</>");
+            $output->writeln("  <fg=gray>{$exception->getFile()}:{$exception->getLine()}</>");
+        } catch (\Throwable) {
+            fwrite(STDERR, "ERROR: {$message}\n");
+            fwrite(STDERR, "{$exception->getMessage()}\n");
+            fwrite(STDERR, "{$exception->getFile()}:{$exception->getLine()}\n");
         }
     }
 

@@ -1,4 +1,4 @@
-dateModified: 1727735180
+dateModified: 1770133003
 email:
   fromEmail: michael@bluth.com
   fromName: Pest
@@ -18,16 +18,24 @@ meta:
     99c2747f-1049-46bc-93e0-424bad0544e5: Pest # Pest
     184fa66e-14cd-4045-853d-9a69ecf44e4e: 'Public Schema' # Public Schema
     0193fbbc-6912-4ff6-a3d5-e60ea03c8590: Default # Default
-    10199d0e-57f0-4724-aefb-1ef4ed73b408: 'Field Two' # Field Two
+    10199d0e-57f0-4724-aefb-1ef4ed73b408: 'Matrix Field - Block Type One - Field Two' # Matrix Field - Block Type One - Field Two
+    15961c01-3444-4a27-aec8-c588a78738a7: Dummy # Dummy
     17685ada-d64c-459c-b9fc-678d43e4bee8: 'Dropdown Field' # Dropdown Field
     ae919370-04f6-4e2d-8d42-f255cc1b6a75: Posts # Posts
     b5c238dd-588f-4f0a-b9e4-8a988f0e7468: 'Block Type One' # Block Type One
     b11e9b16-d6b0-4771-86bb-3fe962b4596d: Pest # Pest
     bda4d299-4f91-43c1-91d1-48abd1dd5fb4: Pest # Pest
     bdde35b2-daab-45e7-aef7-43fd8b221aa2: Pest # Pest
-    c05f8773-60a8-4f5e-9925-3cc36a064793: 'Field One' # Field One
+    c05f8773-60a8-4f5e-9925-3cc36a064793: 'Matrix Field - Block Type One - Field One' # Matrix Field - Block Type One - Field One
     c148dfb3-a122-49ed-8538-de26d0482663: 'Entries Field' # Entries Field
     c7529b61-60cd-4e18-a272-3084aee7fa89: 'Matrix Field' # Matrix Field
+    d2abc0b3-edae-41bb-8303-44aebee333d7: Primary # Primary
+    e1fed2ba-98b3-4e20-8639-f1869f59f526: New # New
+plugins:
+  commerce:
+    edition: pro
+    enabled: true
+    schemaVersion: 5.2.9.1
 system:
   edition: pro
   live: true

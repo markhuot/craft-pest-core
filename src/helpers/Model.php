@@ -4,6 +4,7 @@ namespace markhuot\craftpest\helpers\model;
 
 use markhuot\craftpest\factories\Entry;
 use markhuot\craftpest\factories\Factory;
+use markhuot\craftpest\factories\Product;
 use markhuot\craftpest\factories\User;
 use Pest\Support\HigherOrderTapProxy;
 
@@ -30,5 +31,21 @@ if (! function_exists('user')) {
     function user()
     {
         return User::factory();
+    }
+}
+
+if (! function_exists('product')) {
+    /**
+     * @deprecated Use the Product::factory() directly
+     */
+    function product(?string $handle = null)
+    {
+        $factory = Product::factory();
+
+        if ($handle !== null) {
+            $factory->productType($handle);
+        }
+
+        return $factory;
     }
 }

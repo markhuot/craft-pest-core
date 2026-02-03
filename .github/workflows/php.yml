@@ -92,7 +92,6 @@ jobs:
     - name: Install dependencies
       run: |
         composer require "craftcms/cms:${{ matrix.version.constraint }}" --prefer-dist --no-progress
-        composer require pestphp/pest-plugin-browser
         ./bin/post-clone.sh
 
     - name: Cache NPM packages

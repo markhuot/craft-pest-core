@@ -38,7 +38,7 @@ fieldLayouts:
           -
             dateAdded: '2024-11-20T09:14:23-08:00'
             elementCondition: null
-            fieldUid: c05f8773-60a8-4f5e-9925-3cc36a064793 # Field One
+            fieldUid: c05f8773-60a8-4f5e-9925-3cc36a064793 # Matrix Field - Block Type One - Field One
             handle: null
             includeInCards: true
             instructions: null
@@ -54,7 +54,7 @@ fieldLayouts:
           -
             dateAdded: '2024-11-20T09:14:23-08:00'
             elementCondition: null
-            fieldUid: 10199d0e-57f0-4724-aefb-1ef4ed73b408 # Field Two
+            fieldUid: 10199d0e-57f0-4724-aefb-1ef4ed73b408 # Matrix Field - Block Type One - Field Two
             handle: null
             includeInCards: false
             instructions: null
