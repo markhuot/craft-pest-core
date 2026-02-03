@@ -127,6 +127,7 @@ class ProductType extends Factory
         throw_unless(empty($element->errors), 'Problem saving product type: '.implode(', ', $element->getFirstErrors()));
 
         // Store fields for the product field layout if any were defined
+        // @phpstan-ignore-next-line
         if ($element->getFieldLayout()) {
             $this->storeFields($element->getFieldLayout());
         }
