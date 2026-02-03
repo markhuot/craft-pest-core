@@ -68,10 +68,16 @@ class InstallsCraft implements HandlesArguments
 
     protected function install(): void
     {
-        if (! Craft::$app->getIsInstalled(true)) {
+        $wasInstalled = Craft::$app->getIsInstalled(true);
+
+        if (! $wasInstalled) {
             $start = $this->logStart('Installing Craft CMS...');
             $this->craftInstall();
             $this->logEnd('Craft CMS installed', $start);
+
+            // Set the Craft edition from project config immediately after a fresh install
+            // because the project config YAML files are loaded during install
+            $this->setEditionFromProjectConfig();
         }
 
         if (Craft::$app->getContentMigrator()->getNewMigrations()) {
@@ -93,10 +99,10 @@ class InstallsCraft implements HandlesArguments
             $start = $this->logStart('Applying project config changes...');
             $this->craftApplyProjectConfig();
             $this->logEnd('Project config applied', $start);
-        }
 
-        // Set the Craft edition from project config after it has been applied
-        $this->setEditionFromProjectConfig();
+            // Set the Craft edition from project config after applying external changes
+            $this->setEditionFromProjectConfig();
+        }
     }
 
     protected function craftInstall()
