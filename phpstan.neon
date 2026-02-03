@@ -17,3 +17,4 @@ parameters:
       - src/craft/*
       - src/illuminate/*
       - src/actions/RenderCompiledClasses.php
+      - src/browser/*
