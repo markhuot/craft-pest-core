@@ -29,7 +29,12 @@ class InstallsCraft implements HandlesArguments
         if (in_array('--skip-install', $arguments)) {
             $arguments = array_values(array_filter($arguments, fn ($arg) => $arg !== '--skip-install'));
         } else {
-            $this->install();
+            try {
+                $this->install();
+            } catch (\Throwable $e) {
+                $this->logError('Installation failed', $e);
+                throw $e;
+            }
         }
 
         $this->renderCompiledClasses();
@@ -87,24 +92,14 @@ class InstallsCraft implements HandlesArguments
     {
         if (! Craft::$app->getIsInstalled(true)) {
             $start = $this->logStart('Installing Craft CMS...');
-            try {
-                $this->craftInstall();
-                $this->logEnd('Craft CMS installed', $start);
-            } catch (\Throwable $e) {
-                $this->logError('Craft installation failed', $e);
-                throw $e;
-            }
+            $this->craftInstall();
+            $this->logEnd('Craft CMS installed', $start);
         }
 
         if (Craft::$app->getContentMigrator()->getNewMigrations()) {
             $start = $this->logStart('Running migrations...');
-            try {
-                $this->craftMigrateAll();
-                $this->logEnd('Migrations complete', $start);
-            } catch (\Throwable $e) {
-                $this->logError('Migrations failed', $e);
-                throw $e;
-            }
+            $this->craftMigrateAll();
+            $this->logEnd('Migrations complete', $start);
         }
 
         // We have to flush the data cache to make sure we're getting an accurate look at whether or not there
@@ -118,13 +113,8 @@ class InstallsCraft implements HandlesArguments
         Craft::$app->getCache()->flush();
         if (Craft::$app->getProjectConfig()->areChangesPending(null, true)) {
             $start = $this->logStart('Applying project config changes...');
-            try {
-                $this->craftApplyProjectConfig();
-                $this->logEnd('Project config applied', $start);
-            } catch (\Throwable $e) {
-                $this->logError('Project config application failed', $e);
-                throw $e;
-            }
+            $this->craftApplyProjectConfig();
+            $this->logEnd('Project config applied', $start);
         }
     }
 
