@@ -4,6 +4,7 @@ namespace markhuot\craftpest\helpers\model;
 
 use markhuot\craftpest\factories\Entry;
 use markhuot\craftpest\factories\Factory;
+use markhuot\craftpest\factories\Product;
 use markhuot\craftpest\factories\User;
 use Pest\Support\HigherOrderTapProxy;
 

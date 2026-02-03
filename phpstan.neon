@@ -17,8 +17,3 @@ parameters:
       - src/craft/*
       - src/illuminate/*
       - src/actions/RenderCompiledClasses.php
-      - src/browser/*
-      - src/test/BrowserHelpers.php
-      - src/test/ConfiguresBrowserTesting.php
-      - src/pest/UsesVisitTemplateMethodFilter.php
-      - src/helpers/Model.php
