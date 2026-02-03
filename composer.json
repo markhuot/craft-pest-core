@@ -66,6 +66,8 @@
         "craftcms/craft": "^4.0.0|^5.0.0-alpha.1",
         "craftcms/commerce": "^4.0|^5.0",
         "symfony/var-dumper": "^5.0|^6.0",
-        "laravel/pint": "^1.13"
+        "laravel/pint": "^1.13",
+        "pestphp/pest-plugin-browser": "^4.0",
+        "psr/simple-cache": "3.0.0 as 1.0.1"
     }
 }
