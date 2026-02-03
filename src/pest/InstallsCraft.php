@@ -179,6 +179,10 @@ class InstallsCraft implements HandlesArguments
         } else {
             throw new \RuntimeException('Could not determine a [system.edition] based on the project config.');
         }
+
+        // Make sure the edition is saved to the project config
+        Craft::$app->getProjectConfig()->set('system.edition', $edition);
+        Craft::$app->getProjectConfig()->saveModifiedConfigData();
     }
 
     protected function craftMigrateAll()
