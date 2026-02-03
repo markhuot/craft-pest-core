@@ -10,7 +10,8 @@ namespace markhuot\craftpest\factories;
  * allows you to create variants with specific attributes.
  *
  * @method self sku(string $sku)
- * @method self price(float $price)
+ * @method self basePrice(float $basePrice)
+ * @method self price(float $price) Alias for basePrice()
  * @method self isDefault(bool $isDefault)
  * @method self stock(int $stock)
  * @method self unlimitedStock(bool $unlimitedStock)
@@ -63,10 +64,20 @@ class Variant extends Element
         return [
             'title' => 'Variant '.$this->faker->word(),
             'sku' => 'SKU-'.strtoupper($this->faker->bothify('???-###')),
-            'price' => $this->faker->randomFloat(2, 5, 100),
+            'basePrice' => $this->faker->randomFloat(2, 5, 100),
             'isDefault' => false,
             // unlimitedStock was removed in Commerce 5.0+
         ];
+    }
+
+    /**
+     * Allow price() as an alias for basePrice() for backward compatibility
+     *
+     * @internal
+     */
+    public function price(float $price)
+    {
+        return $this->basePrice($price);
     }
 
     /**

@@ -375,7 +375,7 @@ class Product extends Element
                 ->product($element)
                 ->title($element->title ?: 'Default Variant')
                 ->sku($element->title ? strtoupper(str_replace(' ', '-', $element->title)) : 'SKU-'.time())
-                ->price(0)
+                ->basePrice(0)
                 ->isDefault(true)
                 ->create();
         } else {
