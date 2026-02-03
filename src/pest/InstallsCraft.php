@@ -94,6 +94,9 @@ class InstallsCraft implements HandlesArguments
             $this->craftApplyProjectConfig();
             $this->logEnd('Project config applied', $start);
         }
+
+        // Set the Craft edition from project config after it has been applied
+        $this->setEditionFromProjectConfig();
     }
 
     protected function craftInstall()
@@ -152,7 +155,10 @@ class InstallsCraft implements HandlesArguments
         $reflect = new \ReflectionClass($plugins);
         $reflect->getProperty('_pluginsLoaded')->setValue($plugins, false);
         $plugins->loadPlugins();
+    }
 
+    protected function setEditionFromProjectConfig(): void
+    {
         $edition = Craft::$app->getProjectConfig()->get('system.edition');
         if (method_exists(App::class, 'editionIdByHandle')) {
             Craft::$app->setEdition(App::editionIdByHandle($edition));
