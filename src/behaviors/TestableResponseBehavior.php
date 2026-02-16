@@ -130,7 +130,9 @@ class TestableResponseBehavior extends Behavior
      */
     public function getJsonContent()
     {
-        if (! str_contains($this->response->headers->get('content-type'), 'application/json')) {
+        if (!str_contains($this->response->headers->get('content-type'), 'application/json')
+            && !str_contains($this->response->headers->get('content-type'), 'application/graphql-response+json')
+        ) {
             throw new \Exception('The response does not have a JSON content-type to get JSON data from');
         }
 
