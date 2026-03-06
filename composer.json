@@ -32,6 +32,7 @@
             "src/helpers/Http.php",
             "src/helpers/Model.php",
             "src/helpers/Queue.php",
+            "src/helpers/Seed.php",
             "src/helpers/Test.php"
         ]
     },

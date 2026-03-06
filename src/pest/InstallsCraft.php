@@ -15,6 +15,17 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class InstallsCraft implements HandlesArguments
 {
+    /**
+     * When set, the install process will execute this SQL file
+     * instead of running the normal Craft CMS installation.
+     */
+    public static ?string $seedPath = null;
+
+    /**
+     * When true, seeding will run even if Craft is already installed.
+     */
+    public static bool $forceSeed = false;
+
     public function handleArguments(array $arguments): array
     {
         // Load phpunit.xml environment variables early to ensure they're available
@@ -26,9 +37,11 @@ class InstallsCraft implements HandlesArguments
             $this->requireCraft();
         }
 
-        if (in_array('--skip-install', $arguments)) {
-            $arguments = array_values(array_filter($arguments, fn ($arg) => $arg !== '--skip-install'));
-        } else {
+        [$arguments, $skipInstall] = $this->consumeFlag($arguments, '--skip-install');
+        [$arguments, $forceSeed] = $this->consumeFlag($arguments, '--seed');
+        static::$forceSeed = $forceSeed;
+
+        if (! $skipInstall) {
             $this->install();
         }
 
@@ -68,18 +81,24 @@ class InstallsCraft implements HandlesArguments
 
     protected function install(): void
     {
-        if (! Craft::$app->getIsInstalled(true)) {
+        // Step 1: Seed the database from a SQL file OR run the Craft installer
+        if (static::$seedPath !== null) {
+            $this->installFromSeed();
+        } elseif (! Craft::$app->getIsInstalled(true)) {
             $start = $this->logStart('Installing Craft CMS...');
             $this->craftInstall();
             $this->logEnd('Craft CMS installed', $start);
         }
 
+        // Step 2: Run any pending content migrations (applies to both paths)
         if (Craft::$app->getContentMigrator()->getNewMigrations()) {
             $start = $this->logStart('Running migrations...');
             $this->craftMigrateAll();
             $this->logEnd('Migrations complete', $start);
         }
 
+        // Step 3: Apply project config changes (applies to both paths)
+        //
         // We have to flush the data cache to make sure we're getting an accurate look at whether or not there
         // are pending changes.
         //
@@ -94,6 +113,76 @@ class InstallsCraft implements HandlesArguments
             $this->craftApplyProjectConfig();
             $this->logEnd('Project config applied', $start);
         }
+    }
+
+    protected function installFromSeed(): void
+    {
+        $path = Craft::getAlias(static::$seedPath);
+
+        if (! file_exists($path)) {
+            throw new \RuntimeException("Seed file not found: {$path}");
+        }
+
+        // Check if already seeded by testing if Craft is installed from a previous
+        // seed run, unless explicitly forced with --seed.
+        if (! static::$forceSeed && Craft::$app->getIsInstalled(true)) {
+            return;
+        }
+
+        $start = $this->logStart('Seeding database from SQL file...');
+        $sql = file_get_contents($path);
+        Craft::$app->getDb()->pdo->exec($sql);
+
+        // After seeding, Craft's internal state thinks it's not installed because
+        // it cached that check before the seed ran. Reset the installed state.
+        Craft::$app->setIsInstalled();
+
+        // Force-refresh cached app info (including configVersion) from the
+        // newly seeded DB to prevent stale project config lock checks.
+        Craft::$app->getIsInstalled(true);
+
+        // Refresh the Sites service cache so the seeded primary site is available
+        // in this same process/request (without waiting for a new boot cycle).
+        Craft::$app->getSites()->refreshSites();
+
+        // Flush all caches and refresh Craft's field definitions so that custom
+        // field handles (e.g., filterGroup) are registered as query behaviors.
+        Craft::$app->getCache()->flush();
+        Craft::$app->getFields()->refreshFields();
+
+        // Render compiled classes before loading plugins so that custom field
+        // behaviors (e.g., filterGroup) are available when plugin configs are loaded.
+        $this->renderCompiledClasses();
+
+        // Re-load plugins since they're now in the database
+        $plugins = Craft::$app->getPlugins();
+        $reflect = new \ReflectionClass($plugins);
+        $reflect->getProperty('_pluginsLoaded')->setValue($plugins, false);
+        $plugins->loadPlugins();
+
+        // Refresh loaded project config state to match the seeded database,
+        // after fields/plugins are fully available for config consumers.
+        Craft::$app->getProjectConfig()->reset();
+
+        $this->logEnd('Database seeded', $start);
+    }
+
+    /**
+     * Consume a single CLI flag from argument list.
+     *
+     * @return array{0: array, 1: bool}
+     */
+    protected function consumeFlag(array $arguments, string $flag): array
+    {
+        $hasFlag = in_array($flag, $arguments, true);
+
+        if (! $hasFlag) {
+            return [$arguments, false];
+        }
+
+        $arguments = array_values(array_filter($arguments, fn ($argument) => $argument !== $flag));
+
+        return [$arguments, true];
     }
 
     protected function craftInstall()
