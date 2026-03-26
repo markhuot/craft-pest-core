@@ -2,4 +2,6 @@
 
 namespace markhuot\craftpest\overrides;
 
-class ProjectConfig extends \craft\services\Config {}
+use craft\services\Config;
+
+class ProjectConfig extends Config {}

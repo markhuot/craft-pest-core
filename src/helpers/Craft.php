@@ -4,7 +4,10 @@ namespace markhuot\craftpest\helpers\craft;
 
 use Composer\Semver\Semver;
 use Craft;
+use craft\base\VolumeInterface;
+use craft\fs\Local;
 use craft\helpers\FileHelper;
+use craft\models\Volume;
 
 use function markhuot\craftpest\helpers\base\version_greater_than_or_equal_to;
 
@@ -24,12 +27,12 @@ function isBeforeCraftFive(): bool
 if (! function_exists('volumeDeleteFileAtPath')) {
     function volumeDeleteFileAtPath($volume, string $path)
     {
-        if (version_greater_than_or_equal_to(\Craft::$app->version, '4')) {
-            /** @var \craft\models\Volume $volume */
+        if (version_greater_than_or_equal_to(Craft::$app->version, '4')) {
+            /** @var Volume $volume */
             // @phpstan-ignore-next-line Ignored because one of these will fail based on the installed version of Craft
             $volume->getFs()->deleteFile($path);
-        } elseif (version_greater_than_or_equal_to(\Craft::$app->version, '3')) {
-            /** @var \craft\base\VolumeInterface $volume */
+        } elseif (version_greater_than_or_equal_to(Craft::$app->version, '3')) {
+            /** @var VolumeInterface $volume */
             // @phpstan-ignore-next-line Ignored because one of these will fail based on the installed version of Craft
             $volume->deleteFile($path);
         }
@@ -42,13 +45,13 @@ if (! function_exists('volumeDeleteFileAtPath')) {
 if (! function_exists('volumeDeleteRootDirectory')) {
     function volumeDeleteRootDirectory($volume)
     {
-        if (version_greater_than_or_equal_to(\Craft::$app->version, '4')) {
-            /** @var \craft\models\Volume $volume */
-            if (is_a($volume->fs, \craft\fs\Local::class)) {                              // @phpstan-ignore-line
+        if (version_greater_than_or_equal_to(Craft::$app->version, '4')) {
+            /** @var Volume $volume */
+            if (is_a($volume->fs, Local::class)) {                              // @phpstan-ignore-line
                 FileHelper::removeDirectory($volume->fs->getRootPath());                        // @phpstan-ignore-line
             }
-        } elseif (version_greater_than_or_equal_to(\Craft::$app->version, '3')) {
-            /** @var \craft\base\VolumeInterface $volume */
+        } elseif (version_greater_than_or_equal_to(Craft::$app->version, '3')) {
+            /** @var VolumeInterface $volume */
             if (is_a($volume, \craft\volumes\Local::class)) {                             // @phpstan-ignore-line
                 FileHelper::removeDirectory($volume->getRootPath());                            // @phpstan-ignore-line
             }
@@ -62,11 +65,11 @@ if (! function_exists('volumeDeleteRootDirectory')) {
 if (! function_exists('createVolume')) {
     function createVolume()
     {
-        if (version_greater_than_or_equal_to(\Craft::$app->version, '4')) {
+        if (version_greater_than_or_equal_to(Craft::$app->version, '4')) {
             // @phpstan-ignore-next-line Ignored because one of these will fail based on the installed version of Craft
-            return new \craft\models\Volume;
-        } elseif (version_greater_than_or_equal_to(\Craft::$app->version, '3')) {
-            /** @var \craft\base\VolumeInterface $volume */
+            return new Volume;
+        } elseif (version_greater_than_or_equal_to(Craft::$app->version, '3')) {
+            /** @var VolumeInterface $volume */
             // @phpstan-ignore-next-line Ignored because one of these will fail based on the installed version of Craft
             return new \craft\volumes\Local;
         }
@@ -79,16 +82,16 @@ if (! function_exists('createVolume')) {
 if (! function_exists('volumeDefinition')) {
     function volumeDefinition(array $definition = [])
     {
-        if (version_greater_than_or_equal_to(\Craft::$app->version, '4')) {
-            $fileSystem = new \craft\fs\Local;                                                                  // @phpstan-ignore-line
+        if (version_greater_than_or_equal_to(Craft::$app->version, '4')) {
+            $fileSystem = new Local;                                                                  // @phpstan-ignore-line
             $fileSystem->name = $definition['name'].' FS';                                                      // @phpstan-ignore-line
             $fileSystem->handle = $definition['handle'].'Fs';                                                   // @phpstan-ignore-line
-            $fileSystem->path = \Craft::getAlias('@storage').'/volumes/'.$definition['handle'].'/';    // @phpstan-ignore-line
-            \Craft::$app->fs->saveFilesystem($fileSystem);                                                        // @phpstan-ignore-line
+            $fileSystem->path = Craft::getAlias('@storage').'/volumes/'.$definition['handle'].'/';    // @phpstan-ignore-line
+            Craft::$app->fs->saveFilesystem($fileSystem);                                                        // @phpstan-ignore-line
 
             $definition['fsHandle'] = $fileSystem->handle;                                                        // @phpstan-ignore-line
-        } elseif (version_greater_than_or_equal_to(\Craft::$app->version, '3')) {
-            $definition['path'] = \Craft::getAlias('@storage').'/volumes/'.$definition['handle'].'/'; // @phpstan-ignore-line
+        } elseif (version_greater_than_or_equal_to(Craft::$app->version, '3')) {
+            $definition['path'] = Craft::getAlias('@storage').'/volumes/'.$definition['handle'].'/'; // @phpstan-ignore-line
         }
 
         return $definition;

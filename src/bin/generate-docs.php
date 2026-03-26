@@ -13,7 +13,7 @@ $input = $argv[1] ?? null;
 $output = $argv[2] ?? null;
 
 if (empty($input) || empty($output) || ! file_exists($input)) {
-    throw new \Exception('Could not find source ['.$input.']');
+    throw new Exception('Could not find source ['.$input.']');
 }
 
 echo "Transforming [$input] to [$output]\n";

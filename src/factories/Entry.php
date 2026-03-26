@@ -3,6 +3,7 @@
 namespace markhuot\craftpest\factories;
 
 use craft\models\EntryType;
+use craft\web\User;
 use markhuot\craftpest\interfaces\SectionsServiceInterface;
 use markhuot\craftpest\storage\FactoryFields;
 
@@ -117,7 +118,7 @@ class Entry extends Element
      * Set the author of the entry. You may pass a full user object, a user ID,
      * a username, email, or a user ID.
      */
-    public function author(\craft\web\User|string|int $user)
+    public function author(User|string|int $user)
     {
         if (is_numeric($user)) {
             $user = \Craft::$app->users->getUserById($user);
@@ -171,7 +172,7 @@ class Entry extends Element
             $entryTypes = collect(service(SectionsServiceInterface::class)->getAllEntryTypes());
         }
 
-        if (is_a($this->entryTypeIdentifier, \craft\models\EntryType::class)) {
+        if (is_a($this->entryTypeIdentifier, EntryType::class)) {
             $entryType = $this->entryTypeIdentifier;
         } elseif (is_numeric($this->entryTypeIdentifier)) {
             $entryType = $entryTypes->where('id', $this->entryTypeIdentifier)->first();

@@ -5,6 +5,7 @@ namespace markhuot\craftpest\pest;
 use Pest\Contracts\Plugins\AddsOutput;
 use Pest\Contracts\Plugins\HandlesArguments;
 use Pest\Support\Str;
+use SebastianBergmann\CodeCoverage\CodeCoverage;
 use SebastianBergmann\CodeCoverage\Node\File;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputDefinition;
@@ -116,7 +117,7 @@ class Coverage implements AddsOutput, HandlesArguments
 
         $reportPath = getcwd().'/storage/coverage.php';
 
-        /** @var \SebastianBergmann\CodeCoverage\CodeCoverage $codeCoverage */
+        /** @var CodeCoverage $codeCoverage */
         $codeCoverage = require $reportPath;
 
         $report = $codeCoverage->getReport();

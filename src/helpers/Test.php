@@ -6,6 +6,8 @@ use markhuot\craftpest\test\TestCase;
 use Mockery;
 use Pest\Concerns\Expectable;
 use Pest\PendingCalls\TestCall;
+use Symfony\Component\VarDumper\Cloner\VarCloner;
+use Symfony\Component\VarDumper\Dumper\CliDumper;
 
 function mock($className)
 {
@@ -35,8 +37,8 @@ function test()
 // set the correct versions early
 function dump(...$args)
 {
-    $cloner = new \Symfony\Component\VarDumper\Cloner\VarCloner;
-    $dumper = new \Symfony\Component\VarDumper\Dumper\CliDumper;
+    $cloner = new VarCloner;
+    $dumper = new CliDumper;
     foreach ($args as $arg) {
         $dumper->dump($cloner->cloneVar($arg));
     }

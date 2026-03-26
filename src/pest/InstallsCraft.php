@@ -11,6 +11,7 @@ use craft\services\ProjectConfig;
 use markhuot\craftpest\http\TestController;
 use markhuot\craftpest\interfaces\RenderCompiledClassesInterface;
 use Pest\Contracts\Plugins\HandlesArguments;
+use Pest\Support\Container;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class InstallsCraft implements HandlesArguments
@@ -40,7 +41,7 @@ class InstallsCraft implements HandlesArguments
     protected function logStart(string $message): float
     {
         try {
-            $output = \Pest\Support\Container::getInstance()->get(\Symfony\Component\Console\Output\OutputInterface::class);
+            $output = Container::getInstance()->get(OutputInterface::class);
             if (! $output instanceof OutputInterface) {
                 throw new \RuntimeException('No defined output');
             }
@@ -56,7 +57,7 @@ class InstallsCraft implements HandlesArguments
     {
         $duration = round(microtime(true) - $start, 2);
         try {
-            $output = \Pest\Support\Container::getInstance()->get(\Symfony\Component\Console\Output\OutputInterface::class);
+            $output = Container::getInstance()->get(OutputInterface::class);
             if (! $output instanceof OutputInterface) {
                 throw new \RuntimeException('No defined output');
             }
@@ -126,7 +127,7 @@ class InstallsCraft implements HandlesArguments
         $site = new Site($siteConfig);
 
         $migration = new Install([
-            'db' => \Craft::$app->getDb(),
+            'db' => Craft::$app->getDb(),
             'username' => $args['username'],
             'password' => $args['password'],
             'email' => $args['email'],
