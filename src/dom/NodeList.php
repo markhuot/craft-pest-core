@@ -6,6 +6,7 @@ use markhuot\craftpest\http\RequestBuilder;
 use markhuot\craftpest\test\SnapshotAssertions;
 use Pest\Expectation;
 use PHPUnit\Framework\Assert;
+use Symfony\Component\DomCrawler\Crawler;
 
 /**
  * # Node list
@@ -22,10 +23,10 @@ class NodeList implements \Countable
 {
     use SnapshotAssertions;
 
-    /** @var \Symfony\Component\DomCrawler\Crawler */
+    /** @var Crawler */
     public $crawler;
 
-    public function __construct(\Symfony\Component\DomCrawler\Crawler $crawler)
+    public function __construct(Crawler $crawler)
     {
         $this->crawler = $crawler;
     }

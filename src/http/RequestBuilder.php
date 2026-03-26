@@ -2,6 +2,7 @@
 
 namespace markhuot\craftpest\http;
 
+use craft\web\Application;
 use craft\web\User;
 use markhuot\craftpest\http\requests\GetRequest;
 use markhuot\craftpest\http\requests\PostRequest;
@@ -13,7 +14,7 @@ class RequestBuilder
 {
     private WebRequest $request;
 
-    private \craft\web\Application $app;
+    private Application $app;
 
     private RequestHandler $handler;
 
@@ -26,7 +27,7 @@ class RequestBuilder
     public function __construct(
         string $method,
         string $uri,
-        ?\craft\web\Application $app = null,
+        ?Application $app = null,
         ?RequestHandler $handler = null,
     ) {
         $this->method = $method;

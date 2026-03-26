@@ -76,6 +76,6 @@ class TestCase extends \PHPUnit\Framework\TestCase
     {
         $content = Craft::$app->getView()->renderTemplate(...$args);
 
-        return new \markhuot\craftpest\web\TestableResponse(['content' => $content]);
+        return new TestableResponse(['content' => $content]);
     }
 }

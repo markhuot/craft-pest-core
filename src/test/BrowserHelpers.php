@@ -6,6 +6,7 @@ use craft\base\ElementInterface;
 use markhuot\craftpest\browser\CraftHttpServer;
 use markhuot\craftpest\browser\VisitTemplateConfig;
 use Pest\Browser\Api\PendingAwaitablePage;
+use Pest\Browser\Browsable;
 use Pest\Browser\Support\Screenshot;
 
 /**
@@ -215,7 +216,7 @@ use Pest\Browser\Support\Screenshot;
  * ./vendor/bin/pest --headed
  * ```
  *
- * @mixin \Pest\Browser\Browsable
+ * @mixin Browsable
  */
 trait BrowserHelpers
 {

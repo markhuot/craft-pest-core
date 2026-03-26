@@ -39,7 +39,7 @@ class MatrixFieldEntries extends MatrixField
      */
     public function newElement()
     {
-        return new \craft\fields\Matrix;
+        return new Matrix;
     }
 
     /**

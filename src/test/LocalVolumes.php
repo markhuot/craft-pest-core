@@ -2,6 +2,9 @@
 
 namespace markhuot\craftpest\test;
 
+use craft\awss3\Volume;
+use craft\volumes\Local;
+
 /**
  * If you're using an older version of Craft that does not support swappable filesystems you can
  * use the `LocalVolumes` trait to convert any S3 volumes in to local folder volumes during
@@ -20,12 +23,12 @@ trait LocalVolumes
 {
     public function setUpLocalVolumes()
     {
-        \Craft::$container->set(\craft\awss3\Volume::class, function ($container, $params, $config) {
+        \Craft::$container->set(Volume::class, function ($container, $params, $config) {
             if (empty($config['id'])) {
-                return new \craft\awss3\Volume($config);
+                return new Volume($config);
             }
 
-            return new \craft\volumes\Local([
+            return new Local([
                 'id' => $config['id'],
                 'uid' => $config['uid'],
                 'name' => $config['name'],

@@ -2,6 +2,7 @@
 
 namespace markhuot\craftpest\behaviors;
 
+use craft\base\Element;
 use PHPUnit\Framework\Assert;
 use yii\base\Behavior;
 
@@ -12,7 +13,7 @@ use function markhuot\craftpest\helpers\test\test;
  *
  * Elements, like entries, and be tested in Craft via the following assertions.
  *
- * @property \craft\base\Element $owner
+ * @property Element $owner
  */
 class TestableElementBehavior extends Behavior
 {

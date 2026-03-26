@@ -4,6 +4,7 @@ namespace markhuot\craftpest\factories;
 
 use Craft;
 use craft\fields\Matrix;
+use craft\models\EntryType;
 use craft\models\MatrixBlockType;
 use markhuot\craftpest\actions\GetMatrixBlockTypes;
 
@@ -42,7 +43,7 @@ trait AddsMatrixBlocks
     {
         if (is_string($fieldOrHandle)) {
             /** @var Matrix $field */
-            $field = \Craft::$app->fields->getFieldByHandle($fieldOrHandle);
+            $field = Craft::$app->fields->getFieldByHandle($fieldOrHandle);
         } elseif (is_a($fieldOrHandle, Matrix::class)) {
             $field = $fieldOrHandle;
         }
@@ -59,7 +60,7 @@ trait AddsMatrixBlocks
         } elseif (! empty($args[0]) && is_a($args[0], MatrixBlockType::class)) {
             $blockType = $args[0];
             array_shift($args);
-        } elseif (! empty($args[0]) && is_a($args[0], \craft\models\EntryType::class)) {
+        } elseif (! empty($args[0]) && is_a($args[0], EntryType::class)) {
             $blockType = $args[0];
             array_shift($args);
         } else {
