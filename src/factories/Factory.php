@@ -2,7 +2,9 @@
 
 namespace markhuot\craftpest\factories;
 
+use craft\elements\Entry;
 use Faker\Factory as Faker;
+use Faker\Generator;
 use Illuminate\Support\Collection;
 use markhuot\craftpest\events\FactoryStoreEvent;
 use markhuot\craftpest\exceptions\ModelStoreException;
@@ -67,7 +69,7 @@ abstract class Factory
      */
     const EVENT_AFTER_STORE = 'afterStore';
 
-    /** @var \Faker\Generator */
+    /** @var Generator */
     protected $faker;
 
     /** @var array */
@@ -390,7 +392,7 @@ abstract class Factory
      * Because the model is not persisted it is up to the caller to ensure the model is saved
      * via something like `->saveElement($model)`.
      *
-     * @return \craft\elements\Entry|Collection
+     * @return Entry|Collection
      */
     public function make($definition = [])
     {

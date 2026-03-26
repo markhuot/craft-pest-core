@@ -3,6 +3,7 @@
 namespace markhuot\craftpest\web;
 
 use craft\debug\Module;
+use markhuot\craftpest\test\Benchmark;
 use PHPUnit\Framework\Assert;
 
 /**
@@ -20,7 +21,7 @@ use PHPUnit\Framework\Assert;
  *   ->assertNoDuplicateQueries();
  * ```
  *
- * @see \markhuot\craftpest\test\Benchmark
+ * @see Benchmark
  */
 class BenchmarkResult
 {

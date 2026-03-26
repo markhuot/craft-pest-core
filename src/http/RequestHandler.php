@@ -2,7 +2,10 @@
 
 namespace markhuot\craftpest\http;
 
+use craft\web\Application;
 use craft\web\twig\Extension;
+use craft\web\UrlManager;
+use craft\web\UrlRule;
 use markhuot\craftpest\http\requests\WebRequest;
 use markhuot\craftpest\web\TestableResponse;
 use Twig\Error\RuntimeError;
@@ -12,9 +15,9 @@ use function markhuot\craftpest\helpers\test\test;
 
 class RequestHandler
 {
-    private \craft\web\Application $app;
+    private Application $app;
 
-    public function __construct(?\craft\web\Application $app = null)
+    public function __construct(?Application $app = null)
     {
         $this->app = $app ?? \Craft::$app;
     }
@@ -25,7 +28,7 @@ class RequestHandler
         $this->registerWithCraft($request);
 
         try {
-            $this->app->trigger(\craft\web\Application::EVENT_BEFORE_REQUEST);
+            $this->app->trigger(Application::EVENT_BEFORE_REQUEST);
 
             // The actual call
             /** @var TestableResponse $response */
@@ -47,7 +50,7 @@ class RequestHandler
             }
 
             // Always send the after request so Craft can clean up after itself
-            $this->app->trigger(\craft\web\Application::EVENT_AFTER_REQUEST);
+            $this->app->trigger(Application::EVENT_AFTER_REQUEST);
         }
     }
 
@@ -109,9 +112,9 @@ class RequestHandler
             // We'll help out by resetting a few components (causing them to recalculate their
             // internal state). The config here is no different than the default config.
             'urlManager' => [
-                'class' => \craft\web\UrlManager::class,
+                'class' => UrlManager::class,
                 'enablePrettyUrl' => true,
-                'ruleConfig' => ['class' => \craft\web\UrlRule::class],
+                'ruleConfig' => ['class' => UrlRule::class],
             ],
         ]);
 

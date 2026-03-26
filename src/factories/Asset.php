@@ -5,6 +5,7 @@ namespace markhuot\craftpest\factories;
 use craft\helpers\App;
 use craft\models\VolumeFolder;
 use Illuminate\Support\Collection;
+use markhuot\craftpest\test\LocalVolumes;
 use markhuot\craftpest\test\RefreshesDatabase;
 use yii\base\Event;
 
@@ -44,7 +45,7 @@ class Asset extends Element
      *
      * Commonly, you will want to set this to an a temporary volume, that is only used in tests.
      *
-     * @see \markhuot\craftpest\test\LocalVolumes
+     * @see LocalVolumes
      */
     public function volume(string $handle)
     {

@@ -13,14 +13,17 @@ use Amp\Http\Server\SocketHttpServer;
 use Craft;
 use markhuot\craftpest\http\RequestHandler;
 use markhuot\craftpest\http\requests\GetRequest;
+use Pest\Browser\Contracts\HttpServer;
 use Pest\Browser\Exceptions\ServerNotFoundException;
 use Pest\Browser\Execution;
 use Pest\Browser\GlobalState;
 use Psr\Log\NullLogger;
 use Symfony\Component\Mime\MimeTypes;
 use Throwable;
+use yii\web\Cookie;
+use yii\web\CookieCollection;
 
-class CraftHttpServer implements \Pest\Browser\Contracts\HttpServer
+class CraftHttpServer implements HttpServer
 {
     /**
      * The URL path used for visitTemplate() requests.
@@ -65,7 +68,7 @@ class CraftHttpServer implements \Pest\Browser\Contracts\HttpServer
      */
     protected function getBasePath(): string
     {
-        return \Craft::getAlias('@webroot');
+        return Craft::getAlias('@webroot');
     }
 
     /**
@@ -257,9 +260,9 @@ class CraftHttpServer implements \Pest\Browser\Contracts\HttpServer
         }
 
         // Set cookies
-        $cookies = new \yii\web\CookieCollection(['readOnly' => false]);
+        $cookies = new CookieCollection(['readOnly' => false]);
         foreach ($request->getCookies() as $name => $value) {
-            $cookies->add(new \yii\web\Cookie([
+            $cookies->add(new Cookie([
                 'name' => $name,
                 'value' => $value,
             ]));
