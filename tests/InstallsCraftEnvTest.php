@@ -138,3 +138,27 @@ test('InstallsCraft handles missing phpunit.xml gracefully', function () {
         rmdir($tempDir);
     }
 });
+
+test('InstallsCraft consumes --seed flag from arguments', function () {
+    $installsCraft = new InstallsCraft;
+    $reflection = new ReflectionClass($installsCraft);
+    $method = $reflection->getMethod('consumeFlag');
+    $method->setAccessible(true);
+
+    [$arguments, $hasFlag] = $method->invoke($installsCraft, ['--seed', '--colors=always'], '--seed');
+
+    expect($hasFlag)->toBeTrue();
+    expect($arguments)->toBe(['--colors=always']);
+});
+
+test('InstallsCraft returns unchanged args when --seed is absent', function () {
+    $installsCraft = new InstallsCraft;
+    $reflection = new ReflectionClass($installsCraft);
+    $method = $reflection->getMethod('consumeFlag');
+    $method->setAccessible(true);
+
+    [$arguments, $hasFlag] = $method->invoke($installsCraft, ['--colors=always'], '--seed');
+
+    expect($hasFlag)->toBeFalse();
+    expect($arguments)->toBe(['--colors=always']);
+});
