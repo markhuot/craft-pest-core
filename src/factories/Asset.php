@@ -45,7 +45,7 @@ class Asset extends Element
      *
      * Commonly, you will want to set this to an a temporary volume, that is only used in tests.
      *
-     * @see LocalVolumes
+     * @see markhuot\craftpest\test\LocalVolumes
      */
     public function volume(string $handle)
     {
