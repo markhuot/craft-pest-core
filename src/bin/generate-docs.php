@@ -72,7 +72,11 @@ function parseComment(string $comment)
 
     preg_match_all('/^SEE\[(.+)\]$/m', $comment, $sees);
     foreach ($sees[1] as $index => $otherClass) {
-        $comment = str_replace($sees[0][$index], "\n\n".implode("\n\n", parseClass($otherClass))."\n\n", $comment);
+        try {
+            $comment = str_replace($sees[0][$index], "\n\n".implode("\n\n", parseClass($otherClass))."\n\n", $comment);
+        } catch (ReflectionException $e) {
+            $comment = str_replace($sees[0][$index], '', $comment);
+        }
     }
 
     return trim($comment);
