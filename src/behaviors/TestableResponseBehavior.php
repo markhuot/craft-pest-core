@@ -3,6 +3,8 @@
 namespace markhuot\craftpest\behaviors;
 
 use Carbon\Carbon;
+use craft\helpers\UrlHelper;
+use craft\web\Response;
 use Illuminate\Support\Arr;
 use markhuot\craftpest\dom\Form;
 use markhuot\craftpest\dom\NodeList;
@@ -26,7 +28,7 @@ use yii\base\Behavior;
  * not return an error. You may use `->assertOk()` to check that the
  * status code was 200.
  *
- * @property \craft\web\Response $owner
+ * @property Response $owner
  *
  * @method self fill(string $key, string $value)
  * @method self tick(string $key)
@@ -592,7 +594,7 @@ class TestableResponseBehavior extends Behavior
         // @TODO this will break protocol relative URLs though because they
         // start with a double slash like `//foo.com`
         $locationUri = ltrim($location, '/');
-        $locationUrl = \craft\helpers\UrlHelper::url($locationUri);
+        $locationUrl = UrlHelper::url($locationUri);
         $locationParts = parse_url($locationUrl);
 
         if ($checkParts !== null) {

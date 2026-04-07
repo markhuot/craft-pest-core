@@ -1,5 +1,8 @@
 <?php
 
+use craft\web\Application;
+use Dotenv\Dotenv;
+
 // Mute deprecation warnings on php8.4+
 // https://github.com/craftcms/cms/issues/16606#issuecomment-3436971416
 // https://github.com/craftcms/craft/commit/e31038d7cbe7a03e1c35c15883bd0248f4306c8d
@@ -14,13 +17,13 @@ define('YII_ENABLE_ERROR_HANDLER', false);
 if (file_exists(CRAFT_BASE_PATH.'/.env')) {
     if (method_exists('\Dotenv\Dotenv', 'createUnsafeImmutable')) {
         /** @phpstan-ignore-next-line */
-        \Dotenv\Dotenv::createUnsafeImmutable(CRAFT_BASE_PATH)->safeLoad();
+        Dotenv::createUnsafeImmutable(CRAFT_BASE_PATH)->safeLoad();
     } elseif (method_exists('\Dotenv\Dotenv', 'create')) {
         /** @phpstan-ignore-next-line */
-        \Dotenv\Dotenv::create(CRAFT_BASE_PATH)->load();
+        Dotenv::create(CRAFT_BASE_PATH)->load();
     } else {
         /** @phpstan-ignore-next-line */
-        (new \Dotenv\Dotenv(CRAFT_BASE_PATH))->load();
+        (new Dotenv(CRAFT_BASE_PATH))->load();
     }
 }
 
@@ -96,7 +99,7 @@ if (! function_exists('replace_class')) {
 
 replace_class('services\\Config');
 
-/** @var \craft\web\Application $app */
+/** @var Application $app */
 $app = require CRAFT_VENDOR_PATH.'/craftcms/cms/bootstrap/web.php';
 
 // Now that the app is loaded, we can restore the original argv and argc so we don't mess up Pest's CLI processing.

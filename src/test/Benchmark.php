@@ -2,6 +2,7 @@
 
 namespace markhuot\craftpest\test;
 
+use craft\debug\Module;
 use markhuot\craftpest\web\BenchmarkResult;
 
 trait Benchmark
@@ -40,7 +41,7 @@ trait Benchmark
         // time. However, because we're running multiple requests through a single
         // logTarget we need to manually update thentag (triggering independant log)
         // files to be written.
-        \craft\debug\Module::getInstance()->logTarget->tag = uniqid();
+        Module::getInstance()->logTarget->tag = uniqid();
 
         return $this;
     }
@@ -74,7 +75,7 @@ trait Benchmark
     {
         $this->activeBenchmark['end'] = count(\Craft::getLogger()->getProfiling());
 
-        \craft\debug\Module::getInstance()?->logTarget->export();
+        Module::getInstance()?->logTarget->export();
 
         return new BenchmarkResult($this->activeBenchmark['start'], $this->activeBenchmark['end']);
     }

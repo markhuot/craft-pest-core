@@ -2,6 +2,7 @@
 
 namespace markhuot\craftpest\web;
 
+use craft\web\Response;
 use markhuot\craftpest\behaviors\ExpectableBehavior;
 use markhuot\craftpest\behaviors\TestableResponseBehavior;
 use markhuot\craftpest\test\Dd;
@@ -11,7 +12,7 @@ use markhuot\craftpest\test\SnapshotAssertions;
  * @mixin ExpectableBehavior
  * @mixin TestableResponseBehavior
  */
-class TestableResponse extends \craft\web\Response
+class TestableResponse extends Response
 {
     use Dd;
     use SnapshotAssertions;

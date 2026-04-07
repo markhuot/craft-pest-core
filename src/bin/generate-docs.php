@@ -13,7 +13,7 @@ $input = $argv[1] ?? null;
 $output = $argv[2] ?? null;
 
 if (empty($input) || empty($output) || ! file_exists($input)) {
-    throw new \Exception('Could not find source ['.$input.']');
+    throw new Exception('Could not find source ['.$input.']');
 }
 
 echo "Transforming [$input] to [$output]\n";
@@ -26,13 +26,31 @@ $namespace = str_replace('/', '\\', preg_replace('/^(.\/)?src\//', '', $info['di
 require $input;
 $contents = parseClass('markhuot\\craftpest\\'.$namespace.'\\'.$className);
 
+function getUseMap(ReflectionClass $reflection): array
+{
+    $useMap = [];
+    $file = $reflection->getFileName();
+    if ($file && file_exists($file)) {
+        $source = file_get_contents($file);
+        preg_match_all('/^use\s+(.+?)(?:\s+as\s+(\w+))?\s*;/m', $source, $matches, PREG_SET_ORDER);
+        foreach ($matches as $match) {
+            $fqcn = trim($match[1]);
+            $alias = $match[2] ?? basename(str_replace('\\', '/', $fqcn));
+            $useMap[$alias] = $fqcn;
+        }
+    }
+
+    return $useMap;
+}
+
 function parseClass(string $className)
 {
     $reflection = new ReflectionClass($className);
     $classComment = $reflection->getDocComment();
+    $useMap = getUseMap($reflection);
 
     $contents = [];
-    $contents[] = parseComment($classComment);
+    $contents[] = parseComment($classComment, $useMap);
 
     foreach ($reflection->getMethods() as $method) {
         if ($method->getDeclaringClass()->getName() === $reflection->getName() &&
@@ -41,7 +59,7 @@ function parseClass(string $className)
             substr($method->getName(), 0, 2) !== '__' &&
             strpos($method->getDocComment(), '@internal') === false
         ) {
-            $comment = parseComment($method->getDocComment());
+            $comment = parseComment($method->getDocComment(), $useMap);
             if (! empty($comment)) {
                 $params = array_map(function (ReflectionParameter $param) {
                     return ($param->getType() ? (string) $param->getType().' ' : ''). // @phpstan-ignore-line for some reason PHP stan doesn't like ->getName on a type
@@ -56,11 +74,11 @@ function parseClass(string $className)
     return $contents;
 }
 
-function parseComment(string $comment)
+function parseComment(string $comment, array $useMap = [])
 {
     preg_match_all('/@see\s+(.+)$/m', $comment, $sees);
     foreach ($sees[1] as $index => $otherClass) {
-        $comment = str_replace($sees[0][$index], 'SEE['.$otherClass.']', $comment);
+        $comment = str_replace($sees[0][$index], 'SEE['.trim($otherClass).']', $comment);
     }
 
     $comment = preg_replace('/^\/\*\*/', '', $comment);
@@ -72,7 +90,12 @@ function parseComment(string $comment)
 
     preg_match_all('/^SEE\[(.+)\]$/m', $comment, $sees);
     foreach ($sees[1] as $index => $otherClass) {
-        $comment = str_replace($sees[0][$index], "\n\n".implode("\n\n", parseClass($otherClass))."\n\n", $comment);
+        $resolved = $useMap[$otherClass] ?? $otherClass;
+        try {
+            $comment = str_replace($sees[0][$index], "\n\n".implode("\n\n", parseClass($resolved))."\n\n", $comment);
+        } catch (ReflectionException $e) {
+            $comment = str_replace($sees[0][$index], '', $comment);
+        }
     }
 
     return trim($comment);

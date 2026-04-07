@@ -3,14 +3,16 @@
 namespace markhuot\craftpest\http\requests;
 
 use craft\helpers\App;
+use craft\web\Request;
 use markhuot\craftpest\test\Dd;
 use Pest\Expectation;
 use PHPUnit\Framework\Assert;
+use yii\web\CookieCollection;
 use yii\web\NotFoundHttpException;
 
 use function markhuot\craftpest\helpers\test\test;
 
-abstract class WebRequest extends \craft\web\Request
+abstract class WebRequest extends Request
 {
     use Dd;
 
@@ -89,7 +91,7 @@ abstract class WebRequest extends \craft\web\Request
         return $this;
     }
 
-    public function setCookies(\yii\web\CookieCollection $cookies): self
+    public function setCookies(CookieCollection $cookies): self
     {
         $this->setRaw(['_cookies' => $cookies]);
 

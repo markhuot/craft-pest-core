@@ -2,13 +2,14 @@
 
 namespace markhuot\craftpest\pest;
 
+use Composer\Factory;
 use Pest\Contracts\Plugins\Bootable;
 
 class MonkeyPatches implements Bootable
 {
     public function boot(): void
     {
-        $vendorDir = dirname(\Composer\Factory::getComposerFile()).'/vendor/';
+        $vendorDir = dirname(Factory::getComposerFile()).'/vendor/';
 
         $entry = file_get_contents($vendorDir.'/craftcms/cms/src/elements/Entry.php');
         $entry = preg_replace('/^<\?php/', '', $entry);

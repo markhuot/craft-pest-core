@@ -2,12 +2,16 @@
 
 namespace markhuot\craftpest\test;
 
+use markhuot\craftpest\browser\CraftHttpServer;
+use Pest\Browser\ServerManager;
+use Pest\Browser\Support\Port;
+
 trait ConfiguresBrowserTesting
 {
     public function setUpConfiguresBrowserTesting(): void
     {
         // If the browser plugin is not available, we don't need to configure anything
-        if (! class_exists(\Pest\Browser\ServerManager::class)) {
+        if (! class_exists(ServerManager::class)) {
             return;
         }
 
@@ -20,16 +24,16 @@ trait ConfiguresBrowserTesting
     private function configureBrowserTesting(): void
     {
         try {
-            $reflection = new \ReflectionClass(\Pest\Browser\ServerManager::class);
+            $reflection = new \ReflectionClass(ServerManager::class);
             $instance = $reflection->getMethod('instance')->invoke(null);
 
             $httpProperty = $reflection->getProperty('http');
             $httpProperty->setAccessible(true);
             $httpProperty->setValue(
                 $instance,
-                new \markhuot\craftpest\browser\CraftHttpServer(
-                    \Pest\Browser\ServerManager::DEFAULT_HOST,
-                    \Pest\Browser\Support\Port::find(),
+                new CraftHttpServer(
+                    ServerManager::DEFAULT_HOST,
+                    Port::find(),
                 )
             );
         } catch (\Throwable) {
