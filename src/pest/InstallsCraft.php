@@ -75,7 +75,16 @@ class InstallsCraft implements HandlesArguments
             $this->logEnd('Craft CMS installed', $start);
         }
 
-        if (Craft::$app->getContentMigrator()->getNewMigrations()) {
+        $migrators = $this->getMigrators();
+        $hasPending = false;
+        foreach ($migrators as $migrator) {
+            if ($migrator->getNewMigrations()) {
+                $hasPending = true;
+                break;
+            }
+        }
+
+        if ($hasPending) {
             $start = $this->logStart('Running migrations...');
             $this->craftMigrateAll();
             $this->logEnd('Migrations complete', $start);
@@ -166,7 +175,30 @@ class InstallsCraft implements HandlesArguments
 
     protected function craftMigrateAll()
     {
-        Craft::$app->getContentMigrator()->up();
+        foreach ($this->getMigrators() as $migrator) {
+            if ($migrator->getNewMigrations()) {
+                $migrator->up();
+            }
+        }
+    }
+
+    /**
+     * Returns the migrators that `php craft migrate/all` would run, in the
+     * same order: Craft core (app), each installed plugin, then content.
+     *
+     * @return array<string, \craft\db\MigrationManager>
+     */
+    protected function getMigrators(): array
+    {
+        $migrators = ['app' => Craft::$app->getMigrator()];
+
+        foreach (Craft::$app->getPlugins()->getAllPlugins() as $plugin) {
+            $migrators["plugin:{$plugin->id}"] = $plugin->getMigrator();
+        }
+
+        $migrators['content'] = Craft::$app->getContentMigrator();
+
+        return $migrators;
     }
 
     protected function craftApplyProjectConfig(): void
