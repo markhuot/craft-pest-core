@@ -50,13 +50,31 @@ trait Queues
      */
     protected array $assertions = [];
 
+    /**
+     * The handler `setUpQueues` registered, kept so `tearDownQueues` can remove it. Left
+     * registered, it keeps every finished test reachable through its bound `$this`.
+     *
+     * @var (callable(ExecEvent): void)|null
+     */
+    protected $queuePayloadHandler = null;
+
     public function setUpQueues()
     {
         $this->payloads = collect();
 
-        Event::on(Queue::class, Queue::EVENT_BEFORE_EXEC, function (ExecEvent $event) {
+        $this->queuePayloadHandler = function (ExecEvent $event) {
             $this->payloads->push($event);
-        });
+        };
+
+        Event::on(Queue::class, Queue::EVENT_BEFORE_EXEC, $this->queuePayloadHandler);
+    }
+
+    public function tearDownQueues()
+    {
+        if ($this->queuePayloadHandler !== null) {
+            Event::off(Queue::class, Queue::EVENT_BEFORE_EXEC, $this->queuePayloadHandler);
+            $this->queuePayloadHandler = null;
+        }
     }
 
     protected function assertPostConditions(): void
